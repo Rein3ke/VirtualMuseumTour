@@ -37,8 +37,18 @@ public class ExhibitManager : MonoBehaviour
     {
         foreach (var o in assetBundle.LoadAllAssets())
         {
-            var asset = (GameObject) o;
-            InstantiateAssetAsChildFrom(GetExhibitAnchorWithName(asset.name), asset);
+            switch (o)
+            {
+                case GameObject exhibitGameObject:
+                {
+                    InstantiateAssetAsChildFrom(GetExhibitAnchorWithName(exhibitGameObject.name), exhibitGameObject);
+                    break;
+                }
+                case ExhibitData exhibitData:
+                    GameObject exhibitAnchor = GetExhibitAnchorWithName(exhibitData.exhibitName);
+                    exhibitAnchor.GetComponent<ExhibitAnchor>().ExhibitData = exhibitData;
+                    break;
+            }
         }
     }
 
