@@ -6,4 +6,6 @@ public class ExhibitData : ScriptableObject
     public string exhibitName;
     [TextArea]
     public string exhibitDescription;
+
+    public AudioClip[] audioClips;
 }

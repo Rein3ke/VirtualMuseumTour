@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEngine;
 
 public class ExhibitManager : MonoBehaviour
@@ -15,8 +16,7 @@ public class ExhibitManager : MonoBehaviour
         LoadAllExhibitAnchors();
 
         // Start asset bundle download...
-        BundleWebLoader bundleWebLoader = new BundleWebLoader();
-        Coroutine downloadAssetBundleCoroutine = StartCoroutine(bundleWebLoader.DownloadAssetBundle(LoadAssetBundle, bundleUrl));
+        Coroutine downloadAssetBundleCoroutine = StartCoroutine(BundleWebLoader.DownloadAssetBundle(LoadAndUnpackAssetBundle, bundleUrl));
     }
 
     private void LoadAllExhibitAnchors()
@@ -33,8 +33,14 @@ public class ExhibitManager : MonoBehaviour
         return _exhibitAnchors.FirstOrDefault(exhibitAnchor => exhibitAnchor.GetComponent<ExhibitAnchor>().ExhibitID.Equals(assetName));
     }
 
-    private void LoadAssetBundle(AssetBundle assetBundle)
+    private void LoadAndUnpackAssetBundle(AssetBundle assetBundle)
     {
+        if (assetBundle == null)
+        {
+            Debug.LogError("LoadAndUnpackAssetBundle: AssetBundle can't be null!");
+            return;
+        }
+
         foreach (var o in assetBundle.LoadAllAssets())
         {
             switch (o)
@@ -45,21 +51,24 @@ public class ExhibitManager : MonoBehaviour
                     break;
                 }
                 case ExhibitData exhibitData:
+                    Debug.Log($"ExhibitData found. Name: {exhibitData.exhibitName}");
                     GameObject exhibitAnchor = GetExhibitAnchorWithName(exhibitData.exhibitName);
+                    if (exhibitAnchor == null) break;
                     exhibitAnchor.GetComponent<ExhibitAnchor>().ExhibitData = exhibitData;
                     break;
             }
         }
     }
 
-    private void InstantiateAssetAsChildFrom(GameObject parent, GameObject asset)
+    private void InstantiateAssetAsChildFrom(GameObject parent, GameObject child)
     {
-        if (parent == null)
+        if (parent == null || child == null)
         {
-            Debug.LogError("InstantiateAssetAsChildFrom: No parent for " + asset.name + " found!");
+            Debug.LogError("InstantiateAssetAsChildFrom: Parent or child can't be null!");
             return;
         }
-        
-        Instantiate(asset, parent.transform);
+
+        Instantiate(child, parent.transform);
+        Debug.Log($"Instantiate {child.name} as a child from [{parent.GetType()}]{parent.GetComponent<ExhibitAnchor>().ExhibitID}.");
     }
 }

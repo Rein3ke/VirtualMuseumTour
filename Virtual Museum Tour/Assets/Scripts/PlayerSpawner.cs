@@ -4,6 +4,7 @@ using UnityEngine;
 public class PlayerSpawner : MonoBehaviour
 {
     [SerializeField] private GameObject player;
+    [SerializeField] private string playerSpawnName;
     
     private GameObject _currentPlayer;
 

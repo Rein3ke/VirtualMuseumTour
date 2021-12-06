@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 public class BundleWebLoader
 {
     
-    public IEnumerator DownloadAssetBundle(Action<AssetBundle> assetBundleCallback, string bundleUrl)
+    public static IEnumerator DownloadAssetBundle(Action<AssetBundle> assetBundleCallback, string bundleUrl)
     {
         UnityWebRequest webRequest = UnityWebRequestAssetBundle.GetAssetBundle(bundleUrl);
 
