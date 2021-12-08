@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 521937499052352690}
   - component: {fileID: 521937499052352693}
   m_Layer: 0
-  m_Name: PlayerSpawner
-  m_TagString: Untagged
+  m_Name: PlayerSpawnPoint
+  m_TagString: PlayerSpawner
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 521937499052352692}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 4, z: -4}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -43,5 +43,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca14a33fa76714148bdc50afd6918443, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 6893931672208225025, guid: 4b90b272324c1fb4899ee20f0f31d6fc, type: 3}
-  playerSpawnName: TestMuseumSpawn01
+  playerSpawnName: 

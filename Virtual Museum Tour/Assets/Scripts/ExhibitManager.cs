@@ -1,14 +1,27 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using UnityEngine;
 
 public class ExhibitManager : MonoBehaviour
 {
-    public ExhibitManager Instance => this;
+    public static ExhibitManager Instance { get; private set; }
 
-    public string bundleUrl = "http://localhost/assetbundles/testbundle";
+    [SerializeField] private string bundleUrl = "http://localhost/assetbundles/testbundle";
+    
     private List<GameObject> _exhibitAnchors;
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
 
     private void Start()
     {
@@ -51,7 +64,7 @@ public class ExhibitManager : MonoBehaviour
                     break;
                 }
                 case ExhibitData exhibitData:
-                    Debug.Log($"ExhibitData found. Name: {exhibitData.exhibitName}");
+                    Debug.Log($"ExhibitData found!\n Name: {exhibitData.exhibitName}");
                     GameObject exhibitAnchor = GetExhibitAnchorWithName(exhibitData.exhibitName);
                     if (exhibitAnchor == null) break;
                     exhibitAnchor.GetComponent<ExhibitAnchor>().ExhibitData = exhibitData;

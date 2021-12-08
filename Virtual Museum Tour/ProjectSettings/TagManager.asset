@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - ExhibitAnchor
+  - PlayerSpawner
   layers:
   - Default
   - TransparentFX
