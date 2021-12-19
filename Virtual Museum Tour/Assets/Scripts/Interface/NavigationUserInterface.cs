@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Linq;
 using Controller;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,35 +8,30 @@ namespace Interface
     public class NavigationUserInterface : MonoBehaviour
     {
         [SerializeField] private GameObject sideBar;
-        [SerializeField] private Dropdown dropdown; 
-    
-        private GameObject[] _playerSpawnPoints;
+        [SerializeField] private Dropdown dropdown;
 
         private void Start()
         {
-            RefreshPlayerSpawnPointListFromCurrentScene();
+            // fill dropdown with all the spawn points from PlayerSpawnController
+            DropdownSetup();
 
-            if (_playerSpawnPoints.Length > 0)
+            void DropdownSetup()
             {
-                var optionDatas = new List<Dropdown.OptionData>();
-                foreach (var playerSpawnPointGameObject in _playerSpawnPoints)
-                {
-                    var optionData = new Dropdown.OptionData
-                    {
-                        text = playerSpawnPointGameObject.GetComponent<PlayerSpawnPoint>().PlayerSpawnName
-                    };
-
-                    optionDatas.Add(optionData);
-                }
-
-                dropdown.AddOptions(optionDatas);
+                FillDropdown();
+                dropdown.onValueChanged.AddListener(delegate { DropdownValueChanged(dropdown); });
             }
-        
-            dropdown.onValueChanged.AddListener(delegate
-            {
-                DropdownValueChanged(dropdown);
-            });
-            //SetActive(sideBar, false);
+        }
+
+        private void FillDropdown()
+        {
+            var playerSpawnPoints = PlayerSpawnController.Instance.PlayerSpawnPoints;
+            if (playerSpawnPoints.Length <= 0) return;
+            
+            var optionData = playerSpawnPoints
+                .Select(spawnPoint => new Dropdown.OptionData {text = spawnPoint.GetComponent<PlayerSpawnPoint>().PlayerSpawnName})
+                .ToList();
+
+            dropdown.AddOptions(optionData);
         }
 
         private void DropdownValueChanged(Dropdown change)
@@ -44,20 +39,14 @@ namespace Interface
             PlayerSpawnController.Instance.SetTeleportRequestOn(change.captionText.text);
         }
 
-        private void RefreshPlayerSpawnPointListFromCurrentScene()
+        public void ShowInterface()
         {
-            _playerSpawnPoints = GameObject.FindGameObjectsWithTag("PlayerSpawner");
-            Debug.Log($"Player spawn points found: {_playerSpawnPoints.Length}");
+            sideBar.SetActive(true);
         }
 
-        private void ToggleUiElement(GameObject uiElement)
+        public void HideInterface()
         {
-            uiElement.SetActive(!uiElement.activeSelf);
-        }
-
-        private void SetActive(GameObject uiElement, bool shouldBeActive)
-        {
-            uiElement.SetActive(shouldBeActive);
+            sideBar.SetActive(false);
         }
     }
 }
