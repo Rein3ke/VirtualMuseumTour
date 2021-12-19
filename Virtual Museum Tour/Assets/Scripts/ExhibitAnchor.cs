@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class ExhibitAnchor : MonoBehaviour
@@ -43,5 +44,4 @@ public class ExhibitAnchor : MonoBehaviour
     }
 
     public string ExhibitID => exhibitID;
-    
 }

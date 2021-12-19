@@ -3,9 +3,8 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class BundleWebLoader
+public static class BundleWebLoader
 {
-    
     public static IEnumerator DownloadAssetBundle(Action<AssetBundle> assetBundleCallback, string bundleUrl)
     {
         UnityWebRequest webRequest = UnityWebRequestAssetBundle.GetAssetBundle(bundleUrl);
