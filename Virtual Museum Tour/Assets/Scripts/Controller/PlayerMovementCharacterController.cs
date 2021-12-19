@@ -2,10 +2,9 @@ using UnityEngine;
 
 namespace Controller
 {
+    [RequireComponent(typeof(CharacterController))]
     public class PlayerMovementCharacterController : MonoBehaviour
     {
-        public static PlayerMovementCharacterController Instance { get; private set; }
-
         private CharacterController _characterController;
     
         [SerializeField] private float playerSpeed = 4.0f;
@@ -21,15 +20,6 @@ namespace Controller
     
         private void Awake()
         {
-            if (Instance != null && Instance != this)
-            {
-                Destroy(this.gameObject);
-            }
-            else
-            {
-                Instance = this;
-            }
-        
             _characterController = GetComponent<CharacterController>();
         }
 
