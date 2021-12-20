@@ -11,6 +11,7 @@ namespace Controller
         private GameObject _exhibitManagerGameObject;
         private GameObject _exhibitDetailsUserInterfaceGameObject;
         private GameObject _navigationUserInterface;
+        private GameObject _selectionManager;
 
         private const string PrefabPath = "prefabs";
 
@@ -35,6 +36,7 @@ namespace Controller
             {
                 _playerSpawnControllerGameObject = Instantiate(LoadFromResourcesAsGameObject("PlayerSpawnController"), transform);
                 _exhibitManagerGameObject = Instantiate(LoadFromResourcesAsGameObject("ExhibitManager"), transform);
+                _selectionManager = Instantiate(LoadFromResourcesAsGameObject("SelectionManager"), transform);
             }
             
             void InterfaceSetup()

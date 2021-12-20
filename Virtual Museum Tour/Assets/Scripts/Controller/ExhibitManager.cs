@@ -16,7 +16,7 @@ namespace Controller
         {
             if (Instance != null && Instance != this)
             {
-                Destroy(this.gameObject);
+                Destroy(gameObject);
             }
             else
             {
@@ -26,10 +26,10 @@ namespace Controller
 
         private void Start()
         {
-            // First, load all exhibit anchors...
+            // first, load all exhibit anchors...
             LoadAllExhibitAnchors();
 
-            // Start asset bundle download...
+            // secondly, start asset bundle download...
             Coroutine downloadAssetBundleCoroutine = StartCoroutine(BundleWebLoader.DownloadAssetBundle(LoadAndUnpackAssetBundle, bundleUrl));
         }
 
@@ -80,6 +80,18 @@ namespace Controller
             {
                 Debug.LogError("InstantiateAssetAsChildFrom: Parent or child can't be null!");
                 return;
+            }
+
+            // add tag to exhibit and its children
+            child.tag = "Exhibit";
+            for (int index = 0; index < child.transform.childCount; index++)
+            {
+                var childOfChild = child.transform.GetChild(index).gameObject;
+                childOfChild.tag = "Exhibit";
+                if (childOfChild.GetComponent<Renderer>() != null)
+                {
+                    if (childOfChild.GetComponent<Collider>() == null) childOfChild.AddComponent<MeshCollider>();
+                }
             }
 
             Instantiate(child, parent.transform);
