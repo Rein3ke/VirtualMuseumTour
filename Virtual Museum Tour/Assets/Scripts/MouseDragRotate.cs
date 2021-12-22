@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MouseDragRotate : MonoBehaviour
 {
-    [SerializeField] private float rotationSpeed = 0.2f;
+    [SerializeField] private float rotationSpeed = 5.0f;
 
     private void OnMouseDrag()
     {
