@@ -11,6 +11,7 @@ namespace Controller
         [SerializeField] private string bundleUrl = "http://localhost/assetbundles/testbundle";
     
         private List<GameObject> _exhibitAnchors;
+        public Dictionary<string, Exhibit> ExhibitDictionary { get; private set; }
 
         private void Awake()
         {
@@ -26,25 +27,23 @@ namespace Controller
 
         private void Start()
         {
+            ExhibitDictionary = new Dictionary<string, Exhibit>();
+            
             // first, load all exhibit anchors...
-            LoadAllExhibitAnchors();
+            _exhibitAnchors = new List<GameObject>(GetAllExhibitAnchors());
 
             // secondly, start asset bundle download...
-            Coroutine downloadAssetBundleCoroutine = StartCoroutine(BundleWebLoader.DownloadAssetBundle(LoadAndUnpackAssetBundle, bundleUrl));
+            StartCoroutine(BundleWebLoader.DownloadAssetBundle(LoadAndUnpackAssetBundle, bundleUrl));
         }
 
-        private void LoadAllExhibitAnchors()
+        private GameObject[] GetAllExhibitAnchors()
         {
-            // If null, declare field...
-            _exhibitAnchors ??= new List<GameObject>();
-        
-            _exhibitAnchors.AddRange(GameObject.FindGameObjectsWithTag("ExhibitAnchor"));
-            Debug.Log("LoadAllExhibitAnchors: " + _exhibitAnchors.Count + " exhibit anchors loaded.");
+            return GameObject.FindGameObjectsWithTag("ExhibitAnchor");
         }
 
         private GameObject GetExhibitAnchorWithName(string assetName)
         {
-            return _exhibitAnchors.FirstOrDefault(exhibitAnchor => exhibitAnchor.GetComponent<ExhibitAnchor>().ExhibitID.Equals(assetName));
+            return _exhibitAnchors.FirstOrDefault(anchor => anchor.GetComponent<ExhibitAnchor>().ExhibitID.Equals(assetName));
         }
 
         private void LoadAndUnpackAssetBundle(AssetBundle assetBundle)
@@ -59,18 +58,67 @@ namespace Controller
             {
                 switch (o)
                 {
-                    case GameObject exhibitGameObject:
+                    case GameObject exhibitAsset:
                     {
-                        InstantiateAssetAsChildFrom(GetExhibitAnchorWithName(exhibitGameObject.name), exhibitGameObject);
+                        RegisterExhibit(exhibitAsset);
+                        /*var anchor = GetExhibitAnchorWithName(exhibitAsset.name);
+                        InstantiateAssetAsChildFrom(anchor, exhibitAsset);*/
                         break;
                     }
                     case ExhibitData exhibitData:
-                        Debug.Log($"ExhibitData found!\n Name: {exhibitData.exhibitName}");
-                        GameObject exhibitAnchor = GetExhibitAnchorWithName(exhibitData.exhibitName);
-                        if (exhibitAnchor == null) break;
-                        exhibitAnchor.GetComponent<ExhibitAnchor>().ExhibitData = exhibitData;
+                    {
+                        RegisterExhibit(exhibitData);
+                        /*var anchor = GetExhibitAnchorWithName(exhibitData.exhibitName);
+                        if (anchor == null) break;
+                        exhibitAnchor.GetComponent<ExhibitAnchor>().ExhibitData = exhibitData;*/
                         break;
+                    }
                 }
+            }
+
+            foreach (var valuePair in ExhibitDictionary)
+            {
+                InstantiateAssetAsChildFrom(valuePair.Value.Anchor, valuePair.Value.Asset);
+            }
+        }
+
+        private void RegisterExhibit(GameObject exhibitAsset)
+        {
+            var exhibitID = exhibitAsset.name;
+
+            if (ExhibitDictionary.TryGetValue(exhibitID, out var exhibit))
+            {
+                exhibit.Asset = exhibitAsset;
+            }
+            else
+            {
+                exhibit = new Exhibit
+                {
+                    Anchor = GetExhibitAnchorWithName(exhibitID),
+                    Name = exhibitID,
+                    Asset = exhibitAsset
+                };
+                ExhibitDictionary.Add(exhibitID, exhibit);
+            }
+        }
+
+        private void RegisterExhibit(ExhibitData exhibitData)
+        {
+            var exhibitID = exhibitData.exhibitName;
+
+            if (ExhibitDictionary.TryGetValue(exhibitID, out var exhibit))
+            {
+                exhibit.ExhibitData = exhibitData;
+            }
+            else
+            {
+                exhibit = new Exhibit()
+                {
+                    ExhibitData = exhibitData,
+                    Anchor = GetExhibitAnchorWithName(exhibitID),
+                    Name = exhibitID
+                };
+                ExhibitDictionary.Add(exhibitID, exhibit);
             }
         }
 
@@ -84,7 +132,7 @@ namespace Controller
 
             // add tag to exhibit and its children
             child.tag = "Exhibit";
-            for (int index = 0; index < child.transform.childCount; index++)
+            for (var index = 0; index < child.transform.childCount; index++)
             {
                 var childOfChild = child.transform.GetChild(index).gameObject;
                 childOfChild.tag = "Exhibit";
