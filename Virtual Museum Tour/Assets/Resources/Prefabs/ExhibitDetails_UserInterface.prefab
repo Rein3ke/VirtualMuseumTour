@@ -593,3 +593,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   modelHolder: {fileID: 5642274503577391749}
   interfaceCamera: {fileID: 5642274503419472445}
+  title: {fileID: 5642274503229910011}
+  description: {fileID: 5642274502875170262}
