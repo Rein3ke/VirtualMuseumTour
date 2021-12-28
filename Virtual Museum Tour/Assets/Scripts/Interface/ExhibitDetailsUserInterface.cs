@@ -2,6 +2,7 @@ using System;
 using Controller;
 using UnityEngine;
 using UnityEngine.UI;
+using Image = UnityEngine.UI.Image;
 
 namespace Interface
 {
@@ -11,6 +12,7 @@ namespace Interface
 
         [SerializeField] private float scaleFactor = 100f;
         [SerializeField] private GameObject modelHolder;
+        [SerializeField] private GameObject imageHolder;
         [SerializeField] private Camera interfaceCamera;
         [SerializeField] private Text title;
         [SerializeField] private Text description;
@@ -54,6 +56,7 @@ namespace Interface
         {
             if (!_isVisible) return;
 
+            // on right mouse button, hide interface
             if (Input.GetMouseButtonDown(1))
             {
                 HideInterface();
@@ -79,6 +82,18 @@ namespace Interface
             return attachedModel != null ? attachedModel : null;
         }
 
+        private GameObject[] GetAttachedImageGameObjects()
+        {
+            var childCount = imageHolder.transform.childCount;
+            var attachedImageGameObjects = new GameObject[childCount];
+            for (int index = 0; index < childCount; index++)
+            {
+                attachedImageGameObjects[index] = imageHolder.transform.GetChild(index).gameObject;
+            }
+
+            return attachedImageGameObjects;
+        }
+
         private static void AttachScriptToModel(GameObject model)
         {
             model.AddComponent<MouseDragRotate>();
@@ -86,16 +101,44 @@ namespace Interface
 
         private void InterfaceSetup(Exhibit exhibit)
         {
+            // reset interface
+            Destroy(GetAttachedModel());
+            foreach (var imageGameObject in GetAttachedImageGameObjects())
+            {
+                Destroy(imageGameObject);
+            }
+            
             // set variables
             title.text = exhibit.Name;
             description.text = exhibit.Description;
+            
             // set model
-            Destroy(modelHolder.transform.GetChild(0).gameObject);
             var attachedGameObject = Instantiate(exhibit.Asset.GetComponentInChildren<Renderer>().gameObject, modelHolder.transform);
             attachedGameObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
             attachedGameObject.layer = LayerMask.NameToLayer("UI");
-            // attach drag and rotation script to model
+            
+            // attach Drag And Rotation script to model
             AttachScriptToModel(attachedGameObject);
+            
+            // set images
+            for (var index = 0; index < exhibit.ExhibitData.images.Length; index++)
+            {
+                var storedTexture = exhibit.ExhibitData.images[index];
+                var imageObject = new GameObject($"Image_{index}");
+                // set rect transform
+                var trans = imageObject.AddComponent<RectTransform>();
+                trans.transform.SetParent(imageHolder.transform);
+                trans.localScale = Vector3.one;
+                trans.anchoredPosition3D = Vector3.zero;
+                trans.sizeDelta = new Vector2(100, 100);
+
+                var image = imageObject.AddComponent<Image>();
+                image.sprite = Sprite.Create(
+                    storedTexture,
+                    new Rect(0, 0, storedTexture.width, storedTexture.height),
+                    new Vector2(0.5f, 0.5f)
+                );
+            }
         }
 
         #region Events

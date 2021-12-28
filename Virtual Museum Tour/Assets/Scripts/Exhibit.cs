@@ -20,9 +20,5 @@ public class Exhibit
     
     public string Description { get; private set; }
     public AudioClip[] AudioClips { get; private set; }
-    
-    public Exhibit()
-    {
-        
-    }
+    public Texture[] Textures { get; private set; }
 }

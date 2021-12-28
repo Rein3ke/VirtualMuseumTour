@@ -19,7 +19,7 @@ namespace Controller
         {
             if (Instance != null && Instance != this)
             {
-                Destroy(this.gameObject);
+                Destroy(gameObject);
             }
             else
             {

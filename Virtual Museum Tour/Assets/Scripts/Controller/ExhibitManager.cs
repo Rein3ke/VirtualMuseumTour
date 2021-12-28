@@ -112,7 +112,7 @@ namespace Controller
             }
             else
             {
-                exhibit = new Exhibit()
+                exhibit = new Exhibit
                 {
                     ExhibitData = exhibitData,
                     Anchor = GetExhibitAnchorWithName(exhibitID),

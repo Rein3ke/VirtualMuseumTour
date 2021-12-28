@@ -8,4 +8,5 @@ public class ExhibitData : ScriptableObject
     public string exhibitDescription;
 
     public AudioClip[] audioClips;
+    public Texture2D[] images;
 }
