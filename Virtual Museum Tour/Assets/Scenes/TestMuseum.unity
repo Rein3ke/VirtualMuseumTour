@@ -1576,6 +1576,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ExhibitAnchor
       objectReference: {fileID: 0}
+    - target: {fileID: 7053185931106318614, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7053185931106318615, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
       propertyPath: m_RootOrder
       value: 9

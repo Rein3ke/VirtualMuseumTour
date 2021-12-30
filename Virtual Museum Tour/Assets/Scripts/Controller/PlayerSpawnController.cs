@@ -10,9 +10,7 @@ namespace Controller
 
         [SerializeField] private bool spawnPlayerOnStart;
 
-        private PlayerSpawnPoint[] _playerSpawnPoints;
-
-        public PlayerSpawnPoint[] PlayerSpawnPoints => _playerSpawnPoints;
+        public PlayerSpawnPoint[] PlayerSpawnPoints { get; private set; }
 
         private GameObject _currentPlayer;
         private GameObject _playerPrefab;
@@ -32,25 +30,26 @@ namespace Controller
         private void Start()
         {
             // load all player spawn points in current scene
-            _playerSpawnPoints = FindObjectsOfType<PlayerSpawnPoint>();
+            PlayerSpawnPoints = FindObjectsOfType<PlayerSpawnPoint>();
 
             // load first person player prefab
             _playerPrefab = Resources.Load(FirstPersonPlayerPath) as GameObject;
             if (_playerPrefab == null)
             {
-                Debug.LogError("Couldn't load first person player prefab!");
+                Debug.LogError("Couldn't load player prefab!");
                 return;
             }
 
             // If true, instantiate player prefab on position x
             if (spawnPlayerOnStart)
             {
-                InstantiatePlayerPrefabOnPosition(_playerPrefab, _playerSpawnPoints[0].gameObject.transform.position);
+                InstantiatePlayerPrefabOnPosition(_playerPrefab, PlayerSpawnPoints[0].gameObject.transform.position);
             }
         }
 
         private void InstantiatePlayerPrefabOnPosition(GameObject playerPrefab, Vector3 position)
         {
+            // reset current player reference & destroy previous player game object
             if (_currentPlayer != null)
             {
                 Destroy(_currentPlayer);
@@ -85,8 +84,14 @@ namespace Controller
 
         private PlayerSpawnPoint GetPlayerSpawnPointByName(string playerSpawnPointName)
         {
-            return _playerSpawnPoints.FirstOrDefault(playerSpawnPoint =>
+            return PlayerSpawnPoints.FirstOrDefault(playerSpawnPoint =>
                 playerSpawnPointName.Equals(playerSpawnPoint.PlayerSpawnName));
+        }
+
+        private void OnDestroy()
+        {
+            // reset instance
+            if (Instance != null && Instance == this) Instance = null;
         }
     }
 }

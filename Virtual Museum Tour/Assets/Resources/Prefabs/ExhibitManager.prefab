@@ -43,4 +43,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d860d1ed0b962a24ea712cdc744d16d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bundleUrl: http://localhost/assetbundles/testbundle
+  bundleUrl: http://localhost/assetbundles/
+  bundleName: testbundle

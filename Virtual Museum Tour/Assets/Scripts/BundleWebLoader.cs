@@ -7,7 +7,7 @@ public static class BundleWebLoader
 {
     public static IEnumerator DownloadAssetBundle(Action<AssetBundle> assetBundleCallback, string bundleUrl)
     {
-        UnityWebRequest webRequest = UnityWebRequestAssetBundle.GetAssetBundle(bundleUrl);
+        var webRequest = UnityWebRequestAssetBundle.GetAssetBundle(bundleUrl);
 
         // Wait for completion...
         yield return webRequest.SendWebRequest();
@@ -23,7 +23,7 @@ public static class BundleWebLoader
             Debug.Log("DownLoadAssetBundle: " + webRequest.result);
         }
 
-        AssetBundle bundle = DownloadHandlerAssetBundle.GetContent(webRequest);
+        var bundle = DownloadHandlerAssetBundle.GetContent(webRequest);
 
         assetBundleCallback(bundle);
         

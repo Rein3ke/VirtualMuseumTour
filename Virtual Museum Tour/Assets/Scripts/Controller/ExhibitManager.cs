@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Controller
@@ -8,9 +8,10 @@ namespace Controller
     {
         public static ExhibitManager Instance { get; private set; }
 
-        [SerializeField] private string bundleUrl = "http://localhost/assetbundles/testbundle";
-    
-        private List<GameObject> _exhibitAnchors;
+        [Header("Asset Bundle")]
+        [SerializeField] private string bundleUrl = "http://localhost/assetbundles/";
+        [SerializeField] private string bundleName = "testbundle";
+        
         public Dictionary<string, Exhibit> ExhibitDictionary { get; private set; }
 
         private void Awake()
@@ -28,25 +29,12 @@ namespace Controller
         private void Start()
         {
             ExhibitDictionary = new Dictionary<string, Exhibit>();
-            
-            // first, load all exhibit anchors...
-            _exhibitAnchors = new List<GameObject>(GetAllExhibitAnchors());
 
-            // secondly, start asset bundle download...
-            StartCoroutine(BundleWebLoader.DownloadAssetBundle(LoadAndUnpackAssetBundle, bundleUrl));
+            // start asset bundle download...
+            StartCoroutine(BundleWebLoader.DownloadAssetBundle(LoadAndUnpackAssetBundle, bundleUrl + bundleName));
         }
 
-        private GameObject[] GetAllExhibitAnchors()
-        {
-            return GameObject.FindGameObjectsWithTag("ExhibitAnchor");
-        }
-
-        private GameObject GetExhibitAnchorWithName(string assetName)
-        {
-            return _exhibitAnchors.FirstOrDefault(anchor => anchor.GetComponent<ExhibitAnchor>().ExhibitID.Equals(assetName));
-        }
-
-        private void LoadAndUnpackAssetBundle(AssetBundle assetBundle)
+        private void LoadAndUnpackAssetBundle([NotNull] AssetBundle assetBundle)
         {
             if (assetBundle == null)
             {
@@ -62,7 +50,7 @@ namespace Controller
                     {
                         RegisterExhibit(exhibitAsset);
                         /*var anchor = GetExhibitAnchorWithName(exhibitAsset.name);
-                        InstantiateAssetAsChildFrom(anchor, exhibitAsset);*/
+                        InstantiateAsChildFrom(anchor, exhibitAsset);*/
                         break;
                     }
                     case ExhibitData exhibitData:
@@ -78,11 +66,11 @@ namespace Controller
 
             foreach (var valuePair in ExhibitDictionary)
             {
-                InstantiateAssetAsChildFrom(valuePair.Value.Anchor, valuePair.Value.Asset);
+                InstantiateAsChildFrom(valuePair.Value.Anchor, valuePair.Value.Asset);
             }
         }
 
-        private void RegisterExhibit(GameObject exhibitAsset)
+        private void RegisterExhibit([NotNull] GameObject exhibitAsset)
         {
             var exhibitID = exhibitAsset.name;
 
@@ -94,7 +82,7 @@ namespace Controller
             {
                 exhibit = new Exhibit
                 {
-                    Anchor = GetExhibitAnchorWithName(exhibitID),
+                    Anchor = ExhibitAnchor.GetExhibitAnchor(exhibitID).gameObject,
                     Name = exhibitID,
                     Asset = exhibitAsset
                 };
@@ -102,7 +90,7 @@ namespace Controller
             }
         }
 
-        private void RegisterExhibit(ExhibitData exhibitData)
+        private void RegisterExhibit([NotNull] ExhibitData exhibitData)
         {
             var exhibitID = exhibitData.exhibitName;
 
@@ -115,18 +103,18 @@ namespace Controller
                 exhibit = new Exhibit
                 {
                     ExhibitData = exhibitData,
-                    Anchor = GetExhibitAnchorWithName(exhibitID),
+                    Anchor = ExhibitAnchor.GetExhibitAnchor(exhibitID).gameObject,
                     Name = exhibitID
                 };
                 ExhibitDictionary.Add(exhibitID, exhibit);
             }
         }
 
-        private void InstantiateAssetAsChildFrom(GameObject parent, GameObject child)
+        private void InstantiateAsChildFrom([NotNull] GameObject parent, [NotNull] GameObject child)
         {
             if (parent == null || child == null)
             {
-                Debug.LogError("InstantiateAssetAsChildFrom: Parent or child can't be null!");
+                Debug.LogError("InstantiateAsChildFrom: Parent or child can't be null!");
                 return;
             }
 
