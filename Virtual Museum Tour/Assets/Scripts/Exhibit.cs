@@ -14,11 +14,12 @@ public class Exhibit
             _exhibitData = value;
             Description = _exhibitData.exhibitDescription;
             AudioClips = _exhibitData.audioClips;
+            Textures = _exhibitData.images;
         }
     }
     private ExhibitData _exhibitData;
     
     public string Description { get; private set; }
     public AudioClip[] AudioClips { get; private set; }
-    public Texture[] Textures { get; private set; }
+    public Texture2D[] Textures { get; private set; }
 }

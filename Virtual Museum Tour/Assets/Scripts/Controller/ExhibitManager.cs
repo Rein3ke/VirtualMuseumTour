@@ -64,6 +64,7 @@ namespace Controller
                 }
             }
 
+            // instantiate each exhibit in its own anchor
             foreach (var valuePair in ExhibitDictionary)
             {
                 InstantiateAsChildFrom(valuePair.Value.Anchor, valuePair.Value.Asset);
@@ -73,6 +74,7 @@ namespace Controller
         private void RegisterExhibit([NotNull] GameObject exhibitAsset)
         {
             var exhibitID = exhibitAsset.name;
+            Debug.Log($"Register new exhibit: {exhibitID}");
 
             if (ExhibitDictionary.TryGetValue(exhibitID, out var exhibit))
             {
@@ -82,7 +84,7 @@ namespace Controller
             {
                 exhibit = new Exhibit
                 {
-                    Anchor = ExhibitAnchor.GetExhibitAnchor(exhibitID).gameObject,
+                    Anchor = ExhibitAnchor.GetExhibitAnchor(exhibitID)?.gameObject,
                     Name = exhibitID,
                     Asset = exhibitAsset
                 };
@@ -93,6 +95,7 @@ namespace Controller
         private void RegisterExhibit([NotNull] ExhibitData exhibitData)
         {
             var exhibitID = exhibitData.exhibitName;
+            Debug.Log($"Register new exhibit data: {exhibitID}");
 
             if (ExhibitDictionary.TryGetValue(exhibitID, out var exhibit))
             {
@@ -103,7 +106,7 @@ namespace Controller
                 exhibit = new Exhibit
                 {
                     ExhibitData = exhibitData,
-                    Anchor = ExhibitAnchor.GetExhibitAnchor(exhibitID).gameObject,
+                    Anchor = ExhibitAnchor.GetExhibitAnchor(exhibitID)?.gameObject,
                     Name = exhibitID
                 };
                 ExhibitDictionary.Add(exhibitID, exhibit);

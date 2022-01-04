@@ -1,8 +1,8 @@
 using System;
 using Controller;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
-using Image = UnityEngine.UI.Image;
 
 namespace Interface
 {
@@ -10,17 +10,22 @@ namespace Interface
     {
         public static ExhibitDetailsUserInterface Instance { get; private set; }
 
+        [Header("Options")]
+        [SerializeField] private float scaleFactorChangeSpeed;
+        [Space(8)]
         [SerializeField] private float scaleFactor = 100f;
         [SerializeField] private GameObject modelHolder;
         [SerializeField] private GameObject imageHolder;
         [SerializeField] private Camera interfaceCamera;
         [SerializeField] private Text title;
         [SerializeField] private Text description;
+        [SerializeField] private Text scaleFactorText;
 
         public event EventHandler<OnVisibilityChangeEventArgs> OnVisibilityChange;
 
         private Exhibit _currentExhibit;
         private bool _isVisible;
+        private GameObject _currentAttachedGameObject;
 
         public bool IsVisible
         {
@@ -61,6 +66,15 @@ namespace Interface
             {
                 HideInterface();
             }
+
+            // update model scale
+            var f = Input.mouseScrollDelta.y;
+            scaleFactor += f * scaleFactorChangeSpeed * Time.deltaTime;
+            scaleFactor = Mathf.Clamp(scaleFactor, 30, 400);
+
+            _currentAttachedGameObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
+
+            scaleFactorText.text = $"Scale factor: {scaleFactor}";
         }
 
         public void ShowInterface()
@@ -77,9 +91,9 @@ namespace Interface
         
         private GameObject GetAttachedModel()
         {
-            var attachedModel = modelHolder.transform.GetChild(0).gameObject;
+            var child = modelHolder.transform.GetChild(0);
 
-            return attachedModel != null ? attachedModel : null;
+            return child.gameObject != null ? child.gameObject : null;
         }
 
         private GameObject[] GetAttachedImageGameObjects()
@@ -94,34 +108,38 @@ namespace Interface
             return attachedImageGameObjects;
         }
 
-        private static void AttachScriptToModel(GameObject model)
+        private static void AttachScriptToModel([NotNull] GameObject model)
         {
             model.AddComponent<MouseDragRotate>();
         }
 
         private void InterfaceSetup(Exhibit exhibit)
         {
-            // reset interface
-            Destroy(GetAttachedModel());
-            foreach (var imageGameObject in GetAttachedImageGameObjects())
-            {
-                Destroy(imageGameObject);
-            }
-            
+            ResetInterface();
+
             // set variables
             title.text = exhibit.Name;
             description.text = exhibit.Description;
             
             // set model
-            var attachedGameObject = Instantiate(exhibit.Asset.GetComponentInChildren<Renderer>().gameObject, modelHolder.transform);
-            attachedGameObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
-            attachedGameObject.layer = LayerMask.NameToLayer("UI");
+            _currentAttachedGameObject = Instantiate(exhibit.Asset.GetComponentInChildren<Renderer>().gameObject, modelHolder.transform);
+            _currentAttachedGameObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
+            _currentAttachedGameObject.layer = LayerMask.NameToLayer("UI");
+            // set attached game object children
+            if (_currentAttachedGameObject.transform.childCount > 0)
+            {
+                for (int index = 0; index < _currentAttachedGameObject.transform.childCount; index++)
+                {
+                    var child = _currentAttachedGameObject.transform.GetChild(index).gameObject;
+                    if (child.GetComponent<MeshRenderer>() != null) child.layer = LayerMask.NameToLayer("UI");
+                }
+            }
             
             // attach Drag And Rotation script to model
-            AttachScriptToModel(attachedGameObject);
+            AttachScriptToModel(_currentAttachedGameObject);
             
             // set images
-            for (var index = 0; index < exhibit.ExhibitData.images.Length; index++)
+            /*for (var index = 0; index < exhibit.ExhibitData.images.Length; index++)
             {
                 var storedTexture = exhibit.ExhibitData.images[index];
                 var imageObject = new GameObject($"Image_{index}");
@@ -130,7 +148,7 @@ namespace Interface
                 trans.transform.SetParent(imageHolder.transform);
                 trans.localScale = Vector3.one;
                 trans.anchoredPosition3D = Vector3.zero;
-                trans.sizeDelta = new Vector2(100, 100);
+                trans.sizeDelta = new Vector2(storedTexture.width, storedTexture.height);
 
                 var image = imageObject.AddComponent<Image>();
                 image.sprite = Sprite.Create(
@@ -138,6 +156,16 @@ namespace Interface
                     new Rect(0, 0, storedTexture.width, storedTexture.height),
                     new Vector2(0.5f, 0.5f)
                 );
+            }*/
+        }
+
+        private void ResetInterface()
+        {
+            // reset interface
+            Destroy(GetAttachedModel());
+            foreach (var imageGameObject in GetAttachedImageGameObjects())
+            {
+                Destroy(imageGameObject);
             }
         }
 
@@ -170,16 +198,8 @@ namespace Interface
             {
                 Instance = null;
             }
-        }
-    }
-
-    public class OnVisibilityChangeEventArgs : EventArgs
-    {
-        public bool IsVisible { get; private set; }
-
-        public OnVisibilityChangeEventArgs(bool isVisible)
-        {
-            IsVisible = isVisible;
+            // clear own event
+            OnVisibilityChange = null;
         }
     }
 }

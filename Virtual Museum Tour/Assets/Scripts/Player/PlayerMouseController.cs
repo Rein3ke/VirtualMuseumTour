@@ -8,18 +8,13 @@ namespace Player
         [SerializeField] private float mouseSensitivity = 100f;
         [SerializeField] private Transform playerBody;
 
-        private float _xRotation = 0f;
+        private float _xRotation;
         private bool _shouldMove = true;
 
         private void Start()
         {
             ExhibitDetailsUserInterface.Instance.OnVisibilityChange += ExhibitDetailsUserInterface_OnVisibilityChange;
             //Cursor.lockState = CursorLockMode.Locked;
-        }
-
-        private void ExhibitDetailsUserInterface_OnVisibilityChange(object sender, OnVisibilityChangeEventArgs e)
-        {
-            _shouldMove = !e.IsVisible;
         }
 
         private void Update()
@@ -38,7 +33,19 @@ namespace Player
 
         private void OnDestroy()
         {
-            ExhibitDetailsUserInterface.Instance.OnVisibilityChange -= ExhibitDetailsUserInterface_OnVisibilityChange;
+            if (ExhibitDetailsUserInterface.Instance)
+            {
+                ExhibitDetailsUserInterface.Instance.OnVisibilityChange -= ExhibitDetailsUserInterface_OnVisibilityChange;
+            }
         }
+
+        #region Event Handling
+
+        private void ExhibitDetailsUserInterface_OnVisibilityChange(object sender, OnVisibilityChangeEventArgs e)
+        {
+            _shouldMove = !e.IsVisible;
+        }
+
+        #endregion
     }
 }

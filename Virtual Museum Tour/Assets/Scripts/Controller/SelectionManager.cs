@@ -1,5 +1,5 @@
 using System;
-using JetBrains.Annotations;
+using Interface;
 using UnityEngine;
 
 namespace Controller
@@ -14,6 +14,7 @@ namespace Controller
 
         private Transform _selection;
         private Material _selectionMaterial;
+        private bool _canSelect;
 
         private void Awake()
         {
@@ -27,8 +28,15 @@ namespace Controller
             }
         }
 
+        private void Start()
+        {
+            ExhibitDetailsUserInterface.Instance.OnVisibilityChange += ExhibitDetailsUserInterface_OnVisibilityChange;
+        }
+
         private void Update()
         {
+            if (!_canSelect) return;
+            
             // 1. check for main camera
             var mainCamera = Camera.main;
             if (mainCamera == null) return;
@@ -94,7 +102,16 @@ namespace Controller
             anchor = null;
             return false;
         }
-        
+
+        #region Event Handling
+
+        private void ExhibitDetailsUserInterface_OnVisibilityChange(object sender, OnVisibilityChangeEventArgs e)
+        {
+            _canSelect = !e.IsVisible;
+        }
+
+        #endregion
+
         #region Events
 
         private void InvokeOnExhibitSelected(Exhibit exhibit)
@@ -108,15 +125,5 @@ namespace Controller
         }
 
         #endregion
-    }
-
-    public class OnExhibitSelectedEventArgs: EventArgs
-    {
-        public Exhibit Exhibit { get; private set; }
-
-        public OnExhibitSelectedEventArgs(Exhibit exhibit)
-        {
-            Exhibit = exhibit;
-        }
     }
 }
