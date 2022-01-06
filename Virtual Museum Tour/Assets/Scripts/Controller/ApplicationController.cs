@@ -12,6 +12,7 @@ namespace Controller
         private GameObject _exhibitDetailsUserInterfaceGameObject;
         private GameObject _navigationUserInterfaceGameObject;
         private GameObject _selectionManagerGameObject;
+        private GameObject _audioControllerGameObject;
 
         private const string PrefabPath = "prefabs";
 
@@ -31,12 +32,13 @@ namespace Controller
         {
             ControllerSetup();
             InterfaceSetup();
-            
+
             void ControllerSetup()
             {
                 _playerSpawnControllerGameObject = Instantiate(LoadFromResourcesAsGameObject("PlayerSpawnController"), transform);
                 _exhibitManagerGameObject = Instantiate(LoadFromResourcesAsGameObject("ExhibitManager"), transform);
                 _selectionManagerGameObject = Instantiate(LoadFromResourcesAsGameObject("SelectionManager"), transform);
+                _audioControllerGameObject = Instantiate(LoadFromResourcesAsGameObject("AudioController"), transform);
             }
             
             void InterfaceSetup()
