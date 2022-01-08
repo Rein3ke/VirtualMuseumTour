@@ -23,6 +23,9 @@ namespace Interface
 
         public event EventHandler<OnVisibilityChangeEventArgs> OnVisibilityChange;
 
+        [SerializeField] private float minimumScale = 0.7f;
+        [SerializeField] private float maximumScale = 4.2f;
+        
         private Exhibit _currentExhibit;
         private bool _isVisible;
         private GameObject _currentAttachedGameObject;
@@ -69,9 +72,22 @@ namespace Interface
 
             // update model scale
             var f = Input.mouseScrollDelta.y;
-            scaleFactor += f * scaleFactorChangeSpeed * Time.deltaTime;
-            scaleFactor = Mathf.Clamp(scaleFactor, 30, 400);
+            scaleFactor += f * (scaleFactorChangeSpeed * 4) * Time.deltaTime;
+            scaleFactor = Mathf.Clamp(scaleFactor, 1, float.MaxValue);
+            
+            var meshRenderer = _currentAttachedGameObject.GetComponent<MeshRenderer>();
+            Debug.Log($"Bounds: {meshRenderer}");
 
+            while (meshRenderer.bounds.extents.x > maximumScale || meshRenderer.bounds.extents.y > maximumScale || meshRenderer.bounds.extents.z > maximumScale)
+            {
+                scaleFactor *= 0.99f;
+                _currentAttachedGameObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
+            }
+            while (meshRenderer.bounds.extents.x < minimumScale || meshRenderer.bounds.extents.y < minimumScale || meshRenderer.bounds.extents.z < minimumScale)
+            {
+                scaleFactor *= 1.01f;
+                _currentAttachedGameObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
+            }
             _currentAttachedGameObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
 
             scaleFactorText.text = $"Scale factor: {scaleFactor}";
