@@ -1,7 +1,7 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -19,7 +19,6 @@ namespace Controller
 
         private AudioSource _audioSource;
         private List<AudioClip> _audioClipQueue;
-        private AudioClip _currentAudioClip;
         private Coroutine _audioPlayRoutine;
 
         #region Unity Functions
@@ -45,16 +44,17 @@ namespace Controller
             _audioSource = GetComponent<AudioSource>();
             _audioSource.playOnAwake = false;
             
-            // If ready, play test sounds
-            _audioClipQueue.Add((AudioClip) Resources.Load($"{AudioPath}ambient_environment_museum_02"));
-            _audioClipQueue.Add((AudioClip) Resources.Load($"{AudioPath}ambient_environment_museum_01"));
+            // If setup is ready, load audio clips from directory
+            _audioClipQueue.AddRange(GetAudioClipsFromDirectory($"{AudioPath}environment"));
+            // PlayOneShot(Resources.Load<AudioClip>($"{AudioPath}environment/ambient_environment_museum_02"));
         }
 
         private void Update()
         {
             if (_audioSource.isPlaying || _audioClipQueue.Count <= 0 || _audioPlayRoutine != null) return;
 
-            _audioPlayRoutine = StartCoroutine(PlayAudioRoutine(GetNextAudioClipFromQueue()));
+            var clip = GetNextAudioClipFromQueue();
+            _audioPlayRoutine = StartCoroutine(PlayAudioRoutine(clip));
         }
 
         private void OnDestroy()
@@ -97,13 +97,11 @@ namespace Controller
             {
                 clip.LoadAudioData();
                 yield return new WaitUntil(() => clip.loadState == AudioDataLoadState.Loaded);
-                Debug.Log($"AudioClip {clip} loaded in background.");
+                Debug.Log($"AudioClip {clip.name} loaded in background.");
             }
 
-            _currentAudioClip = clip;
-
             // Load clip in audio source and play it
-            _audioSource.clip = _currentAudioClip;
+            _audioSource.clip = clip;
             _audioSource.Play();
             yield return new WaitUntil(() => !_audioSource.isPlaying);
             _audioPlayRoutine = null;
@@ -123,6 +121,26 @@ namespace Controller
             }
 
             return null;
+        }
+
+        private AudioClip[] GetAudioClipsFromDirectory(string path)
+        {
+            var clips = Resources.LoadAll(path, typeof(AudioClip));
+
+            return clips
+                .Cast<AudioClip>()
+                .Where(clip => clip != null)
+                .ToArray();
+        }
+
+        private void PlayOneShot([NotNull] AudioClip clip)
+        {
+            if (clip == null)
+            {
+                Debug.LogError($"[{nameof(PlayOneShot)}] Audio clip is null!", this);
+                return;
+            }
+            _audioSource.PlayOneShot(clip);
         }
         
         #endregion
