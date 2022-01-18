@@ -6,14 +6,24 @@ namespace Controller
 {
     public class ExhibitManager : MonoBehaviour
     {
+        /// <summary>
+        /// Public singleton instance. Instance of the script must exist only once.
+        /// </summary>
         public static ExhibitManager Instance { get; private set; }
 
-        [Header("Asset Bundle")]
-        [SerializeField] private string bundleUrl = "http://localhost/assetbundles/";
-        [SerializeField] private string bundleName = "testbundle";
-        
-        public Dictionary<string, Exhibit> ExhibitDictionary { get; private set; }
+        [Header("Asset Bundle")] [SerializeField]
+        private string bundleUrl = "http://localhost/assetbundles/";
 
+        [SerializeField] private string bundleName = "testbundle";
+
+        /// <summary>
+        /// A directory that stores all exhibits with an associated key.
+        /// </summary>
+        public Dictionary<string, Exhibit> ExhibitDictionary { get; } = new Dictionary<string, Exhibit>();
+
+        /// <summary>
+        /// Set Instance to this if Instance isn't null. Otherwise destroy gameObject.
+        /// </summary>
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -26,19 +36,25 @@ namespace Controller
             }
         }
 
+        /// <summary>
+        /// Starts a coroutine to download an associated AssetBundle (set via SerializedField). 
+        /// </summary>
         private void Start()
         {
-            ExhibitDictionary = new Dictionary<string, Exhibit>();
-
             // start asset bundle download...
             StartCoroutine(BundleWebLoader.DownloadAssetBundle(LoadAndUnpackAssetBundle, bundleUrl + bundleName));
         }
 
+        /// <summary>
+        /// Receives an AssetBundle and iterates through it until all objects in it could be assigned to a type.
+        /// The method therefore filters out all GameObjects and ExhibitData scripts.
+        /// </summary>
+        /// <param name="assetBundle">The AssetBundle to unpack.</param>
         private void LoadAndUnpackAssetBundle([NotNull] AssetBundle assetBundle)
         {
             if (assetBundle == null)
             {
-                Debug.LogError("LoadAndUnpackAssetBundle: AssetBundle can't be null!");
+                Debug.LogError($"{nameof(LoadAndUnpackAssetBundle)}: AssetBundle can't be null!", this);
                 return;
             }
 
@@ -49,16 +65,11 @@ namespace Controller
                     case GameObject exhibitAsset:
                     {
                         RegisterExhibit(exhibitAsset);
-                        /*var anchor = GetExhibitAnchorWithName(exhibitAsset.name);
-                        InstantiateAsChildFrom(anchor, exhibitAsset);*/
                         break;
                     }
                     case ExhibitData exhibitData:
                     {
                         RegisterExhibit(exhibitData);
-                        /*var anchor = GetExhibitAnchorWithName(exhibitData.exhibitName);
-                        if (anchor == null) break;
-                        exhibitAnchor.GetComponent<ExhibitAnchor>().ExhibitData = exhibitData;*/
                         break;
                     }
                 }
@@ -134,7 +145,8 @@ namespace Controller
             }
 
             Instantiate(child, parent.transform);
-            Debug.Log($"Instantiate {child.name} as a child from [{parent.GetType()}]{parent.GetComponent<ExhibitAnchor>().ExhibitID}.");
+            Debug.Log(
+                $"Instantiate {child.name} as a child from [{parent.GetType()}]{parent.GetComponent<ExhibitAnchor>().ExhibitID}.");
         }
     }
 }

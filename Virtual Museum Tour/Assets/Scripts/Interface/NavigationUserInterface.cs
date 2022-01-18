@@ -58,8 +58,7 @@ namespace Interface
             if (playerSpawnPoints.Length <= 0) return;
 
             var optionData = playerSpawnPoints
-                .Select(spawnPoint => new Dropdown.OptionData
-                    {text = spawnPoint.GetComponent<PlayerSpawnPoint>().PlayerSpawnName})
+                .Select(spawnPoint => new Dropdown.OptionData {text = spawnPoint.GetComponent<PlayerSpawnPoint>().PlayerSpawnName})
                 .ToList();
 
             dropdown.AddOptions(optionData);
