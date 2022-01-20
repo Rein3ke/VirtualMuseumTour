@@ -18,7 +18,7 @@ namespace Controller
         public static AudioController Instance { get; private set; }
 
         private AudioSource _audioSource;
-        private List<AudioClip> _audioClipQueue;
+        private List<AudioClip> _audioClipQueue; // Queue
         private Coroutine _audioPlayRoutine;
 
         #region Unity Functions
@@ -45,7 +45,7 @@ namespace Controller
             _audioSource.playOnAwake = false;
             
             // If setup is ready, load audio clips from directory
-            _audioClipQueue.AddRange(GetAudioClipsFromDirectory($"{AudioPath}environment"));
+            _audioClipQueue.AddRange(LoadAudioClipsFromDirectory($"{AudioPath}environment"));
             // PlayOneShot(Resources.Load<AudioClip>($"{AudioPath}environment/ambient_environment_museum_02"));
         }
 
@@ -123,7 +123,7 @@ namespace Controller
             return null;
         }
 
-        private AudioClip[] GetAudioClipsFromDirectory(string path)
+        private static AudioClip[] LoadAudioClipsFromDirectory(string path)
         {
             var clips = Resources.LoadAll(path, typeof(AudioClip));
 
@@ -133,7 +133,7 @@ namespace Controller
                 .ToArray();
         }
 
-        private void PlayOneShot([NotNull] AudioClip clip)
+        public void PlayOneShot([NotNull] AudioClip clip)
         {
             if (clip == null)
             {
@@ -143,6 +143,17 @@ namespace Controller
             _audioSource.PlayOneShot(clip);
         }
         
+        public void PauseAudioClip()
+        {
+            if (_audioPlayRoutine != null)
+            {
+                _audioSource.Pause();
+                _audioPlayRoutine = null;
+            }
+        }
+        
         #endregion
+
+        
     }
 }

@@ -44,4 +44,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bundleUrl: http://localhost/assetbundles/
-  bundleName: testbundle
+  bundleName: testbundle_webGl

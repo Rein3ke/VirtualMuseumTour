@@ -86,14 +86,29 @@ namespace Interface
             Debug.Log($"[{nameof(SetCurrentAudioClip)}] Current audio clip: {_currentAudioClip}");
         }
 
+        private AudioClip GetCurrentlySelectedAudioClip()
+        {
+            // Get the currently selected option
+            var selectedOptionData = audioClipsDropdown.options[audioClipsDropdown.value];
+            // Try to get the value out of the directory by parsing the selected option data
+            if (_optionsAudioClipsDictionary.TryGetValue(selectedOptionData, out var audioClip))
+            {
+                Debug.Log($"[{nameof(GetCurrentlySelectedAudioClip)}] Selected audio clip: {audioClip.name}");
+                return audioClip;
+            }
+
+            return null;
+        }
+
         private void PlaySelectedAudioClip()
         {
-            throw new NotImplementedException();
+            var audioClip = GetCurrentlySelectedAudioClip();
+            AudioController.Instance.PlayOneShot(audioClip);
         }
 
         private void PauseSelectedAudioClip()
         {
-            throw new NotImplementedException();
+            // AudioController.Instance.PauseAudioClip();
         }
 
         private void Update()
