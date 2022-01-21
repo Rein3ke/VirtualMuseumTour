@@ -667,7 +667,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7053185931106318608, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
       propertyPath: exhibitID
-      value: ExampleExhibit_Car_01
+      value: BundledSpriteObject
       objectReference: {fileID: 0}
     - target: {fileID: 7053185931106318614, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
       propertyPath: m_Name
@@ -1206,7 +1206,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7053185931106318608, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
       propertyPath: exhibitID
-      value: BundledSpriteObject
+      value: ExampleExhibit_Car_01
       objectReference: {fileID: 0}
     - target: {fileID: 7053185931106318614, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
       propertyPath: m_Name

@@ -223,9 +223,17 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 691377126689162729, guid: 9bf614bfe27e68246b8b5221a7184d81, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2802198585457391132, guid: 9bf614bfe27e68246b8b5221a7184d81, type: 3}
       propertyPath: m_Name
       value: ExampleExhibit_Car_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 2802198585457391132, guid: 9bf614bfe27e68246b8b5221a7184d81, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2802198585457391133, guid: 9bf614bfe27e68246b8b5221a7184d81, type: 3}
       propertyPath: m_RootOrder
