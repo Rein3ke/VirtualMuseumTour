@@ -1,8 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
+using UnityEngine.Audio;
+using System.Collections;
+using System.Linq;
+using Controller.Audio;
 using UnityEngine;
 
 namespace Controller
@@ -10,19 +10,33 @@ namespace Controller
     /// <summary>
     /// An controller that handles all the audio clips which should be played.
     /// </summary>
-    [RequireComponent(typeof(AudioSource))]
     public class AudioController : MonoBehaviour
     {
-        private const string AudioPath = "AudioClips/";
-        
+        // Constants
+        private const string EnvironmentAudioPath = "AudioClips/Environment/";
+        private const string MusicPath = "AudioClips/Music/";
+        private const string EffectsAudioPath = "AudioClips/Effects/";
+        private const string TestAudioPath = "AudioClips/Test/";
+
+        // Serialize fields
+        [SerializeField] private AudioMixerGroup storytellingMixerGroup;
+        [SerializeField] private AudioMixerGroup environmentMixerGroup;
+        [SerializeField] private AudioMixerGroup musicMixerGroup;
+
+        // Static members
         public static AudioController Instance { get; private set; }
 
-        private AudioSource _audioSource;
-        private List<AudioClip> _audioClipQueue; // Queue
-        private Coroutine _audioPlayRoutine;
+        // Members
+        private AudioSource _storytellingAudioSource;
+        
+        private AudioQueue _environmentAudioQueue;
+        private AudioQueue _musicAudioQueue;
+        
+        private Coroutine _environmentCoroutine;
+        private Coroutine _musicCoroutine;
 
         #region Unity Functions
-        
+
         private void Awake()
         {
             // Set instance
@@ -38,24 +52,33 @@ namespace Controller
 
         private void Start()
         {
-            _audioClipQueue = new List<AudioClip>();
+            // Setup background audio
+            // Load audio clips from directory
+            AudioClip[] environmentClipsFromDirectory = LoadAudioClipsFromDirectory(EnvironmentAudioPath);
+            _environmentAudioQueue = new AudioQueue(environmentClipsFromDirectory, AudioQueueType.Environment);
+            // Start background audio loop
+            _environmentCoroutine = StartCoroutine(AudioQueueCoroutine(_environmentAudioQueue));
+
+            // setup music audio
+            // load audio clips from directory
+            AudioClip[] musicClipsFromDirectory = LoadAudioClipsFromDirectory(MusicPath);
+            _musicAudioQueue = new AudioQueue(musicClipsFromDirectory, AudioQueueType.Music);
+            // Start music audio loop
+            _musicCoroutine = StartCoroutine(AudioQueueCoroutine(_musicAudioQueue));
             
-            // Audio Source Configuration
-            _audioSource = GetComponent<AudioSource>();
-            _audioSource.playOnAwake = false;
-            
-            // If setup is ready, load audio clips from directory
-            _audioClipQueue.AddRange(LoadAudioClipsFromDirectory($"{AudioPath}environment"));
-            // PlayOneShot(Resources.Load<AudioClip>($"{AudioPath}environment/ambient_environment_museum_02"));
+            // Setup storytelling audio
+            _storytellingAudioSource = gameObject.AddComponent<AudioSource>(); // create new audio source
+            _storytellingAudioSource.playOnAwake = false;
+            _storytellingAudioSource.outputAudioMixerGroup = storytellingMixerGroup; // set storytelling mixer group
         }
 
-        private void Update()
+        /*private void Update()
         {
             if (_audioSource.isPlaying || _audioClipQueue.Count <= 0 || _audioPlayRoutine != null) return;
-
+        
             var clip = GetNextAudioClipFromQueue();
             _audioPlayRoutine = StartCoroutine(PlayAudioRoutine(clip));
-        }
+        }*/
 
         private void OnDestroy()
         {
@@ -63,68 +86,103 @@ namespace Controller
         }
 
         #endregion
-        
+
         #region AudioController specific methods
 
-        public void PlayAudioClip([NotNull] AudioClip clip)
+        public void AddAudioToQueue([NotNull] AudioClip clip, AudioQueueType type)
+        {
+            switch (type)
+            {
+                case AudioQueueType.Environment:
+                    _environmentAudioQueue.Add(clip);
+                    break;
+                case AudioQueueType.Music:
+                    _musicAudioQueue.Add(clip);
+                    break;
+                default:
+                    Debug.LogError($"[{nameof(AddAudioToQueue)}] Error while trying to add audio to queue.");
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Audio loop.
+        /// </summary>
+        /// <param name="queue">Queue for referencing</param>
+        private IEnumerator AudioQueueCoroutine([NotNull] AudioQueue queue)
+        {
+            if (queue.Length <= 0) yield break; // if queue is empty, break out of coroutine
+            
+            Debug.Log($"[{nameof(AudioQueueCoroutine)}]: Run coroutine with queue length of {queue.Length}");
+
+            
+            bool isFromQueueTypeStorytelling = queue.QueueType == AudioQueueType.Storytelling; // set "remove clip from queue" flag if clip is from type 'storytelling'
+            AudioClip audioClip = queue.GetNextAudioClipFromQueue(isFromQueueTypeStorytelling); // load next clip from queue
+
+            Debug.Log($"[{nameof(AudioQueueCoroutine)}]: AudioClip: <color=#FF0000>{audioClip.name}</color> will be played next.");
+            
+            AudioSource audioSource = gameObject.AddComponent<AudioSource>(); // add new audio source component
+            audioSource.playOnAwake = false; // let it play only on start
+            audioSource.clip = audioClip; // set loaded audio clip to audio source
+
+            // set correct audio mixer group
+            switch (queue.QueueType)
+            {
+                case AudioQueueType.Storytelling:
+                    audioSource.outputAudioMixerGroup = storytellingMixerGroup; // Storytelling mixer
+                    break;
+                case AudioQueueType.Environment:
+                    audioSource.outputAudioMixerGroup = environmentMixerGroup; // Environment mixer
+                    break;
+                case AudioQueueType.Music:
+                    audioSource.outputAudioMixerGroup = musicMixerGroup; // Music mixer
+                    break;
+                default:
+                    Debug.LogError($"[{nameof(AddAudioToQueue)}] Error while trying to determine mixer group.");
+                    break;
+            }
+
+            audioSource.Play(); // finally, play audio
+
+            yield return new WaitUntil(() => audioSource.isPlaying == false); // wait until current audio clip finished playing
+
+            Destroy(audioSource); // remove audio source after playing
+
+            if (queue.Length <= 0) yield break; // leave coroutine if queue is empty
+            
+            StartCoroutine(AudioQueueCoroutine(queue));
+        }
+
+        public void PlayStorytellingAudio([NotNull] AudioClip clip)
         {
             if (clip == null)
             {
-                Debug.LogError("AudioClip is null.");
+                Debug.LogError("AudioClip can't be null.");
                 return;
             }
-            
-            if (_audioSource == null || _audioSource.isPlaying) 
+
+            if (_storytellingAudioSource.isPlaying) // if there is currently audio playing
             {
-                _audioClipQueue.Add(clip);
-                Debug.Log($"AudioClip {clip.name} was added to queue!");
-                return;
+                _storytellingAudioSource.Stop();
             }
+
+            #if UNITY_EDITOR
+                _storytellingAudioSource.clip = Resources.LoadAll<AudioClip>(TestAudioPath)[0];
+            #else
+                _storytellingAudioSource.clip = clip;
+            #endif
             
-            _audioPlayRoutine = StartCoroutine(PlayAudioRoutine(clip));
+            _storytellingAudioSource.Play();
         }
 
-        private IEnumerator PlayAudioRoutine([NotNull] AudioClip clip)
-        {
-            if (clip == null)
-            {
-                Debug.LogError("AudioClip is null.", this);
-                yield return null;
-            }
+        #endregion
 
-            // Load clip if isn't loaded yet.
-            if (clip.loadInBackground)
-            {
-                clip.LoadAudioData();
-                yield return new WaitUntil(() => clip.loadState == AudioDataLoadState.Loaded);
-                Debug.Log($"AudioClip {clip.name} loaded in background.");
-            }
-
-            // Load clip in audio source and play it
-            _audioSource.clip = clip;
-            _audioSource.Play();
-            yield return new WaitUntil(() => !_audioSource.isPlaying);
-            _audioPlayRoutine = null;
-            Debug.Log("Finished playing audio.");
-        }
-        
-        private AudioClip GetNextAudioClipFromQueue()
-        {
-            Debug.Log("Get next audio clip from queue!");
-            
-            var nextAudioClip = _audioClipQueue.FirstOrDefault();
-            // If nextAudioClip could get loaded, remove it from the queue
-            if (nextAudioClip != null)
-            {
-                _audioClipQueue.RemoveAt(0);
-                return nextAudioClip;
-            }
-
-            return null;
-        }
+        #region Resource Management
 
         private static AudioClip[] LoadAudioClipsFromDirectory(string path)
         {
+            if (string.IsNullOrWhiteSpace(path)) return null;
+
             var clips = Resources.LoadAll(path, typeof(AudioClip));
 
             return clips
@@ -133,27 +191,6 @@ namespace Controller
                 .ToArray();
         }
 
-        public void PlayOneShot([NotNull] AudioClip clip)
-        {
-            if (clip == null)
-            {
-                Debug.LogError($"[{nameof(PlayOneShot)}] Audio clip is null!", this);
-                return;
-            }
-            _audioSource.PlayOneShot(clip);
-        }
-        
-        public void PauseAudioClip()
-        {
-            if (_audioPlayRoutine != null)
-            {
-                _audioSource.Pause();
-                _audioPlayRoutine = null;
-            }
-        }
-        
         #endregion
-
-        
     }
 }

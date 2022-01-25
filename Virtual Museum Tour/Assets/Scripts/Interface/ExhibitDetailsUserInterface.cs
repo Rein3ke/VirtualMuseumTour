@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Controller;
+using Controller.Audio;
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
@@ -38,7 +39,7 @@ namespace Interface
         private bool _isVisible;
         private Exhibit _currentExhibit;
         private GameObject _currentAttachedGameObject;
-        private Dictionary<Dropdown.OptionData, AudioClip> _optionsAudioClipsDictionary = new Dictionary<Dropdown.OptionData, AudioClip>();
+        private readonly Dictionary<Dropdown.OptionData, AudioClip> _optionsAudioClipsDictionary = new Dictionary<Dropdown.OptionData, AudioClip>();
         private AudioClip _currentAudioClip;
 
         public bool IsVisible
@@ -65,10 +66,10 @@ namespace Interface
 
         private void Start()
         {
-            // 1. hide interface at start
+            // hide interface at start
             HideInterface();
 
-            // 2. subscribe from events
+            // subscribe from events
             SelectionManager.Instance.OnExhibitSelected += OnExhibitSelected;
             
             // set dropdown value change event
@@ -103,7 +104,7 @@ namespace Interface
         private void PlaySelectedAudioClip()
         {
             var audioClip = GetCurrentlySelectedAudioClip();
-            AudioController.Instance.PlayOneShot(audioClip);
+            AudioController.Instance.PlayStorytellingAudio(audioClip);
         }
 
         private void PauseSelectedAudioClip()
