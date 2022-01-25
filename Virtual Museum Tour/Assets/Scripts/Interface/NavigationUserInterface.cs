@@ -8,13 +8,20 @@ namespace Interface
 {
     public class NavigationUserInterface : MonoBehaviour, IUserInterface
     {
+        // static members
         public static NavigationUserInterface Instance { get; private set; }
         
+        // serialize fields
         [SerializeField] private GameObject sideBar;
         [SerializeField] private Dropdown dropdown;
+        
+        // members
         private bool _isVisible;
+        
+        // events
         public event EventHandler<OnVisibilityChangeEventArgs> OnVisibilityChange;
 
+        // properties
         public bool IsVisible
         {
             get => _isVisible;
@@ -24,6 +31,8 @@ namespace Interface
                 InvokeOnVisibilityChange(_isVisible);
             }
         }
+
+        #region Unity related methods
 
         private void Awake()
         {
@@ -39,21 +48,48 @@ namespace Interface
 
         private void Start()
         {
-            // 1. fill dropdown with all the spawn points from PlayerSpawnController
-            DropdownSetup();
-
-            void DropdownSetup()
-            {
-                FillDropdown();
-                dropdown.onValueChanged.AddListener(delegate { DropdownValueChanged(dropdown); });
-            }
-
-            // 2. subscribe from events
-            SelectionManager.Instance.OnExhibitSelected += OnExhibitSelected;
+            // fill dropdown with all the spawn points from PlayerSpawnController
+            UpdateDropdown();
+            dropdown.onValueChanged.AddListener(delegate { DropdownValueChanged(dropdown); });
+            
+            SelectionManager.Instance.OnExhibitSelected += SelectionManager_OnExhibitSelected; // subscribe from events
+            ExhibitDetailsUserInterface.Instance.OnVisibilityChange += ExhibitDetailsUserInterface_OnVisibilityChange;
+            
+            ShowInterface();
         }
 
-        private void FillDropdown()
+        private void OnDestroy()
         {
+            // unsubscribe from events
+            SelectionManager.Instance.OnExhibitSelected -= SelectionManager_OnExhibitSelected;
+            ExhibitDetailsUserInterface.Instance.OnVisibilityChange -= ExhibitDetailsUserInterface_OnVisibilityChange;
+            // reset instance
+            if (Instance != null && Instance == this)
+            {
+                Instance = null;
+            }
+        }
+
+        #endregion
+
+        public void ShowInterface()
+        {
+            sideBar.SetActive(true);
+            IsVisible = true;
+        }
+
+        public void HideInterface()
+        {
+            sideBar.SetActive(false);
+            IsVisible = false;
+        }
+
+        #region Dropdown methods
+
+        private void UpdateDropdown()
+        {
+            dropdown.options.Clear(); // reset list
+            
             var playerSpawnPoints = PlayerSpawnController.Instance.PlayerSpawnPoints;
             if (playerSpawnPoints.Length <= 0) return;
 
@@ -69,18 +105,7 @@ namespace Interface
             PlayerSpawnController.Instance.SetTeleportRequestOn(change.captionText.text);
         }
 
-
-        public void ShowInterface()
-        {
-            sideBar.SetActive(true);
-            IsVisible = true;
-        }
-
-        public void HideInterface()
-        {
-            sideBar.SetActive(false);
-            IsVisible = false;
-        }
+        #endregion
 
         #region Events
 
@@ -93,22 +118,19 @@ namespace Interface
 
         #region Event Handling
 
-        private void OnExhibitSelected(object sender, EventArgs e)
+        private void SelectionManager_OnExhibitSelected(object sender, EventArgs e)
         {
             HideInterface();
         }
 
-        #endregion
-
-        private void OnDestroy()
+        private void ExhibitDetailsUserInterface_OnVisibilityChange(object sender, OnVisibilityChangeEventArgs e)
         {
-            // unsubscribe from events
-            SelectionManager.Instance.OnExhibitSelected -= OnExhibitSelected;
-            // reset instance
-            if (Instance != null && Instance == this)
+            if (!e.IsVisible)
             {
-                Instance = null;
+                ShowInterface();
             }
         }
+
+        #endregion
     }
 }
