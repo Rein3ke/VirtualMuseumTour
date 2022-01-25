@@ -60,14 +60,21 @@ namespace Interface
 
         private void OnDestroy()
         {
-            // unsubscribe from events
-            SelectionManager.Instance.OnExhibitSelected -= SelectionManager_OnExhibitSelected;
-            ExhibitDetailsUserInterface.Instance.OnVisibilityChange -= ExhibitDetailsUserInterface_OnVisibilityChange;
             // reset instance
             if (Instance != null && Instance == this)
             {
                 Instance = null;
             }
+        }
+
+        private void OnDisable()
+        {
+            // unsubscribe from events
+            if (SelectionManager.Instance != null)
+                SelectionManager.Instance.OnExhibitSelected -= SelectionManager_OnExhibitSelected;
+            
+            if (ExhibitDetailsUserInterface.Instance != null)
+                ExhibitDetailsUserInterface.Instance.OnVisibilityChange -= ExhibitDetailsUserInterface_OnVisibilityChange;
         }
 
         #endregion
