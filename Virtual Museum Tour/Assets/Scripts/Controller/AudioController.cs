@@ -112,25 +112,13 @@ namespace Controller
         private IEnumerator AudioQueueCoroutine([NotNull] AudioQueue queue)
         {
             if (queue.Length <= 0) yield break; // if queue is empty, break out of coroutine
-            
-            Debug.Log($"[{nameof(AudioQueueCoroutine)}]: Run coroutine with queue length of {queue.Length}");
 
-            
-            bool isFromQueueTypeStorytelling = queue.QueueType == AudioQueueType.Storytelling; // set "remove clip from queue" flag if clip is from type 'storytelling'
-            AudioClip audioClip = queue.GetNextAudioClipFromQueue(isFromQueueTypeStorytelling); // load next clip from queue
-
-            Debug.Log($"[{nameof(AudioQueueCoroutine)}]: AudioClip: <color=#FF0000>{audioClip.name}</color> will be played next.");
-            
             AudioSource audioSource = gameObject.AddComponent<AudioSource>(); // add new audio source component
-            audioSource.playOnAwake = false; // let it play only on start
-            audioSource.clip = audioClip; // set loaded audio clip to audio source
-
+            audioSource.playOnAwake = false; // disable play on start
+            
             // set correct audio mixer group
             switch (queue.QueueType)
             {
-                case AudioQueueType.Storytelling:
-                    audioSource.outputAudioMixerGroup = storytellingMixerGroup; // Storytelling mixer
-                    break;
                 case AudioQueueType.Environment:
                     audioSource.outputAudioMixerGroup = environmentMixerGroup; // Environment mixer
                     break;
@@ -141,16 +129,21 @@ namespace Controller
                     Debug.LogError($"[{nameof(AddAudioToQueue)}] Error while trying to determine mixer group.");
                     break;
             }
-
-            audioSource.Play(); // finally, play audio
-
-            yield return new WaitUntil(() => audioSource.isPlaying == false); // wait until current audio clip finished playing
-
-            Destroy(audioSource); // remove audio source after playing
-
-            if (queue.Length <= 0) yield break; // leave coroutine if queue is empty
             
-            StartCoroutine(AudioQueueCoroutine(queue));
+            while (true)
+            {
+                Debug.Log($"[{nameof(AudioQueueCoroutine)}]: Run coroutine with queue length of {queue.Length}");
+                
+                AudioClip audioClip = queue.GetNextAudioClipFromQueue(); // load next clip from queue
+
+                Debug.Log($"[{nameof(AudioQueueCoroutine)}]: AudioClip: <color=#FF0000>{audioClip.name}</color> will be played next.");
+                
+                audioSource.clip = audioClip; // set loaded audio clip to audio source
+
+                audioSource.Play(); // finally, play audio
+
+                yield return new WaitUntil(() => audioSource.isPlaying == false); // wait until current audio clip finished playing
+            }
         }
 
         public void PlayStorytellingAudio([NotNull] AudioClip clip)

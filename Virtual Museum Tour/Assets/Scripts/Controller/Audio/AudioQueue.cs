@@ -35,7 +35,7 @@
             _audioClips.Add(audioClip);
         }
         
-        public AudioClip GetNextAudioClipFromQueue(bool removeAudioClip = true)
+        public AudioClip GetNextAudioClipFromQueue(bool removeAudioClip = false)
         {
             if (_audioClips.Count == 0) return null;
 
