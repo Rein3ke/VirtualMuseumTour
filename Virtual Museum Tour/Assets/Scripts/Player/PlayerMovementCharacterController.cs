@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Player
@@ -5,21 +6,35 @@ namespace Player
     [RequireComponent(typeof(CharacterController))]
     public class PlayerMovementCharacterController : MonoBehaviour
     {
-        private CharacterController _characterController;
-    
+        // serialize fields
         [SerializeField] private float playerSpeed = 4.0f;
-        [SerializeField] private Transform groundCheck;
         [SerializeField] private float groundDistance = 0.4f;
-        [SerializeField] private LayerMask groundMask;
         [SerializeField] private float jumpHeight = 3f;
+        [SerializeField] private Transform groundCheck;
+        [SerializeField] private LayerMask groundMask;
 
+        // members
+        private CharacterController _characterController;
+        
         private const float Gravity = -9.81f;
 
         private Vector3 _velocity;
+
         private bool _isGrounded;
-    
+
+        public static PlayerMovementCharacterController Instance { get; private set; }
+
         private void Awake()
         {
+            // set instance
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
+
+            // set components
             _characterController = GetComponent<CharacterController>();
         }
 
@@ -48,6 +63,11 @@ namespace Player
             _velocity.y += Gravity * Time.deltaTime;
 
             _characterController.Move(_velocity * Time.deltaTime);
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance != null && Instance == this) Instance = null;
         }
     }
 }
