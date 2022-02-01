@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using com.rein3ke.virtualtour.core;
 using JetBrains.Annotations;
 using UnityEngine;
 

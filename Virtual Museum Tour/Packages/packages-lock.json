@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.rein3ke.virtualtour.core": {
+      "version": "https://github.com/Rein3ke/com.rein3ke.virtualtour.core.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "4efedb2032651bf283bed30d24561e9967b86b6d"
+    },
     "com.unity.collab-proxy": {
       "version": "1.7.1",
       "depth": 0,

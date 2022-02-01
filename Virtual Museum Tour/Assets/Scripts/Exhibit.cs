@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using com.rein3ke.virtualtour.core;
 
 public class Exhibit
 { 
