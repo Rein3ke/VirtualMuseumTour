@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Controller
 {
@@ -15,6 +17,8 @@ namespace Controller
 
         private GameObject _currentPlayer;
         private GameObject _playerPrefab;
+        
+        public event EventHandler OnPlayerSpawnPointsListUpdated;
 
         private void Awake()
         {
@@ -30,8 +34,7 @@ namespace Controller
 
         private void Start()
         {
-            // load all player spawn points in current scene
-            PlayerSpawnPoints = FindObjectsOfType<PlayerSpawnPoint>();
+            UpdatePlayerSpawnPointList();
 
             // load first person player prefab
             _playerPrefab = Resources.Load(FirstPersonPlayerPath) as GameObject;
@@ -42,10 +45,19 @@ namespace Controller
             }
 
             // If true, instantiate player prefab on position x
-            if (spawnPlayerOnStart)
+            /*if (spawnPlayerOnStart)
             {
                 StartCoroutine(InstantiatePlayerPrefabOnPosition(_playerPrefab, PlayerSpawnPoints[0].gameObject.transform.position));
-            }
+            }*/
+            
+            SceneManager.sceneLoaded += SceneManager_OnSceneLoaded;
+        }
+
+        private void UpdatePlayerSpawnPointList()
+        {
+            // load all player spawn points in current scene
+            PlayerSpawnPoints = FindObjectsOfType<PlayerSpawnPoint>();
+            InvokeOnPlayerSpawnPointsListUpdated();
         }
 
         /// <summary>
@@ -100,5 +112,23 @@ namespace Controller
             // reset instance
             if (Instance != null && Instance == this) Instance = null;
         }
+
+        #region Event Handling
+
+        private void SceneManager_OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
+        {
+            UpdatePlayerSpawnPointList();
+        }
+
+        #endregion
+
+        #region Events
+
+        protected virtual void InvokeOnPlayerSpawnPointsListUpdated()
+        {
+            OnPlayerSpawnPointsListUpdated?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
     }
 }

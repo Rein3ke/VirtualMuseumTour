@@ -51,10 +51,11 @@ namespace Interface
             // fill dropdown with all the spawn points from PlayerSpawnController
             UpdateDropdown();
             dropdown.onValueChanged.AddListener(delegate { DropdownValueChanged(dropdown); });
-            
+
             SelectionManager.Instance.OnExhibitSelected += SelectionManager_OnExhibitSelected; // subscribe from events
             ExhibitDetailsUserInterface.Instance.OnVisibilityChange += ExhibitDetailsUserInterface_OnVisibilityChange;
-            
+            PlayerSpawnController.Instance.OnPlayerSpawnPointsListUpdated += PlayerSpawnController_OnPlayerSpawnPointsListUpdated;
+
             ShowInterface();
         }
 
@@ -136,6 +137,11 @@ namespace Interface
             {
                 ShowInterface();
             }
+        }
+        
+        private void PlayerSpawnController_OnPlayerSpawnPointsListUpdated(object sender, EventArgs e)
+        {
+            UpdateDropdown();
         }
 
         #endregion

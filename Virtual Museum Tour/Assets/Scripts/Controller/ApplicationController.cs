@@ -1,3 +1,4 @@
+using Interface;
 using UnityEngine;
 
 // Singleton
@@ -14,12 +15,13 @@ namespace Controller
         /// </summary>
         private const string PrefabPath = "prefabs";
         
-        private GameObject _playerSpawnControllerGameObject;
-        private GameObject _exhibitManagerGameObject;
-        private GameObject _exhibitDetailsUserInterfaceGameObject;
-        private GameObject _navigationUserInterfaceGameObject;
-        private GameObject _selectionManagerGameObject;
-        private GameObject _audioControllerGameObject;
+        private PlayerSpawnController _playerSpawnController;
+        private ExhibitManager _exhibitManager;
+        private ExhibitDetailsUserInterface _exhibitDetailsUserInterface;
+        private NavigationUserInterface _navigationUserInterface;
+        private SelectionManager _selectionManager;
+        private AudioController _audioController;
+        private SceneController _sceneController;
 
         /// <summary>
         /// Set Instance to this if Instance isn't null. Otherwise destroy gameObject.
@@ -46,16 +48,17 @@ namespace Controller
 
             void ControllerSetup()
             {
-                _playerSpawnControllerGameObject = Instantiate(LoadFromResourcesAsGameObject("PlayerSpawnController"), transform);
-                _exhibitManagerGameObject = Instantiate(LoadFromResourcesAsGameObject("ExhibitManager"), transform);
-                _selectionManagerGameObject = Instantiate(LoadFromResourcesAsGameObject("SelectionManager"), transform);
-                _audioControllerGameObject = Instantiate(LoadFromResourcesAsGameObject("AudioController"), transform);
+                _playerSpawnController = Instantiate(LoadFromResourcesAsGameObject("PlayerSpawnController"), transform).GetComponent<PlayerSpawnController>();
+                _exhibitManager = Instantiate(LoadFromResourcesAsGameObject("ExhibitManager"), transform).GetComponent<ExhibitManager>();
+                _selectionManager = Instantiate(LoadFromResourcesAsGameObject("SelectionManager"), transform).GetComponent<SelectionManager>();
+                _audioController = Instantiate(LoadFromResourcesAsGameObject("AudioController"), transform).GetComponent<AudioController>();
+                _sceneController = Instantiate(LoadFromResourcesAsGameObject("SceneController"), transform).GetComponent<SceneController>();
             }
             
             void InterfaceSetup()
             {
-                _exhibitDetailsUserInterfaceGameObject = Instantiate(LoadFromResourcesAsGameObject("ExhibitDetails_UserInterface"), transform);
-                _navigationUserInterfaceGameObject = Instantiate(LoadFromResourcesAsGameObject("Navigation_UserInterface"), transform);
+                _exhibitDetailsUserInterface = Instantiate(LoadFromResourcesAsGameObject("ExhibitDetails_UserInterface"), transform).GetComponent<ExhibitDetailsUserInterface>();
+                _navigationUserInterface = Instantiate(LoadFromResourcesAsGameObject("Navigation_UserInterface"), transform).GetComponent<NavigationUserInterface>();
             }
         }
 
