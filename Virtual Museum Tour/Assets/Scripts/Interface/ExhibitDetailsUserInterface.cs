@@ -4,6 +4,7 @@ using System.Linq;
 using Controller;
 using Controller.Audio;
 using JetBrains.Annotations;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,9 +24,9 @@ namespace Interface
         [SerializeField] private GameObject modelHolder;
         [SerializeField] private GameObject imageHolder;
         [SerializeField] private Camera interfaceCamera;
-        [SerializeField] private Text title;
+        [SerializeField] private TextMeshProUGUI title;
         [SerializeField] private Text description;
-        [SerializeField] private Text scaleFactorText;
+        [SerializeField] private TextMeshProUGUI scaleFactorText;
         [SerializeField] private Dropdown audioClipsDropdown;
         
         [Header("Buttons")]
