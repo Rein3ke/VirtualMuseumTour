@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using com.rein3ke.virtualtour.core;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Controller
 {
@@ -42,6 +43,9 @@ namespace Controller
         /// </summary>
         private void Start()
         {
+            // register events
+            SceneManager.sceneLoaded += SceneManager_OnSceneLoaded;
+            
             // start asset bundle download...
             StartCoroutine(BundleWebLoader.DownloadAssetBundle(LoadAndUnpackAssetBundle, bundleUrl + bundleName));
         }
@@ -74,12 +78,6 @@ namespace Controller
                         break;
                     }
                 }
-            }
-
-            // instantiate each exhibit in its own anchor
-            foreach (var valuePair in ExhibitDictionary)
-            {
-                InstantiateAsChildFrom(valuePair.Value.Anchor, valuePair.Value.Asset);
             }
         }
 
@@ -129,7 +127,8 @@ namespace Controller
         {
             if (parent == null || child == null)
             {
-                Debug.LogError("InstantiateAsChildFrom: Parent or child can't be null!");
+                var errorMessage = parent == null ? "parent" : "child";
+                Debug.LogError($"InstantiateAsChildFrom: {errorMessage} can't be null!");
                 return;
             }
 
@@ -149,5 +148,29 @@ namespace Controller
             Debug.Log(
                 $"Instantiate {child.name} as a child from [{parent.GetType()}]{parent.GetComponent<ExhibitAnchor>().ExhibitID}.");
         }
+
+        #region Event Handling
+
+        private void SceneManager_OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
+        {
+            // refresh anchor points if missing  
+            foreach (var exhibitEntry in ExhibitDictionary)
+            {
+                var exhibit = exhibitEntry.Value;
+                if (exhibit.Anchor == null)
+                {
+                    exhibit.Anchor = ExhibitAnchor.GetExhibitAnchor(exhibit.Name).gameObject;
+                }
+            }
+            
+            // instantiate each exhibit in its own anchor
+            foreach (var exhibitEntry in ExhibitDictionary)
+            {
+                var exhibit = exhibitEntry.Value;
+                InstantiateAsChildFrom(exhibit.Anchor, exhibit.Asset);
+            }
+        }
+
+        #endregion
     }
 }

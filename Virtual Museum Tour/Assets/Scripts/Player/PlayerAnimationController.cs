@@ -8,7 +8,6 @@ namespace Player
     public class PlayerAnimationController : MonoBehaviour
     {
         // constants
-        private static readonly int IsMoving = Animator.StringToHash("IsMoving");
         private static readonly int IsMovingBool = Animator.StringToHash("IsMovingBool");
         
         // members
@@ -30,13 +29,9 @@ namespace Player
             _animationController = GetComponent<Animator>();
         }
 
-        private void Start()
-        {
-            _animationController.ResetTrigger(IsMoving);
-        }
-
         private void FixedUpdate()
         {
+            // check if player is moving
             if (_playerTransform.position != _lastPosition)
             {
                 // player has moved

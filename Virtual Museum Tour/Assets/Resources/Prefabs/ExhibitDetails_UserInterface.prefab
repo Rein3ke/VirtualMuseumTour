@@ -1870,7 +1870,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5642274503577391749}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -90}
+  m_LocalPosition: {x: 0, y: 0, z: -180}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5642274502593635703}
@@ -1935,7 +1935,7 @@ MonoBehaviour:
   imageHolder: {fileID: 9077129154719231418}
   interfaceCamera: {fileID: 5642274503419472445}
   title: {fileID: 6581136210697490722}
-  description: {fileID: 0}
+  description: {fileID: 6251922741504681710}
   scaleFactorText: {fileID: 2226682623477330106}
   audioClipsDropdown: {fileID: 8885294180738859232}
   playButton: {fileID: 1181166003945972814}

@@ -25,7 +25,7 @@ namespace Interface
         [SerializeField] private GameObject imageHolder;
         [SerializeField] private Camera interfaceCamera;
         [SerializeField] private TextMeshProUGUI title;
-        [SerializeField] private Text description;
+        [SerializeField] private TextMeshProUGUI description;
         [SerializeField] private TextMeshProUGUI scaleFactorText;
         [SerializeField] private Dropdown audioClipsDropdown;
         
