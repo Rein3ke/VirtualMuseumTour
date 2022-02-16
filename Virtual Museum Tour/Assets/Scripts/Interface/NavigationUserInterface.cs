@@ -1,104 +1,67 @@
 using System;
 using System.Linq;
-using Controller;
+using Events;
 using UnityEngine;
 using UnityEngine.UI;
+using EventType = Events.EventType;
 
 namespace Interface
 {
-    public class NavigationUserInterface : MonoBehaviour, IUserInterface
+    public class NavigationUserInterface : MonoBehaviour
     {
-        // static members
-        public static NavigationUserInterface Instance { get; private set; }
-        
         // serialize fields
         [SerializeField] private GameObject sideBar;
         [SerializeField] private Dropdown dropdown;
-        
-        // members
-        private bool _isVisible;
-        
-        // events
-        public event EventHandler<OnVisibilityChangeEventArgs> OnVisibilityChange;
 
-        // properties
-        public bool IsVisible
+        public void ShowInterface()
         {
-            get => _isVisible;
-            set
-            {
-                _isVisible = value;
-                InvokeOnVisibilityChange(_isVisible);
-            }
+            sideBar.SetActive(true);
+        }
+
+        public void HideInterface()
+        {
+            sideBar.SetActive(false);
         }
 
         #region Unity related methods
 
         private void Awake()
         {
-            if (Instance != null && Instance != this)
-            {
-                Destroy(gameObject);
-            }
-            else
-            {
-                Instance = this;
-            }
+            GetComponent<Canvas>();
         }
 
         private void Start()
         {
             // fill dropdown with all the spawn points from PlayerSpawnController
-            UpdateDropdown();
             dropdown.onValueChanged.AddListener(delegate { DropdownValueChanged(dropdown); });
 
-            SelectionManager.Instance.OnExhibitSelected += SelectionManager_OnExhibitSelected; // subscribe from events
-            ExhibitDetailsUserInterface.Instance.OnVisibilityChange += ExhibitDetailsUserInterface_OnVisibilityChange;
-            PlayerSpawnController.Instance.OnPlayerSpawnPointsListUpdated += PlayerSpawnController_OnPlayerSpawnPointsListUpdated;
-
-            ShowInterface();
+            // HideInterface();
         }
 
-        private void OnDestroy()
+        private void OnEnable()
         {
-            // reset instance
-            if (Instance != null && Instance == this)
-            {
-                Instance = null;
-            }
+            EventManager.StartListening(EventType.EventPlayerSpawnPointsLoaded, UpdateDropdown);
+            //EventManager.StartListening(EventType.EventSpawnPlayer, SetCameraToActivePlayer);
         }
 
         private void OnDisable()
         {
-            // unsubscribe from events
-            if (SelectionManager.Instance != null)
-                SelectionManager.Instance.OnExhibitSelected -= SelectionManager_OnExhibitSelected;
-            
-            if (ExhibitDetailsUserInterface.Instance != null)
-                ExhibitDetailsUserInterface.Instance.OnVisibilityChange -= ExhibitDetailsUserInterface_OnVisibilityChange;
+            EventManager.StopListening(EventType.EventPlayerSpawnPointsLoaded, UpdateDropdown);
+            //EventManager.StopListening(EventType.EventSpawnPlayer, SetCameraToActivePlayer);
         }
 
         #endregion
 
-        public void ShowInterface()
-        {
-            sideBar.SetActive(true);
-            IsVisible = true;
-        }
-
-        public void HideInterface()
-        {
-            sideBar.SetActive(false);
-            IsVisible = false;
-        }
-
         #region Dropdown methods
 
-        private void UpdateDropdown()
+        private void UpdateDropdown(EventParam eventParam)
         {
+            if (eventParam.Param6 == null) return;
+
+            var playerSpawnPoints = eventParam.Param6;
+            
             dropdown.options.Clear(); // reset list
             
-            var playerSpawnPoints = PlayerSpawnController.Instance.PlayerSpawnPoints;
             if (playerSpawnPoints.Length <= 0) return;
 
             var optionData = playerSpawnPoints
@@ -110,38 +73,11 @@ namespace Interface
 
         private void DropdownValueChanged(Dropdown change)
         {
-            PlayerSpawnController.Instance.SetTeleportRequestOn(change.captionText.text);
-        }
-
-        #endregion
-
-        #region Events
-
-        public void InvokeOnVisibilityChange(bool isVisible)
-        {
-            OnVisibilityChange?.Invoke(this, new OnVisibilityChangeEventArgs(isVisible));
-        }
-
-        #endregion
-
-        #region Event Handling
-
-        private void SelectionManager_OnExhibitSelected(object sender, EventArgs e)
-        {
-            HideInterface();
-        }
-
-        private void ExhibitDetailsUserInterface_OnVisibilityChange(object sender, OnVisibilityChangeEventArgs e)
-        {
-            if (!e.IsVisible)
+            var eventParam = new EventParam
             {
-                ShowInterface();
-            }
-        }
-        
-        private void PlayerSpawnController_OnPlayerSpawnPointsListUpdated(object sender, EventArgs e)
-        {
-            UpdateDropdown();
+                Param1 = change.captionText.text
+            };
+            EventManager.TriggerEvent(EventType.EventTeleportRequest, eventParam);
         }
 
         #endregion

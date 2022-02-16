@@ -1,19 +1,16 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Controller;
-using Controller.Audio;
+using Events;
 using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using EventType = Events.EventType;
 
 namespace Interface
 {
-    public class ExhibitDetailsUserInterface : MonoBehaviour, IUserInterface
+    public class ExhibitDetailsUserInterface : MonoBehaviour
     {
-        public static ExhibitDetailsUserInterface Instance { get; private set; }
-
         [Header("Scale")] [Space(8)]
         [SerializeField] private float scaleFactorChangeSpeed;
         [SerializeField] private float scaleFactor = 100f;
@@ -33,54 +30,41 @@ namespace Interface
         [SerializeField] private Button playButton;
         [SerializeField] private Button pauseButton;
 
-        // Events
-        public event EventHandler<OnVisibilityChangeEventArgs> OnVisibilityChange;
-
         // Members
-        private bool _isVisible;
         private Exhibit _currentExhibit;
         private GameObject _currentAttachedGameObject;
         private readonly Dictionary<Dropdown.OptionData, AudioClip> _optionsAudioClipsDictionary = new Dictionary<Dropdown.OptionData, AudioClip>();
         private AudioClip _currentAudioClip;
-
-        public bool IsVisible
-        {
-            get => _isVisible;
-            set
-            {
-                _isVisible = value;
-                InvokeOnVisibilityChange(_isVisible);
-            }
-        }
-
-        private void Awake()
-        {
-            if (Instance != null && Instance != this)
-            {
-                Destroy(gameObject);
-            }
-            else
-            {
-                Instance = this;
-            }
-        }
+        private bool _isVisible = false;
 
         private void Start()
         {
-            // hide interface at start
-            HideInterface();
-
-            // subscribe from events
-            SelectionManager.Instance.OnExhibitSelected += OnExhibitSelected;
-            
-            // set dropdown value change event
+            // Set dropdown value change event
             audioClipsDropdown.onValueChanged.AddListener(delegate { SetCurrentAudioClip(); });
             
-            // set button events
+            // Set button events
             playButton.onClick.AddListener(delegate { PlaySelectedAudioClip(); });
             pauseButton.onClick.AddListener(delegate { PauseSelectedAudioClip(); });
+            
+            HideInterface(); // Hide interface
         }
-        
+
+        private void OnEnable()
+        {
+            EventManager.StartListening(EventType.EventExhibitSelect, Initialize);
+        }
+
+        private void OnDisable()
+        {
+            EventManager.StopListening(EventType.EventExhibitSelect, Initialize);
+        }
+
+        private void Initialize(EventParam eventParam)
+        {
+            _currentExhibit = eventParam.Param7;
+            InterfaceSetup(_currentExhibit);
+        }
+
         private void SetCurrentAudioClip()
         {
             var optionData = audioClipsDropdown.options[audioClipsDropdown.value];
@@ -90,10 +74,9 @@ namespace Interface
 
         private AudioClip GetCurrentlySelectedAudioClip()
         {
-            // Get the currently selected option
-            var selectedOptionData = audioClipsDropdown.options[audioClipsDropdown.value];
-            // Try to get the value out of the directory by parsing the selected option data
-            if (_optionsAudioClipsDictionary.TryGetValue(selectedOptionData, out var audioClip))
+            var selectedOptionData = audioClipsDropdown.options[audioClipsDropdown.value]; // Get the currently selected option
+            
+            if (_optionsAudioClipsDictionary.TryGetValue(selectedOptionData, out var audioClip)) // Try to get the value out of the directory by parsing the selected option data
             {
                 Debug.Log($"[{nameof(GetCurrentlySelectedAudioClip)}] Selected audio clip: {audioClip.name}");
                 return audioClip;
@@ -105,22 +88,27 @@ namespace Interface
         private void PlaySelectedAudioClip()
         {
             var audioClip = GetCurrentlySelectedAudioClip();
-            AudioController.Instance.PlayStorytellingAudio(audioClip);
+            EventManager.TriggerEvent(EventType.EventPlayAudio, new EventParam
+            {
+                Param8 = audioClip
+            });
         }
 
         private void PauseSelectedAudioClip()
         {
-            // AudioController.Instance.PauseAudioClip();
+            EventManager.TriggerEvent(EventType.EventPauseAudio, new EventParam());
         }
 
         private void Update()
         {
             if (!_isVisible) return;
-
+            
             // on right mouse button, hide interface
             if (Input.GetMouseButtonDown(1))
             {
-                HideInterface();
+                //HideInterface();
+                EventManager.TriggerEvent(EventType.EventDetailsInterfaceClose, new EventParam());
+                return;
             }
 
             // update model scale
@@ -153,13 +141,21 @@ namespace Interface
         public void ShowInterface()
         {
             interfaceCamera.enabled = true;
-            IsVisible = true;
+            _isVisible = true;
+            EventManager.TriggerEvent(EventType.EventLockControls, new EventParam
+            {
+                Param4 = true
+            });
         }
 
         public void HideInterface()
         {
             interfaceCamera.enabled = false;
-            IsVisible = false;
+            _isVisible = false;
+            EventManager.TriggerEvent(EventType.EventLockControls, new EventParam
+            {
+                Param4 = false
+            });
         }
 
         private GameObject GetAttachedModel()
@@ -260,40 +256,6 @@ namespace Interface
             }
             // clear dictionary
             _optionsAudioClipsDictionary.Clear();
-        }
-
-        #region Events
-
-        public void InvokeOnVisibilityChange(bool isVisible)
-        {
-            OnVisibilityChange?.Invoke(this, new OnVisibilityChangeEventArgs(isVisible));
-        }
-
-        #endregion
-
-        #region Event Handling
-
-        private void OnExhibitSelected(object sender, OnExhibitSelectedEventArgs e)
-        {
-            _currentExhibit = e.Exhibit;
-            InterfaceSetup(_currentExhibit);
-            ShowInterface();
-        }
-
-        #endregion
-
-        private void OnDestroy()
-        {
-            // unsubscribe from events
-            SelectionManager.Instance.OnExhibitSelected -= OnExhibitSelected;
-            // reset instance
-            if (Instance != null && Instance == this)
-            {
-                Instance = null;
-            }
-
-            // clear own event
-            OnVisibilityChange = null;
         }
     }
 }
