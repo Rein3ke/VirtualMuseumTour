@@ -1,26 +1,37 @@
 using System;
+using Events;
 using UnityEngine;
+using EventType = Events.EventType;
 
 namespace Player
 {
     [RequireComponent(typeof(CharacterController))]
     public class PlayerMovementCharacterController : MonoBehaviour
     {
-        // serialize fields
+        #region Constants
+
+        private const float Gravity = -9.81f;
+
+        #endregion
+        
+        #region SerializeFields
+
         [SerializeField] private float playerSpeed = 4.0f;
         [SerializeField] private float groundDistance = 0.4f;
         [SerializeField] private float jumpHeight = 3f;
         [SerializeField] private Transform groundCheck;
         [SerializeField] private LayerMask groundMask;
 
-        // members
+        #endregion
+
+        #region Members
+
         private CharacterController _characterController;
-        
-        private const float Gravity = -9.81f;
-
         private Vector3 _velocity;
-
         private bool _isGrounded;
+        private bool _isLocked;
+
+        #endregion
 
         public static PlayerMovementCharacterController Instance { get; private set; }
 
@@ -38,8 +49,30 @@ namespace Player
             _characterController = GetComponent<CharacterController>();
         }
 
+        private void Start()
+        {
+            _isLocked = false;
+        }
+
+        private void OnEnable()
+        {
+            EventManager.StartListening(EventType.EventLockControls, SetLockState);
+        }
+
+        private void OnDisable()
+        {
+            EventManager.StopListening(EventType.EventLockControls, SetLockState);
+        }
+
+        private void SetLockState(EventParam eventParam)
+        {
+            _isLocked = eventParam.Param4;
+        }
+
         private void Update()
-        {   
+        {
+            if (_isLocked) return;
+            
             var currentTransform = transform;
             _isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 

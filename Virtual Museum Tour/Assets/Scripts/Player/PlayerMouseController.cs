@@ -1,25 +1,50 @@
+using System;
+using Events;
 using Interface;
 using UnityEngine;
+using EventType = Events.EventType;
 
 namespace Player
 {
     public class PlayerMouseController : MonoBehaviour
     {
+        #region SerializeFields
+
         [SerializeField] private float mouseSensitivity = 100f;
         [SerializeField] private Transform playerBody;
 
+        #endregion
+
+        #region Members
+
         private float _xRotation;
-        private bool _shouldMove = true;
+        private bool _isLocked;
+
+        #endregion
 
         private void Start()
         {
-            ExhibitDetailsUserInterface.Instance.OnVisibilityChange += ExhibitDetailsUserInterface_OnVisibilityChange;
-            //Cursor.lockState = CursorLockMode.Locked;
+            _isLocked = false;
+        }
+
+        private void OnEnable()
+        {
+            EventManager.StartListening(EventType.EventLockControls, SetLockState);
+        }
+
+        private void OnDisable()
+        {
+            EventManager.StopListening(EventType.EventLockControls, SetLockState);
+        }
+        
+        private void SetLockState(EventParam eventParam)
+        {
+            _isLocked = eventParam.Param4;
         }
 
         private void Update()
         {
-            if (!_shouldMove) return;
+            if (_isLocked) return;
             
             var mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
             var mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
@@ -30,22 +55,5 @@ namespace Player
             transform.localRotation = Quaternion.Euler(_xRotation, 0f, 0f);
             playerBody.Rotate(Vector3.up * mouseX);
         }
-
-        private void OnDestroy()
-        {
-            if (ExhibitDetailsUserInterface.Instance)
-            {
-                ExhibitDetailsUserInterface.Instance.OnVisibilityChange -= ExhibitDetailsUserInterface_OnVisibilityChange;
-            }
-        }
-
-        #region Event Handling
-
-        private void ExhibitDetailsUserInterface_OnVisibilityChange(object sender, OnVisibilityChangeEventArgs e)
-        {
-            _shouldMove = !e.IsVisible;
-        }
-
-        #endregion
     }
 }
