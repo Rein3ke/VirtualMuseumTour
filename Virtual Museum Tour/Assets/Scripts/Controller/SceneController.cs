@@ -1,34 +1,44 @@
 using System;
+using System.Collections.Generic;
+using Events;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using EventType = Events.EventType;
 
 namespace Controller
 {
     public class SceneController : MonoBehaviour
     {
-        // static members
-        public static SceneController Instance { get; private set; }
-
-        // serialize fields
-        
-        // members
-        
-        
-        private void Awake()
+        private void OnEnable()
         {
-            if (Instance != null && Instance != this)
+            EventManager.StartListening(EventType.EventLoadScene, ExternalLoadCall);
+        }
+
+        private void OnDisable()
+        {
+            EventManager.StopListening(EventType.EventLoadScene, ExternalLoadCall);
+        }
+
+        private void ExternalLoadCall(EventParam eventParam)
+        {
+            if (eventParam.Param4)
             {
-                Destroy(gameObject);
+                LoadSceneAdditive(eventParam.Param1);
             }
             else
             {
-                Instance = this;
+                LoadScene(eventParam.Param1);
             }
         }
 
-        private void Start()
+        public void LoadSceneAdditive(string pathToScene)
         {
-            SceneManager.LoadScene("Scenes/TestMuseum", LoadSceneMode.Additive);
+            SceneManager.LoadScene(pathToScene, LoadSceneMode.Additive);
+        }
+
+        public void LoadScene(string pathToScene)
+        {
+            SceneManager.LoadScene(pathToScene, LoadSceneMode.Single);
         }
     }
 }

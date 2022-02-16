@@ -1,9 +1,9 @@
-﻿namespace Controller.Audio
-{
-    using JetBrains.Annotations;
-    using System.Collections.Generic;
-    using UnityEngine;
+﻿using System.Collections.Generic;
+using JetBrains.Annotations;
+using UnityEngine;
 
+namespace Audio
+{
     public class AudioQueue
     {
         public AudioQueueType QueueType { get; private set; }

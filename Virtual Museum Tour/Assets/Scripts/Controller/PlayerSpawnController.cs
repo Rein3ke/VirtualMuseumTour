@@ -1,63 +1,53 @@
-using System;
 using System.Collections;
 using System.Linq;
+using Events;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using EventType = Events.EventType;
+using Random = UnityEngine.Random;
 
 namespace Controller
 {
     public class PlayerSpawnController : MonoBehaviour
     {
         private const string FirstPersonPlayerPath = "Prefabs/FirstPersonPlayer";
-        public static PlayerSpawnController Instance { get; private set; }
 
-        [SerializeField] private bool spawnPlayerOnStart;
-
-        public PlayerSpawnPoint[] PlayerSpawnPoints { get; private set; }
+        private PlayerSpawnPoint[] PlayerSpawnPoints { get; set; }
 
         private GameObject _currentPlayer;
         private GameObject _playerPrefab;
-        
-        public event EventHandler OnPlayerSpawnPointsListUpdated;
 
         private void Awake()
         {
-            if (Instance != null && Instance != this)
-            {
-                Destroy(gameObject);
-            }
-            else
-            {
-                Instance = this;
-            }
-        }
-
-        private void Start()
-        {
-            UpdatePlayerSpawnPointList();
-
             // load first person player prefab
             _playerPrefab = Resources.Load(FirstPersonPlayerPath) as GameObject;
             if (_playerPrefab == null)
             {
                 Debug.LogError("Couldn't load player prefab!");
-                return;
             }
+        }
 
-            // If true, instantiate player prefab on position x
-            /*if (spawnPlayerOnStart)
-            {
-                StartCoroutine(InstantiatePlayerPrefabOnPosition(_playerPrefab, PlayerSpawnPoints[0].gameObject.transform.position));
-            }*/
-            
+        private void OnEnable()
+        {
             SceneManager.sceneLoaded += SceneManager_OnSceneLoaded;
+            EventManager.StartListening(EventType.EventTeleportRequest, SetTeleportRequestOn);
+        }
+
+        private void OnDisable()
+        {
+            SceneManager.sceneLoaded -= SceneManager_OnSceneLoaded;
+            EventManager.StopListening(EventType.EventTeleportRequest, SetTeleportRequestOn);
         }
 
         private void UpdatePlayerSpawnPointList()
         {
             // load all player spawn points in current scene
             PlayerSpawnPoints = FindObjectsOfType<PlayerSpawnPoint>();
-            InvokeOnPlayerSpawnPointsListUpdated();
+            var eventParam = new EventParam
+            {
+                Param6 = PlayerSpawnPoints
+            };
+            EventManager.TriggerEvent(EventType.EventPlayerSpawnPointsLoaded, eventParam);
         }
 
         /// <summary>
@@ -65,7 +55,7 @@ namespace Controller
         /// </summary>
         /// <param name="playerPrefab">Player gameObject or prefab.</param>
         /// <param name="position">Spawn position.</param>
-        private IEnumerator InstantiatePlayerPrefabOnPosition(GameObject playerPrefab, Vector3 position)
+        private IEnumerator SpawnPlayer(GameObject playerPrefab, Vector3 position)
         {
             // reset current player reference & destroy previous player game object
             if (_currentPlayer != null)
@@ -80,37 +70,52 @@ namespace Controller
             if (_currentPlayer != null)
             {
                 Debug.Log($"Spawn player {playerPrefab.name} at position: X:{position.x}, Y:{position.y}, Z:{position.z}.");
+
+                var eventParam = new EventParam
+                {
+                    Param4 = true
+                };
+                EventManager.TriggerEvent(EventType.EventSpawnPlayer, eventParam);
             }
         }
 
-        public void SetTeleportRequestOn(string playerSpawnPointName)
+        public void SetTeleportRequestOn(EventParam eventParam)
         {
-            if (string.IsNullOrEmpty(playerSpawnPointName))
+            if (string.IsNullOrEmpty(eventParam.Param1))
             {
                 Debug.LogError("SetTeleportRequestOn [Error]: Parameter is empty or null!");
                 return;
             }
 
-            var playerSpawnPoint = GetPlayerSpawnPointByName(playerSpawnPointName);
+            var playerSpawnPoint = GetPlayerSpawnPoint(eventParam.Param1);
             if (playerSpawnPoint == null)
             {
                 Debug.LogError("SetTeleportRequestOn [Error]: Player spawn point is null!");
                 return;
             }
 
-            StartCoroutine(InstantiatePlayerPrefabOnPosition(_playerPrefab, playerSpawnPoint.gameObject.transform.position));
+            StartCoroutine(SpawnPlayer(_playerPrefab, playerSpawnPoint.gameObject.transform.position));
         }
 
-        private PlayerSpawnPoint GetPlayerSpawnPointByName(string playerSpawnPointName)
+        private void SpawnPlayerOnRandomPosition()
+        {
+            StartCoroutine(SpawnPlayer(_playerPrefab,GetRandomPlayerSpawnPoint().transform.position));
+        }
+
+        private PlayerSpawnPoint GetPlayerSpawnPoint(string playerSpawnPointName)
         {
             return PlayerSpawnPoints.FirstOrDefault(playerSpawnPoint =>
                 playerSpawnPointName.Equals(playerSpawnPoint.PlayerSpawnName));
         }
 
-        private void OnDestroy()
+        private PlayerSpawnPoint GetRandomPlayerSpawnPoint()
         {
-            // reset instance
-            if (Instance != null && Instance == this) Instance = null;
+            Debug.Log($"GetRandomPlayerSpawnPoint: Spawn Points Length: {PlayerSpawnPoints.Length}");
+            
+            var random = Random.Range(0, PlayerSpawnPoints.Length);
+            var point = PlayerSpawnPoints[random];
+            
+            return point;
         }
 
         #region Event Handling
@@ -118,15 +123,10 @@ namespace Controller
         private void SceneManager_OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
             UpdatePlayerSpawnPointList();
-        }
-
-        #endregion
-
-        #region Events
-
-        protected virtual void InvokeOnPlayerSpawnPointsListUpdated()
-        {
-            OnPlayerSpawnPointsListUpdated?.Invoke(this, EventArgs.Empty);
+            if (PlayerSpawnPoints.Length > 0)
+            {
+                SpawnPlayerOnRandomPosition();
+            }
         }
 
         #endregion

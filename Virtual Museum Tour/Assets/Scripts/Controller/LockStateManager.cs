@@ -9,5 +9,10 @@ namespace Controller
         {
             Cursor.lockState = CursorLockMode.Confined;
         }
+
+        private void Update()
+        {
+            
+        }
     }
 }

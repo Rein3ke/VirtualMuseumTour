@@ -1,41 +1,41 @@
 using System;
-using Interface;
+using Events;
 using UnityEngine;
+using EventType = Events.EventType;
 
 namespace Controller
 {
     public class SelectionManager : MonoBehaviour
     {
-        public static SelectionManager Instance { get; private set; }
-        
         [SerializeField] private Material highlightMaterial;
-
-        public event EventHandler<OnExhibitSelectedEventArgs> OnExhibitSelected;
 
         private Transform _selection;
         private Material _selectionMaterial;
-        private bool _canSelect;
-
-        private void Awake()
-        {
-            if (Instance != null && Instance != this)
-            {
-                Destroy(gameObject);
-            }
-            else
-            {
-                Instance = this;
-            }
-        }
+        private bool _isLocked;
 
         private void Start()
         {
-            ExhibitDetailsUserInterface.Instance.OnVisibilityChange += ExhibitDetailsUserInterface_OnVisibilityChange;
+            _isLocked = false;
+        }
+
+        private void OnEnable()
+        {
+            EventManager.StartListening(EventType.EventLockControls, SetLockState);
+        }
+        
+        private void OnDisable()
+        {
+            EventManager.StopListening(EventType.EventLockControls, SetLockState);
+        }
+
+        private void SetLockState(EventParam eventParam)
+        {
+            _isLocked = eventParam.Param4;
         }
 
         private void Update()
         {
-            if (!_canSelect) return;
+            if (_isLocked) return;
             
             // 1. check for main camera
             var mainCamera = Camera.main;
@@ -76,9 +76,13 @@ namespace Controller
                 if (HasExhibitAnchor(_selection.gameObject, out var anchor))
                 {
                     
-                    ExhibitManager.Instance.ExhibitDictionary.TryGetValue(anchor.GetComponent<ExhibitAnchor>().ExhibitID, out var exhibit);
+                    ExhibitManager.ExhibitDictionary.TryGetValue(anchor.GetComponent<ExhibitAnchor>().ExhibitID, out var exhibit);
 
-                    InvokeOnExhibitSelected(exhibit);
+                    
+                    EventManager.TriggerEvent(EventType.EventExhibitSelect, new EventParam
+                    {
+                        Param7 = exhibit
+                    });
                 }
             }
         }
@@ -102,28 +106,5 @@ namespace Controller
             anchor = null;
             return false;
         }
-
-        #region Event Handling
-
-        private void ExhibitDetailsUserInterface_OnVisibilityChange(object sender, OnVisibilityChangeEventArgs e)
-        {
-            _canSelect = !e.IsVisible;
-        }
-
-        #endregion
-
-        #region Events
-
-        private void InvokeOnExhibitSelected(Exhibit exhibit)
-        {
-            if (exhibit == null)
-            {
-                Debug.LogError("Given exhibit is null!", this);
-                return;
-            }
-            OnExhibitSelected?.Invoke(this, new OnExhibitSelectedEventArgs(exhibit));
-        }
-
-        #endregion
     }
 }

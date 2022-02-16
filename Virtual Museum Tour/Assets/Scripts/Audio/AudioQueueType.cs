@@ -1,4 +1,4 @@
-﻿namespace Controller.Audio
+﻿namespace Audio
 {
     public enum AudioQueueType
     {

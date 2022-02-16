@@ -6,6 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/TestMuseum.unity
+    path: Assets/Scenes/Application.unity
+    guid: 3040e31273fb0234b85c91e4f5b163b9
+  - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: 9a0a1dc99d893104d885002e16400198
+  - enabled: 1
+    path: Assets/Scenes/Exhibitions/Ladestrasse.unity
     guid: b56f6dd61e3a3c444b94e2d9f3100902
   m_configObjects: {}

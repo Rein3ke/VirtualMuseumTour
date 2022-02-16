@@ -21,7 +21,7 @@ namespace Controller
         /// <summary>
         /// A directory that stores all exhibits with an associated key.
         /// </summary>
-        public Dictionary<string, Exhibit> ExhibitDictionary { get; } = new Dictionary<string, Exhibit>();
+        public static Dictionary<string, Exhibit> ExhibitDictionary { get; } = new Dictionary<string, Exhibit>();
 
         /// <summary>
         /// Set Instance to this if Instance isn't null. Otherwise destroy gameObject.
@@ -145,8 +145,7 @@ namespace Controller
             }
 
             Instantiate(child, parent.transform);
-            Debug.Log(
-                $"Instantiate {child.name} as a child from [{parent.GetType()}]{parent.GetComponent<ExhibitAnchor>().ExhibitID}.");
+            Debug.Log($"Instantiate {child.name} as a child from [{parent.GetType()}]{parent.GetComponent<ExhibitAnchor>().ExhibitID}.");
         }
 
         #region Event Handling
