@@ -11,6 +11,20 @@ namespace DollHouseView
         PlayerSpawnPoint = 3
     }
 
+    internal struct GuiLabelSettings
+    {
+        public readonly float Offset;
+        public readonly float Width;
+        public readonly float Height;
+
+        public GuiLabelSettings(float offset, float width, float height)
+        {
+            Offset = offset;
+            Width = width;
+            Height = height;
+        }
+    }
+    
     [RequireComponent(typeof(SpriteRenderer))]
     [RequireComponent(typeof(SphereCollider))]
     public class PointOfInterest : MonoBehaviour
@@ -25,12 +39,16 @@ namespace DollHouseView
         [SerializeField] private float maxScale = 10f;
 
         private SphereCollider _collider;
+        private bool _isHoverTextVisible;
         private bool _isScaled;
         private bool _isVisible;
         private Camera _mainCamera;
+        private GuiLabelSettings guiLabelSettings;
         private PoiType poiType;
 
         public bool IsClickable { get; set; }
+
+        public string HoverText { get; set; }
 
         public PoiType PoiType
         {
@@ -51,6 +69,8 @@ namespace DollHouseView
         private void Start()
         {
             if (!_collider.isTrigger) Debug.LogWarning("POI Collider attribute 'Is Trigger' is set to false!");
+
+            guiLabelSettings = new GuiLabelSettings(-20f, 200f, 200f);
         }
 
         private void Update()
@@ -66,6 +86,19 @@ namespace DollHouseView
                 var newScale = new Vector3(clampedDistance, clampedDistance, clampedDistance);
                 transform.localScale = newScale;
             }
+        }
+
+        private void OnGUI()
+        {
+            if (!_isHoverTextVisible) return;
+
+            var mousePosition = Input.mousePosition;
+            var x = mousePosition.x - guiLabelSettings.Offset;
+            var y = Screen.height - mousePosition.y - guiLabelSettings.Offset;
+
+            var rect = new Rect(x, y, guiLabelSettings.Width, guiLabelSettings.Height);
+
+            GUI.Label(rect, HoverText);
         }
 
         private void OnBecameInvisible()
@@ -87,6 +120,8 @@ namespace DollHouseView
 
         private void OnMouseEnter()
         {
+            _isHoverTextVisible = true;
+
             if (!IsClickable) return;
 
             GetComponent<SpriteRenderer>().color = HighlightColor;
@@ -96,6 +131,8 @@ namespace DollHouseView
 
         private void OnMouseExit()
         {
+            _isHoverTextVisible = false;
+
             if (!IsClickable) return;
 
             ChangeColorBasedOnType();
