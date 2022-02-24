@@ -1,18 +1,19 @@
 using System.Collections.Generic;
 using System.Linq;
+using DollHouseView;
 using UnityEngine;
 
-public class ExhibitAnchor : MonoBehaviour
+public class ExhibitAnchor : MonoBehaviour, IPoi
 {
-    /// <summary>
-    /// Static list to access all ExhibitAnchors.
-    /// </summary>
-    public static List<ExhibitAnchor> ExhibitAnchors { get; } = new List<ExhibitAnchor>();
-
     /// <summary>
     /// ExhibitID which is used to assign an exhibit. Should have the name of the Exhibit from the AssetBundle.
     /// </summary>
     [SerializeField] private string exhibitID;
+
+    /// <summary>
+    /// Static list to access all ExhibitAnchors.
+    /// </summary>
+    public static List<ExhibitAnchor> ExhibitAnchors { get; } = new List<ExhibitAnchor>();
 
     /// <summary>
     /// Public accessor for exhibitID.
@@ -34,7 +35,19 @@ public class ExhibitAnchor : MonoBehaviour
     {
         ExhibitAnchors.Remove(this);
     }
-    
+
+    public PointOfInterest Poi { get; private set; }
+
+    public void InstantiatePoi()
+    {
+        if (Poi != null) return;
+
+        Poi = Instantiate(Resources.Load<PointOfInterest>(PointOfInterest.PrefabPath), transform);
+        Poi.IsClickable = false;
+        Poi.PoiType = PoiType.Exhibit;
+        Poi.HoverText = $"{nameof(ExhibitAnchor)}: {exhibitID}";
+    }
+
     /// <summary>
     /// Returns an ExhibitAnchor if it could be found via the exhibit ID.
     /// </summary>

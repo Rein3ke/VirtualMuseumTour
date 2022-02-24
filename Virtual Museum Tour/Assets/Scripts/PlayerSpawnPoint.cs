@@ -15,6 +15,7 @@ public class PlayerSpawnPoint : MonoBehaviour, IPoi
         Poi = Instantiate(Resources.Load<PointOfInterest>(PointOfInterest.PrefabPath), transform);
         Poi.IsClickable = true;
         Poi.PoiType = PoiType.PlayerSpawnPoint;
+        Poi.HoverText = $"{nameof(PlayerSpawnPoint)}: {playerSpawnName}";
         Poi.OnClick += PoiOnClick;
     }
 
