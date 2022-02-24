@@ -106,7 +106,6 @@ namespace Interface
             // on right mouse button, hide interface
             if (Input.GetMouseButtonDown(1))
             {
-                //HideInterface();
                 EventManager.TriggerEvent(EventType.EventDetailsInterfaceClose, new EventParam());
                 return;
             }
@@ -118,14 +117,16 @@ namespace Interface
 
             // set scale between following bounds
             var meshRenderer = _currentAttachedGameObject.GetComponent<MeshRenderer>();
-            while (meshRenderer.bounds.extents.x > maximumScale || meshRenderer.bounds.extents.y > maximumScale ||
+            while (meshRenderer.bounds.extents.x > maximumScale ||
+                   meshRenderer.bounds.extents.y > maximumScale ||
                    meshRenderer.bounds.extents.z > maximumScale)
             {
                 scaleFactor *= 0.99f;
                 _currentAttachedGameObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
             }
 
-            while (meshRenderer.bounds.extents.x < minimumScale || meshRenderer.bounds.extents.y < minimumScale ||
+            while (meshRenderer.bounds.extents.x < minimumScale ||
+                   meshRenderer.bounds.extents.y < minimumScale ||
                    meshRenderer.bounds.extents.z < minimumScale)
             {
                 scaleFactor *= 1.01f;
