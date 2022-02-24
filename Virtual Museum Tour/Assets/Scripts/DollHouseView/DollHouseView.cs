@@ -9,9 +9,6 @@ namespace DollHouseView
         [SerializeField] private float scrollSpeed = 10.0f;
         [SerializeField] private float rotationSpeed = 10.0f;
 
-        [Header("UICamera")]
-        [SerializeField] private Camera uiCamera;
-    
         private Camera _camera;
     
         private void Awake()
@@ -24,12 +21,6 @@ namespace DollHouseView
             _camera.clearFlags = CameraClearFlags.Color;
             _camera.backgroundColor = Color.black;
             _camera.orthographic = false;
-
-            uiCamera.clearFlags = CameraClearFlags.Depth;
-            uiCamera.backgroundColor = Color.black;
-            uiCamera.orthographic = false;
-            uiCamera.cullingMask = (1 << LayerMask.NameToLayer("UI"));
-            uiCamera.depth = 10;
         }
 
         private void Update()
