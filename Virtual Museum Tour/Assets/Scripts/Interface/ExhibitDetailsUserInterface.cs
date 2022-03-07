@@ -61,7 +61,7 @@ namespace Interface
 
         private void Initialize(EventParam eventParam)
         {
-            _currentExhibit = eventParam.Param7;
+            _currentExhibit = eventParam.EventExhibit;
             InterfaceSetup(_currentExhibit);
         }
 
@@ -90,7 +90,7 @@ namespace Interface
             var audioClip = GetCurrentlySelectedAudioClip();
             EventManager.TriggerEvent(EventType.EventPlayAudio, new EventParam
             {
-                Param8 = audioClip
+                EventAudioClip = audioClip
             });
         }
 
@@ -145,7 +145,7 @@ namespace Interface
             _isVisible = true;
             EventManager.TriggerEvent(EventType.EventLockControls, new EventParam
             {
-                Param4 = true
+                EventBoolean = true
             });
         }
 
@@ -155,7 +155,7 @@ namespace Interface
             _isVisible = false;
             EventManager.TriggerEvent(EventType.EventLockControls, new EventParam
             {
-                Param4 = false
+                EventBoolean = false
             });
         }
 

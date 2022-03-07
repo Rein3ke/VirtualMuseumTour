@@ -12,6 +12,6 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: 9a0a1dc99d893104d885002e16400198
   - enabled: 1
-    path: Assets/Scenes/Exhibitions/Ladestrasse.unity
+    path: Assets/Scenes/Exhibitions/ExhibitionMainScene.unity
     guid: b56f6dd61e3a3c444b94e2d9f3100902
   m_configObjects: {}

@@ -30,7 +30,7 @@ namespace Controller
 
         private void SetLockState(EventParam eventParam)
         {
-            _isLocked = eventParam.Param4;
+            _isLocked = eventParam.EventBoolean;
         }
 
         private void Update()
@@ -81,7 +81,7 @@ namespace Controller
                     
                     EventManager.TriggerEvent(EventType.EventExhibitSelect, new EventParam
                     {
-                        Param7 = exhibit
+                        EventExhibit = exhibit
                     });
                 }
             }

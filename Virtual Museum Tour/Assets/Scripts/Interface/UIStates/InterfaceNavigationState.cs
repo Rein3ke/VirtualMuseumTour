@@ -18,6 +18,7 @@ namespace Interface.UIStates
         public void Enter()
         {
             EventManager.StartListening(EventType.EventExhibitSelect, ChangeToDetailsState);
+            EventManager.StartListening(EventType.EventOpenDollHouseView, ChangeToEmptyState);
             NavigationUserInterface.ShowInterface();
         }
 
@@ -34,12 +35,21 @@ namespace Interface.UIStates
         public void Exit()
         {
             EventManager.StopListening(EventType.EventExhibitSelect, ChangeToDetailsState);
+            EventManager.StopListening(EventType.EventOpenDollHouseView, ChangeToEmptyState);
             NavigationUserInterface.HideInterface();
         }
-        
+
         private void ChangeToDetailsState(EventParam eventParam)
         {
             UIManager.ChangeState(UIManager.DetailsState);
+        }
+
+        private void ChangeToEmptyState(EventParam eventParam)
+        {
+            if (eventParam.EventBoolean)
+            {
+                UIManager.ChangeState(UIManager.EmptyState);
+            }
         }
     }
 }

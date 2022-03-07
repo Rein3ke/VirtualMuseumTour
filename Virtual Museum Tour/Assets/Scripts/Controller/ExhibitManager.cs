@@ -1,22 +1,26 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using com.rein3ke.virtualtour.core;
+using Events;
 using JetBrains.Annotations;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using Utility;
+using EventType = Events.EventType;
 
 namespace Controller
 {
     public class ExhibitManager : MonoBehaviour
     {
-        /// <summary>
-        /// Public singleton instance. Instance of the script must exist only once.
-        /// </summary>
-        public static ExhibitManager Instance { get; private set; }
-
         [Header("Asset Bundle")] [SerializeField]
         private string bundleUrl = "http://localhost/assetbundles/";
 
         [SerializeField] private string bundleName = "testbundle";
+
+        /// <summary>
+        /// Public singleton instance. Instance of the script must exist only once.
+        /// </summary>
+        public static ExhibitManager Instance { get; private set; }
 
         /// <summary>
         /// A directory that stores all exhibits with an associated key.
@@ -44,10 +48,20 @@ namespace Controller
         private void Start()
         {
             // register events
-            SceneManager.sceneLoaded += SceneManager_OnSceneLoaded;
+            // SceneManager.sceneLoaded += SceneManager_OnSceneLoaded;
             
             // start asset bundle download...
             StartCoroutine(BundleWebLoader.DownloadAssetBundle(LoadAndUnpackAssetBundle, bundleUrl + bundleName));
+        }
+
+        private void OnEnable()
+        {
+            EventManager.StartListening(EventType.EventExhibitionsPlaced, OnExhibitionsPlaced);
+        }
+
+        private void OnDisable()
+        {
+            EventManager.StopListening(EventType.EventExhibitionsPlaced, OnExhibitionsPlaced);
         }
 
         /// <summary>
@@ -94,7 +108,7 @@ namespace Controller
             {
                 exhibit = new Exhibit
                 {
-                    Anchor = ExhibitAnchor.GetExhibitAnchor(exhibitID)?.gameObject,
+                    // Anchor = ExhibitAnchor.GetExhibitAnchor(exhibitID)?.gameObject,
                     Name = exhibitID,
                     Asset = exhibitAsset
                 };
@@ -116,7 +130,7 @@ namespace Controller
                 exhibit = new Exhibit
                 {
                     ExhibitData = exhibitData,
-                    Anchor = ExhibitAnchor.GetExhibitAnchor(exhibitID)?.gameObject,
+                    // Anchor = ExhibitAnchor.GetExhibitAnchor(exhibitID)?.gameObject,
                     Name = exhibitID
                 };
                 ExhibitDictionary.Add(exhibitID, exhibit);
@@ -138,9 +152,9 @@ namespace Controller
             {
                 var childOfChild = child.transform.GetChild(index).gameObject;
                 childOfChild.tag = "Exhibit";
-                if (childOfChild.GetComponent<Renderer>() != null)
+                if (childOfChild.GetComponent<Renderer>() != null && childOfChild.GetComponent<Collider>() == null)
                 {
-                    if (childOfChild.GetComponent<Collider>() == null) childOfChild.AddComponent<MeshCollider>();
+                    childOfChild.AddComponent<MeshCollider>();
                 }
             }
 
@@ -148,26 +162,31 @@ namespace Controller
             Debug.Log($"Instantiate {child.name} as a child from [{parent.GetType()}]{parent.GetComponent<ExhibitAnchor>().ExhibitID}.");
         }
 
-        #region Event Handling
-
-        private void SceneManager_OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
+        private static void RefreshExhibitAnchors()
         {
-            // refresh anchor points if missing  
-            foreach (var exhibitEntry in ExhibitDictionary)
+            // refresh exhibit anchors
+            foreach (var exhibit in ExhibitDictionary.Select(exhibitEntry => exhibitEntry.Value))
             {
-                var exhibit = exhibitEntry.Value;
-                if (exhibit.Anchor == null)
-                {
-                    exhibit.Anchor = ExhibitAnchor.GetExhibitAnchor(exhibit.Name).gameObject;
-                }
+                exhibit.Anchor = ExhibitAnchor.GetExhibitAnchor(exhibit.Name)?.gameObject;
             }
-            
-            // instantiate each exhibit in its own anchor
-            foreach (var exhibitEntry in ExhibitDictionary)
+        }
+
+        private void PlaceExhibitsInScene()
+        {
+            // place exhibits on anchors
+            foreach (var exhibit in ExhibitDictionary.Select(exhibitEntry => exhibitEntry.Value))
             {
-                var exhibit = exhibitEntry.Value;
+                if (exhibit.Anchor == null) continue;
                 InstantiateAsChildFrom(exhibit.Anchor, exhibit.Asset);
             }
+        }
+
+        #region Event Handling
+
+        private void OnExhibitionsPlaced(EventParam eventParam)
+        {
+            RefreshExhibitAnchors();
+            PlaceExhibitsInScene();
         }
 
         #endregion

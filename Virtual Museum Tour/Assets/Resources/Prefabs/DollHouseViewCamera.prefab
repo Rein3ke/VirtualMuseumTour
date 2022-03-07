@@ -84,7 +84,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7956060620187484045}
   - component: {fileID: 7956060620187484044}
-  - component: {fileID: 7956060620187484047}
   - component: {fileID: 7956060620187484042}
   m_Layer: 0
   m_Name: DollHouseViewCamera
@@ -151,14 +150,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &7956060620187484047
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7956060620187484046}
-  m_Enabled: 1
 --- !u!114 &7956060620187484042
 MonoBehaviour:
   m_ObjectHideFlags: 0

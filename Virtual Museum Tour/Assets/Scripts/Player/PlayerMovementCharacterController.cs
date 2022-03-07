@@ -66,7 +66,7 @@ namespace Player
 
         private void SetLockState(EventParam eventParam)
         {
-            _isLocked = eventParam.Param4;
+            _isLocked = eventParam.EventBoolean;
         }
 
         private void Update()

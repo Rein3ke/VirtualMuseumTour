@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Events;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -21,13 +19,13 @@ namespace Controller
 
         private void ExternalLoadCall(EventParam eventParam)
         {
-            if (eventParam.Param4)
+            if (eventParam.EventBoolean)
             {
-                LoadSceneAdditive(eventParam.Param1);
+                LoadSceneAdditive(eventParam.EventString);
             }
             else
             {
-                LoadScene(eventParam.Param1);
+                LoadScene(eventParam.EventString);
             }
         }
 

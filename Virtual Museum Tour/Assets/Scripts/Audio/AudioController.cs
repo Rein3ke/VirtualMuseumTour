@@ -162,7 +162,7 @@ namespace Audio
 
         private void PlayStorytellingAudio(EventParam eventParam)
         {
-            var clip = eventParam.Param8;
+            var clip = eventParam.EventAudioClip;
             
             if (clip == null)
             {

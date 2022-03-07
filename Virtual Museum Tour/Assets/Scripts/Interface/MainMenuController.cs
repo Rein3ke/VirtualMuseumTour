@@ -15,25 +15,25 @@ namespace Interface
             startButton.onClick.AddListener(StartButtonEvent);
         }
 
+        private void OnDisable()
+        {
+            startButton.onClick.RemoveListener(StartButtonEvent);
+        }
+
         private void StartButtonEvent()
         {
             var eventParam = new EventParam
             {
-                Param1 = "Scenes/Exhibitions/Ladestrasse",
-                Param4 = false
+                EventString = "Scenes/Exhibitions/ExhibitionMainScene",
+                EventBoolean = false
             };
             EventManager.TriggerEvent(EventType.EventLoadScene, eventParam);
 
             var eventParam2 = new EventParam
             {
-                Param5 = ApplicationState.Main
+                EventApplicationState = ApplicationState.Main
             };
             EventManager.TriggerEvent(EventType.EventSetState, eventParam2);
-        }
-
-        private void OnDisable()
-        {
-            startButton.onClick.RemoveListener(StartButtonEvent);
         }
     }
 }

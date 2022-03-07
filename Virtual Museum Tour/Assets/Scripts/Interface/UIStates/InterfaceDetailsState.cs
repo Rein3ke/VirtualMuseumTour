@@ -1,6 +1,5 @@
 ﻿using Events;
 using State;
-using UnityEngine;
 using EventType = Events.EventType;
 
 namespace Interface.UIStates

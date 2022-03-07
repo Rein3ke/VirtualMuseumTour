@@ -16,63 +16,13 @@ namespace Controller
     [RequireComponent(typeof(SelectionManager))]
     public class ApplicationController : GenericSingletonClass<ApplicationController>
     {
-        /*/// <summary>
-        /// The default path to the prefabs in the Resources folder.
-        /// </summary>
-        private const string PrefabPath = "prefabs";*/
-        
-        /*
-        private PlayerSpawnController _playerSpawnController;
+        private AudioController _audioController;
         private ExhibitManager _exhibitManager;
-        private ExhibitDetailsUserInterface _exhibitDetailsUserInterface;
-        private NavigationUserInterface _navigationUserInterface;
-        private SelectionManager _selectionManager;
-        private AudioController _audioController;
-        private SceneController _sceneController;
-        */
-
-        /*
-        /// <summary>
-        /// Loads all controller and UI prefabs to instantiate them.
-        /// </summary>
-        private void Start()
-        {
-            // ControllerSetup();
-            InterfaceSetup();
-
-            void ControllerSetup()
-            {
-                _playerSpawnController = Instantiate(LoadFromResourcesAsGameObject("PlayerSpawnController"), transform).GetComponent<PlayerSpawnController>();
-                _exhibitManager = Instantiate(LoadFromResourcesAsGameObject("ExhibitManager"), transform).GetComponent<ExhibitManager>();
-                _selectionManager = Instantiate(LoadFromResourcesAsGameObject("SelectionManager"), transform).GetComponent<SelectionManager>();
-                _audioController = Instantiate(LoadFromResourcesAsGameObject("AudioController"), transform).GetComponent<AudioController>();
-                _sceneController = Instantiate(LoadFromResourcesAsGameObject("SceneController"), transform).GetComponent<SceneController>();
-            }
-            
-            void InterfaceSetup()
-            {
-                _exhibitDetailsUserInterface = Instantiate(LoadFromResourcesAsGameObject("ExhibitDetails_UserInterface"), transform).GetComponent<ExhibitDetailsUserInterface>();
-                _navigationUserInterface = Instantiate(LoadFromResourcesAsGameObject("Navigation_UserInterface"), transform).GetComponent<NavigationUserInterface>();
-            }
-        }*/
-
-        /*/// <summary>
-        /// Takes the name of a prefab (e.g. "PlayerSpawnController"), loads the associated prefab and finally returns it.
-        /// </summary>
-        /// <param name="prefabName">Name of the prefab as a string.</param>
-        /// <returns>The corresponding prefab from the Resources folder.</returns>
-        private static GameObject LoadFromResourcesAsGameObject(string prefabName)
-        {
-            return (GameObject) Resources.Load($"{PrefabPath}/{prefabName}");
-        }*/
-        public ApplicationState CurrentState { get; private set; }
-
-        private AudioController _audioController;
-        private SceneController _sceneController;
-        private PlayerSpawnController _playerSpawnController;
         private LockStateManager _lockStateManager;
-        private ExhibitManager _exhibitManager;
+        private PlayerSpawnController _playerSpawnController;
+        private SceneController _sceneController;
         private SelectionManager _selectionManager;
+        public ApplicationState CurrentState { get; private set; }
 
         public override void Awake()
         {
@@ -91,7 +41,17 @@ namespace Controller
             SetState(ApplicationState.Start);
         }
 
-        public void SetState(ApplicationState state)
+        private void OnEnable()
+        {
+            EventManager.StartListening(EventType.EventSetState, SetState);
+        }
+
+        private void OnDisable()
+        {
+            EventManager.StopListening(EventType.EventSetState, SetState);
+        }
+
+        private void SetState(ApplicationState state)
         {
             Debug.Log($"Previous State is {CurrentState}");
             
@@ -136,23 +96,13 @@ namespace Controller
             Debug.Log($"New State is {CurrentState}");
             EventManager.TriggerEvent(EventType.EventStateChange, new EventParam
             {
-                Param5 = state
+                EventApplicationState = state
             });
         }
 
         private void SetState(EventParam eventParam)
         {
-            SetState(eventParam.Param5);
-        }
-
-        private void OnEnable()
-        {
-            EventManager.StartListening(EventType.EventSetState, SetState);
-        }
-
-        private void OnDisable()
-        {
-            EventManager.StopListening(EventType.EventSetState, SetState);
+            SetState(eventParam.EventApplicationState);
         }
     }
 

@@ -1,9 +1,9 @@
-using System;
 using System.Linq;
 using Events;
 using UnityEngine;
 using UnityEngine.UI;
 using EventType = Events.EventType;
+using DollHouseView;
 
 namespace Interface
 {
@@ -11,16 +11,22 @@ namespace Interface
     {
         // serialize fields
         [SerializeField] private GameObject sideBar;
+        [SerializeField] private GameObject buttonContainer;
         [SerializeField] private Dropdown dropdown;
+        [SerializeField] private Button dollHouseViewButton;
+        
+        private DollHouseView.DollHouseView _dollHouseViewCamera;
 
         public void ShowInterface()
         {
             sideBar.SetActive(true);
+            buttonContainer.SetActive(true);
         }
 
         public void HideInterface()
         {
             sideBar.SetActive(false);
+            buttonContainer.SetActive(false);
         }
 
         #region Unity related methods
@@ -34,20 +40,47 @@ namespace Interface
         {
             // fill dropdown with all the spawn points from PlayerSpawnController
             dropdown.onValueChanged.AddListener(delegate { DropdownValueChanged(dropdown); });
-
-            // HideInterface();
         }
 
         private void OnEnable()
         {
             EventManager.StartListening(EventType.EventPlayerSpawnPointsLoaded, UpdateDropdown);
-            //EventManager.StartListening(EventType.EventSpawnPlayer, SetCameraToActivePlayer);
+            dollHouseViewButton.onClick.AddListener(OnDollHouseViewButtonClick);
+
+            // EventManager.StartListening(EventType.EventSpawnPlayer, SetCameraToActivePlayer);
+        }
+
+        private void OnDollHouseViewButtonClick()
+        {
+            if (_dollHouseViewCamera)
+            {
+                _dollHouseViewCamera.gameObject.SetActive(true);
+            }
+            else
+            {
+                var dollHousePrefab = Instantiate(Resources.Load("Prefabs/DollHouseViewCamera")) as GameObject;
+
+                if (dollHousePrefab == null)
+                {
+                    Debug.LogWarning("DollHouseView is null and couldn't be initialized!");
+                    return;
+                }
+
+                _dollHouseViewCamera = dollHousePrefab.GetComponent<DollHouseView.DollHouseView>();
+            }
+
+            EventManager.TriggerEvent(EventType.EventOpenDollHouseView, new EventParam
+            {
+                EventBoolean = true
+            });
         }
 
         private void OnDisable()
         {
             EventManager.StopListening(EventType.EventPlayerSpawnPointsLoaded, UpdateDropdown);
-            //EventManager.StopListening(EventType.EventSpawnPlayer, SetCameraToActivePlayer);
+            dollHouseViewButton.onClick.RemoveListener(OnDollHouseViewButtonClick);
+
+            // EventManager.StopListening(EventType.EventSpawnPlayer, SetCameraToActivePlayer);
         }
 
         #endregion
@@ -56,9 +89,9 @@ namespace Interface
 
         private void UpdateDropdown(EventParam eventParam)
         {
-            if (eventParam.Param6 == null) return;
+            if (eventParam.EventPlayerSpawnPoints == null) return;
 
-            var playerSpawnPoints = eventParam.Param6;
+            var playerSpawnPoints = eventParam.EventPlayerSpawnPoints;
             
             dropdown.options.Clear(); // reset list
             
@@ -73,11 +106,10 @@ namespace Interface
 
         private void DropdownValueChanged(Dropdown change)
         {
-            var eventParam = new EventParam
+            EventManager.TriggerEvent(EventType.EventTeleportRequest, new EventParam()
             {
-                Param1 = change.captionText.text
-            };
-            EventManager.TriggerEvent(EventType.EventTeleportRequest, eventParam);
+                EventString = change.captionText.text
+            });
         }
 
         #endregion

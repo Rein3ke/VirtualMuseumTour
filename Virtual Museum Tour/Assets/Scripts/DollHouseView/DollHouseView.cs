@@ -1,5 +1,7 @@
 using System.Collections;
+using Events;
 using UnityEngine;
+using EventType = Events.EventType;
 
 namespace DollHouseView
 {
@@ -31,6 +33,7 @@ namespace DollHouseView
 
             _isControllable = true;
             
+            GetNewTarget();
             ResetPosition();
         }
 
@@ -38,9 +41,17 @@ namespace DollHouseView
         {
             if (!_isControllable) return;
             
-            if (Input.GetKeyDown(KeyCode.R))
+            if (Input.GetKeyDown(KeyCode.R)) // R = Reset Camera Position
             {
                 StartCoroutine(ResetPositionCoroutine());
+            }
+            if (Input.GetMouseButtonDown(1)) // Right Click = Disable camera
+            {
+                gameObject.SetActive(false);
+                EventManager.TriggerEvent(EventType.EventOpenDollHouseView, new EventParam
+                {
+                    EventBoolean = false
+                });
             }
             
             var movementVector = new Vector3();
@@ -60,10 +71,13 @@ namespace DollHouseView
         
             transform.LookAt(target);
             transform.Translate(movementVector * rotationSpeed * Time.deltaTime, Space.Self);
+
         }
 
         private IEnumerator ResetPositionCoroutine()
         {
+            if (target == null) yield break;
+            
             Debug.Log("Start reset position coroutine!");
             
             _isControllable = false;
@@ -111,6 +125,16 @@ namespace DollHouseView
             }
             
             transform.position = target.position + offset;
+        }
+
+        private void GetNewTarget()
+        {
+            var exhibition = GameObject.FindGameObjectWithTag("Exhibition");
+
+            if (exhibition != null)
+            {
+                SetTarget(exhibition.transform);
+            }
         }
     }
 }

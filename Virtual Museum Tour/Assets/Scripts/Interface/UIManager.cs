@@ -20,6 +20,7 @@ namespace Interface
 
         public InterfaceNavigationState NavigationState { get; private set; }
         public InterfaceDetailsState DetailsState { get; private set; }
+        public InterfaceEmptyState EmptyState { get; private set; }
 
         #endregion
 
@@ -30,6 +31,7 @@ namespace Interface
             
             NavigationState = new InterfaceNavigationState(this, _navigationUserInterface);
             DetailsState = new InterfaceDetailsState(this, _detailsUserInterface);
+            EmptyState = new InterfaceEmptyState(this);
         }
 
         /*private void Start()
@@ -50,7 +52,7 @@ namespace Interface
 
         private void OnApplicationStateChange(EventParam eventParam)
         {
-            var applicationState = eventParam.Param5;
+            var applicationState = eventParam.EventApplicationState;
             Debug.Log($"Application state changed: {applicationState}");
             if (applicationState == ApplicationState.Main)
             {

@@ -267,6 +267,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerSpawnPoint
       objectReference: {fileID: 0}
+    - target: {fileID: 521937499052352693, guid: edfd5866a5f7212469407e54e5d0057c, type: 3}
+      propertyPath: playerSpawnName
+      value: Ladestrasse 01
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: edfd5866a5f7212469407e54e5d0057c, type: 3}
 --- !u!4 &2049144685881114530 stripped
@@ -281,6 +285,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 92813441836541631}
     m_Modifications:
+    - target: {fileID: 7053185931106318608, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
+      propertyPath: exhibitID
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 7053185931106318614, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
       propertyPath: m_Name
       value: ExhibitAnchor
@@ -529,6 +537,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 92813441836541631}
     m_Modifications:
+    - target: {fileID: 7053185931106318608, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
+      propertyPath: exhibitID
+      value: ExampleExhibit_Car_01
+      objectReference: {fileID: 0}
     - target: {fileID: 7053185931106318614, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
       propertyPath: m_Name
       value: ExhibitAnchor
@@ -591,6 +603,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 92813441836541631}
     m_Modifications:
+    - target: {fileID: 7053185931106318608, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
+      propertyPath: exhibitID
+      value: BundledTestObject
+      objectReference: {fileID: 0}
     - target: {fileID: 7053185931106318614, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
       propertyPath: m_Name
       value: ExhibitAnchor
@@ -763,6 +779,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerSpawnPoint
       objectReference: {fileID: 0}
+    - target: {fileID: 521937499052352693, guid: edfd5866a5f7212469407e54e5d0057c, type: 3}
+      propertyPath: playerSpawnName
+      value: Ladestrasse 02
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: edfd5866a5f7212469407e54e5d0057c, type: 3}
 --- !u!4 &6237259797249346850 stripped
@@ -901,6 +921,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 92813441836541631}
     m_Modifications:
+    - target: {fileID: 7053185931106318608, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
+      propertyPath: exhibitID
+      value: BundledSpriteObject
+      objectReference: {fileID: 0}
     - target: {fileID: 7053185931106318614, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
       propertyPath: m_Name
       value: ExhibitAnchor
