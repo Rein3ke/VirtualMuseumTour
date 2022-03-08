@@ -3,7 +3,6 @@ using Events;
 using UnityEngine;
 using UnityEngine.UI;
 using EventType = Events.EventType;
-using DollHouseView;
 
 namespace Interface
 {
@@ -29,6 +28,26 @@ namespace Interface
             buttonContainer.SetActive(false);
         }
 
+        private void OnDollHouseViewButtonClick()
+        {
+            if (_dollHouseViewCamera)
+            {
+                _dollHouseViewCamera.gameObject.SetActive(true);
+            }
+            else
+            {
+                var dollHousePrefab = Instantiate(Resources.Load("Prefabs/DollHouseViewCamera")) as GameObject;
+
+                if (dollHousePrefab == null)
+                {
+                    Debug.LogWarning("DollHouseView is null and couldn't be initialized!");
+                    return;
+                }
+
+                _dollHouseViewCamera = dollHousePrefab.GetComponent<DollHouseView.DollHouseView>();
+            }
+        }
+
         #region Unity related methods
 
         private void Awake()
@@ -48,31 +67,6 @@ namespace Interface
             dollHouseViewButton.onClick.AddListener(OnDollHouseViewButtonClick);
 
             // EventManager.StartListening(EventType.EventSpawnPlayer, SetCameraToActivePlayer);
-        }
-
-        private void OnDollHouseViewButtonClick()
-        {
-            if (_dollHouseViewCamera)
-            {
-                _dollHouseViewCamera.gameObject.SetActive(true);
-            }
-            else
-            {
-                var dollHousePrefab = Instantiate(Resources.Load("Prefabs/DollHouseViewCamera")) as GameObject;
-
-                if (dollHousePrefab == null)
-                {
-                    Debug.LogWarning("DollHouseView is null and couldn't be initialized!");
-                    return;
-                }
-
-                _dollHouseViewCamera = dollHousePrefab.GetComponent<DollHouseView.DollHouseView>();
-            }
-
-            EventManager.TriggerEvent(EventType.EventOpenDollHouseView, new EventParam
-            {
-                EventBoolean = true
-            });
         }
 
         private void OnDisable()

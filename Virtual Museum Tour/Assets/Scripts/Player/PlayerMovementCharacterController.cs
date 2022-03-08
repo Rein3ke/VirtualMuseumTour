@@ -86,7 +86,7 @@ namespace Player
 
             Vector3 move = currentTransform.right * x + currentTransform.forward * z;
 
-            _characterController.Move(move * playerSpeed * Time.deltaTime);
+            _characterController.Move(move * (playerSpeed * Time.deltaTime));
 
             if (Input.GetButtonDown("Jump") && _isGrounded)
             {

@@ -1812,6 +1812,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   exhibitionList:
   - {fileID: 1486493621179937014, guid: 678ae86e9d43cc5429e313c595cfb1ed, type: 3}
+  - {fileID: 1486493621179937014, guid: 678ae86e9d43cc5429e313c595cfb1ed, type: 3}
+  - {fileID: 1486493621179937014, guid: 678ae86e9d43cc5429e313c595cfb1ed, type: 3}
   origin: {x: 0, y: 0, z: 0}
 --- !u!4 &786756782
 Transform:
@@ -3522,75 +3524,6 @@ Transform:
   m_Father: {fileID: 1446429877}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
---- !u!1001 &1810016558
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 7956060620187484042, guid: 0a1968233cf8197468638a3b61fcb3d3, type: 3}
-      propertyPath: scrollSpeed
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 7956060620187484042, guid: 0a1968233cf8197468638a3b61fcb3d3, type: 3}
-      propertyPath: rotationSpeed
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 7956060620187484045, guid: 0a1968233cf8197468638a3b61fcb3d3, type: 3}
-      propertyPath: m_RootOrder
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7956060620187484045, guid: 0a1968233cf8197468638a3b61fcb3d3, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7956060620187484045, guid: 0a1968233cf8197468638a3b61fcb3d3, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7956060620187484045, guid: 0a1968233cf8197468638a3b61fcb3d3, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -10
-      objectReference: {fileID: 0}
-    - target: {fileID: 7956060620187484045, guid: 0a1968233cf8197468638a3b61fcb3d3, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7956060620187484045, guid: 0a1968233cf8197468638a3b61fcb3d3, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7956060620187484045, guid: 0a1968233cf8197468638a3b61fcb3d3, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7956060620187484045, guid: 0a1968233cf8197468638a3b61fcb3d3, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7956060620187484045, guid: 0a1968233cf8197468638a3b61fcb3d3, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7956060620187484045, guid: 0a1968233cf8197468638a3b61fcb3d3, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7956060620187484045, guid: 0a1968233cf8197468638a3b61fcb3d3, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7956060620187484046, guid: 0a1968233cf8197468638a3b61fcb3d3, type: 3}
-      propertyPath: m_Name
-      value: DollHouseViewCamera
-      objectReference: {fileID: 0}
-    - target: {fileID: 7956060620187484046, guid: 0a1968233cf8197468638a3b61fcb3d3, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 0a1968233cf8197468638a3b61fcb3d3, type: 3}
 --- !u!4 &1923937094 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 521937499052352690, guid: edfd5866a5f7212469407e54e5d0057c, type: 3}

@@ -1,7 +1,10 @@
+using System;
 using System.Collections;
 using Events;
+using TMPro;
 using UnityEngine;
 using EventType = Events.EventType;
+using Random = UnityEngine.Random;
 
 namespace DollHouseView
 {
@@ -9,16 +12,19 @@ namespace DollHouseView
     {
         [Header("Target & Offset")]
         [SerializeField] private Transform target;
-
         [SerializeField] private Vector3 offset = new Vector3(0, 1, -10);
 
         [Header("Camera Movement Settings")]
         [SerializeField] private float scrollSpeed = 10.0f;
-
         [SerializeField] private float rotationSpeed = 10.0f;
+
+        [Header("Interface")]
+        [SerializeField] private TextMeshProUGUI targetText;
 
         private Camera _camera;
         private bool _isControllable;
+        private GameObject[] _targetList;
+        private int _targetListIndex;
 
         private void Awake()
         {
@@ -33,8 +39,31 @@ namespace DollHouseView
 
             _isControllable = true;
             
-            GetNewTarget();
-            ResetPosition();
+            GetRandomTarget();
+        }
+
+        private void OnEnable()
+        {
+            EventManager.TriggerEvent(EventType.EventOpenDollHouseView, new EventParam
+            {
+                EventBoolean = true
+            });
+            EventManager.TriggerEvent(EventType.EventLockControls, new EventParam
+            {
+                EventBoolean = true
+            });
+        }
+
+        private void OnDisable()
+        {
+            EventManager.TriggerEvent(EventType.EventOpenDollHouseView, new EventParam
+            {
+                EventBoolean = false
+            });
+            EventManager.TriggerEvent(EventType.EventLockControls, new EventParam
+            {
+                EventBoolean = false
+            });
         }
 
         private void Update()
@@ -48,10 +77,14 @@ namespace DollHouseView
             if (Input.GetMouseButtonDown(1)) // Right Click = Disable camera
             {
                 gameObject.SetActive(false);
-                EventManager.TriggerEvent(EventType.EventOpenDollHouseView, new EventParam
-                {
-                    EventBoolean = false
-                });
+            }
+            if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                GetNextTarget();
+            }
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                GetPreviousTarget();
             }
             
             var movementVector = new Vector3();
@@ -70,8 +103,13 @@ namespace DollHouseView
             }
         
             transform.LookAt(target);
-            transform.Translate(movementVector * rotationSpeed * Time.deltaTime, Space.Self);
+            transform.Translate(movementVector * (rotationSpeed * Time.deltaTime), Space.Self);
+        }
 
+        private void RefreshTargets()
+        {
+            _targetList = GameObject.FindGameObjectsWithTag("Exhibition");
+            _targetListIndex = 0;
         }
 
         private IEnumerator ResetPositionCoroutine()
@@ -104,16 +142,24 @@ namespace DollHouseView
             Debug.Log("Finished reset position coroutine!");
         }
 
-        public void SetTarget(Transform newTarget)
+        private void SetTarget(Transform newTarget)
         {
-            if (newTarget == null || target == newTarget)
+            if (newTarget == null)
             {
-                Debug.LogError($"Target {newTarget} is either null or already set.");
+                Debug.LogError($"Target {newTarget} is null.");
+                return;
+            }
+
+            if (target == newTarget)
+            {
+                Debug.LogWarning($"Target {newTarget} is already set.");
                 return;
             }
             
             target = newTarget;
-            ResetPosition();
+            targetText.text = $"Selected target: {target.name} [{_targetListIndex}]";
+
+            StartCoroutine(ResetPositionCoroutine());
         }
 
         private void ResetPosition()
@@ -127,14 +173,62 @@ namespace DollHouseView
             transform.position = target.position + offset;
         }
 
-        private void GetNewTarget()
+        private void GetRandomTarget()
         {
-            var exhibition = GameObject.FindGameObjectWithTag("Exhibition");
-
-            if (exhibition != null)
+            RefreshTargets();
+            
+            if (_targetList.Length <= 0)
             {
-                SetTarget(exhibition.transform);
+                Debug.LogWarning("No targets found!");
+                return;
             }
+            
+            _targetListIndex = Random.Range(0, _targetList.Length);
+            SetTarget(_targetList[_targetListIndex].transform);
+        }
+
+        private void GetNextTarget()
+        {
+            if (_targetList == null || _targetList.Length <= 0)
+            {
+                RefreshTargets();
+
+                if (_targetList.Length <= 0)
+                {
+                    return;
+                }
+            }
+
+            _targetListIndex++;
+            
+            if (_targetListIndex > _targetList.Length - 1)
+            {
+                _targetListIndex = 0;
+            }
+            
+            SetTarget(_targetList[_targetListIndex].transform);
+        }
+
+        private void GetPreviousTarget()
+        {
+            if (_targetList == null || _targetList.Length <= 0)
+            {
+                RefreshTargets();
+
+                if (_targetList.Length <= 0)
+                {
+                    return;
+                }
+            }
+            
+            _targetListIndex--;
+            
+            if (_targetListIndex < 0)
+            {
+                _targetListIndex = (_targetList.Length - 1);
+            }
+            
+            SetTarget(_targetList[_targetListIndex].transform);
         }
     }
 }

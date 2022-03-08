@@ -1,5 +1,7 @@
 using System;
+using Events;
 using UnityEngine;
+using EventType = Events.EventType;
 
 namespace DollHouseView
 {
@@ -88,6 +90,16 @@ namespace DollHouseView
             }
         }
 
+        private void OnEnable()
+        {
+            EventManager.StartListening(EventType.EventOpenDollHouseView, SetMainCamera);
+        }
+
+        private void OnDisable()
+        {
+            EventManager.StopListening(EventType.EventOpenDollHouseView, SetMainCamera);
+        }
+
         private void OnGUI()
         {
             if (!_isHoverTextVisible) return;
@@ -142,6 +154,11 @@ namespace DollHouseView
         private void OnValidate()
         {
             ChangeColorBasedOnType();
+        }
+
+        private void SetMainCamera(EventParam eventParam)
+        {
+            _mainCamera = Camera.main;
         }
 
         public event Action OnClick;
