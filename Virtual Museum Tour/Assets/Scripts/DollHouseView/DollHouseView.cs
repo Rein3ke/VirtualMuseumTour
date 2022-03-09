@@ -3,6 +3,7 @@ using System.Collections;
 using Events;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using EventType = Events.EventType;
 using Random = UnityEngine.Random;
 
@@ -20,6 +21,7 @@ namespace DollHouseView
 
         [Header("Interface")]
         [SerializeField] private TextMeshProUGUI targetText;
+        [SerializeField] private Button leftButton, rightButton;
 
         private Camera _camera;
         private bool _isControllable;
@@ -38,6 +40,9 @@ namespace DollHouseView
             _camera.orthographic = false;
 
             _isControllable = true;
+
+            leftButton.onClick.AddListener(GetPreviousTarget);
+            rightButton.onClick.AddListener(GetNextTarget);
             
             GetRandomTarget();
         }
@@ -64,6 +69,12 @@ namespace DollHouseView
             {
                 EventBoolean = false
             });
+        }
+
+        private void OnDestroy()
+        {
+            leftButton.onClick.RemoveListener(GetPreviousTarget);
+            rightButton.onClick.RemoveListener(GetNextTarget);
         }
 
         private void Update()
@@ -133,7 +144,6 @@ namespace DollHouseView
                 transform.position = Vector3.Lerp(currentPosition, targetPosition, t);
                 
                 t += 0.75f * Time.deltaTime;
-                Debug.Log($"{t}");
                 yield return null;
             }
             
@@ -157,7 +167,7 @@ namespace DollHouseView
             }
             
             target = newTarget;
-            targetText.text = $"Selected target: {target.name} [{_targetListIndex}]";
+            targetText.text = $"{target.name} [{_targetListIndex}]";
 
             StartCoroutine(ResetPositionCoroutine());
         }

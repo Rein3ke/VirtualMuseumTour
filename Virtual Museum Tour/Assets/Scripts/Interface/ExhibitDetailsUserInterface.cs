@@ -18,6 +18,7 @@ namespace Interface
         [SerializeField] private float maximumScale = 4.2f;
 
         [Header("Components")] [Space(8)]
+        [SerializeField] private GameObject interfaceGameObject;
         [SerializeField] private GameObject modelHolder;
         [SerializeField] private GameObject imageHolder;
         [SerializeField] private Camera interfaceCamera;
@@ -35,7 +36,7 @@ namespace Interface
         private GameObject _currentAttachedGameObject;
         private readonly Dictionary<Dropdown.OptionData, AudioClip> _optionsAudioClipsDictionary = new Dictionary<Dropdown.OptionData, AudioClip>();
         private AudioClip _currentAudioClip;
-        private bool _isVisible = false;
+        private bool _isVisible;
 
         private void Start()
         {
@@ -141,6 +142,7 @@ namespace Interface
 
         public void ShowInterface()
         {
+            interfaceGameObject.SetActive(true);
             interfaceCamera.enabled = true;
             _isVisible = true;
             EventManager.TriggerEvent(EventType.EventLockControls, new EventParam
@@ -151,6 +153,7 @@ namespace Interface
 
         public void HideInterface()
         {
+            interfaceGameObject.SetActive(false);
             interfaceCamera.enabled = false;
             _isVisible = false;
             EventManager.TriggerEvent(EventType.EventLockControls, new EventParam

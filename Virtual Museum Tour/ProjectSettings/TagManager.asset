@@ -9,6 +9,7 @@ TagManager:
   - Exhibit
   - POI
   - Exhibition
+  - PlayerCamera
   layers:
   - Default
   - TransparentFX

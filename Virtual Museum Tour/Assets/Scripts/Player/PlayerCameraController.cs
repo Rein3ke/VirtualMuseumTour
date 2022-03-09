@@ -1,3 +1,4 @@
+using System;
 using Events;
 using UnityEngine;
 using EventType = Events.EventType;
@@ -10,18 +11,17 @@ namespace Player
 
         private void OnEnable()
         {
-            EventManager.StartListening(EventType.EventLockControls, OnLockStateChange);
+            EventManager.StartListening(EventType.EventLockControls, SetCameraActive);
         }
 
         private void OnDisable()
         {
-            EventManager.StopListening(EventType.EventLockControls, OnLockStateChange);
+            EventManager.StopListening(EventType.EventLockControls, SetCameraActive);
         }
 
-        private void OnLockStateChange(EventParam eventParam)
+        private void SetCameraActive(EventParam eventParam)
         {
-            playerCamera.tag = !eventParam.EventBoolean ? "MainCamera" : "Untagged"; // If true, set the camera to untagged (Player is locked and camera isn't needed at the moment).
-            Debug.Log($"Player camera tag is set to {playerCamera.tag}.");
+            playerCamera.enabled = !eventParam.EventBoolean;
         }
     }
 }

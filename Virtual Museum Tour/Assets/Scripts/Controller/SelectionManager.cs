@@ -38,8 +38,8 @@ namespace Controller
             if (_isLocked) return;
             
             // 1. check for main camera
-            var mainCamera = Camera.main;
-            if (mainCamera == null) return;
+            var originCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<Camera>();
+            if (originCamera == null) return;
 
             // 2. if something is selected, reset
             if (_selection != null)
@@ -50,7 +50,7 @@ namespace Controller
             }
 
             // 3. cast ray from camera to screen
-            var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+            var ray = originCamera.ScreenPointToRay(Input.mousePosition);
 
             // 4. handle raycast hit
             if (Physics.Raycast(ray, out var hit))

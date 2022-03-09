@@ -1931,6 +1931,7 @@ MonoBehaviour:
   scaleFactor: 100
   minimumScale: 0.7
   maximumScale: 4.2
+  interfaceGameObject: {fileID: 5642274503558154536}
   modelHolder: {fileID: 5642274503577391749}
   imageHolder: {fileID: 9077129154719231418}
   interfaceCamera: {fileID: 5642274503419472445}
