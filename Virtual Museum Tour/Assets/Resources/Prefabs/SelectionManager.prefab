@@ -44,3 +44,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   highlightMaterial: {fileID: 2100000, guid: 334ced2075713eb41b129410a0136e77, type: 2}
+  raycastLayerMask:
+    serializedVersion: 2
+    m_Bits: 128

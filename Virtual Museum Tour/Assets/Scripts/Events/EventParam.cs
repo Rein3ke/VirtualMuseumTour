@@ -11,6 +11,7 @@ namespace Events
         public bool EventBoolean;
         public ApplicationState EventApplicationState;
         public PlayerSpawnPoint[] EventPlayerSpawnPoints;
+        public PlayerSpawnPoint EventPlayerSpawnPoint;
         public Exhibit EventExhibit;
         public AudioClip EventAudioClip;
     }

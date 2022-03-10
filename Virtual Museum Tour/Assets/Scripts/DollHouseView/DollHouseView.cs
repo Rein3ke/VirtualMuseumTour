@@ -1,5 +1,5 @@
-using System;
 using System.Collections;
+using System.Linq;
 using Events;
 using TMPro;
 using UnityEngine;
@@ -13,14 +13,17 @@ namespace DollHouseView
     {
         [Header("Target & Offset")]
         [SerializeField] private Transform target;
+
         [SerializeField] private Vector3 offset = new Vector3(0, 1, -10);
 
         [Header("Camera Movement Settings")]
         [SerializeField] private float scrollSpeed = 10.0f;
+
         [SerializeField] private float rotationSpeed = 10.0f;
 
         [Header("Interface")]
         [SerializeField] private TextMeshProUGUI targetText;
+
         [SerializeField] private Button leftButton, rightButton;
 
         private Camera _camera;
@@ -43,38 +46,6 @@ namespace DollHouseView
 
             leftButton.onClick.AddListener(GetPreviousTarget);
             rightButton.onClick.AddListener(GetNextTarget);
-            
-            GetRandomTarget();
-        }
-
-        private void OnEnable()
-        {
-            EventManager.TriggerEvent(EventType.EventDollHouseView, new EventParam
-            {
-                EventBoolean = true
-            });
-            EventManager.TriggerEvent(EventType.EventLockControls, new EventParam
-            {
-                EventBoolean = true
-            });
-        }
-
-        private void OnDisable()
-        {
-            EventManager.TriggerEvent(EventType.EventDollHouseView, new EventParam
-            {
-                EventBoolean = false
-            });
-            EventManager.TriggerEvent(EventType.EventLockControls, new EventParam
-            {
-                EventBoolean = false
-            });
-        }
-
-        private void OnDestroy()
-        {
-            leftButton.onClick.RemoveListener(GetPreviousTarget);
-            rightButton.onClick.RemoveListener(GetNextTarget);
         }
 
         private void Update()
@@ -85,9 +56,9 @@ namespace DollHouseView
             {
                 StartCoroutine(ResetPositionCoroutine());
             }
-            if (Input.GetMouseButtonDown(1)) // Right Click = Disable camera
+            if (Input.GetMouseButtonDown(1)) // Right Click = Disable gameObject
             {
-                gameObject.SetActive(false);
+                DisableDollHouseView();
             }
             if (Input.GetKeyDown(KeyCode.RightArrow))
             {
@@ -117,9 +88,60 @@ namespace DollHouseView
             transform.Translate(movementVector * (rotationSpeed * Time.deltaTime), Space.Self);
         }
 
+        private void OnEnable()
+        {
+            EventManager.StartListening(EventType.EventTeleportRequest, OnTeleportRequest);
+            
+            EventManager.TriggerEvent(EventType.EventDollHouseView, new EventParam
+            {
+                EventBoolean = true
+            });
+            EventManager.TriggerEvent(EventType.EventLockControls, new EventParam
+            {
+                EventBoolean = true
+            });
+            
+            RefreshTargets();
+            SetTarget(_targetList[0].transform);
+        }
+
+        private void OnDisable()
+        {
+            EventManager.StopListening(EventType.EventTeleportRequest, OnTeleportRequest);
+        }
+
+        private void OnDestroy()
+        {
+            leftButton.onClick.RemoveListener(GetPreviousTarget);
+            rightButton.onClick.RemoveListener(GetNextTarget);
+        }
+
+        /// <summary>
+        /// Listen to the TeleportRequest and disable the dollHouseView when invoked.
+        /// </summary>
+        private void OnTeleportRequest(EventParam eventParam)
+        {
+            DisableDollHouseView();
+        }
+
+        private void DisableDollHouseView()
+        {
+            EventManager.TriggerEvent(EventType.EventDollHouseView, new EventParam
+            {
+                EventBoolean = false
+            });
+            EventManager.TriggerEvent(EventType.EventLockControls, new EventParam
+            {
+                EventBoolean = false
+            });
+            gameObject.SetActive(false);
+        }
+
         private void RefreshTargets()
         {
-            _targetList = GameObject.FindGameObjectsWithTag("Exhibition");
+            var player = GameObject.FindGameObjectsWithTag("Player");
+            var exhibitions = GameObject.FindGameObjectsWithTag("Exhibition");
+            _targetList = player.Concat(exhibitions).ToArray();
             _targetListIndex = 0;
         }
 
@@ -199,6 +221,8 @@ namespace DollHouseView
 
         private void GetNextTarget()
         {
+            if (!_isControllable) return;
+            
             if (_targetList == null || _targetList.Length <= 0)
             {
                 RefreshTargets();
@@ -221,6 +245,8 @@ namespace DollHouseView
 
         private void GetPreviousTarget()
         {
+            if (!_isControllable) return;
+            
             if (_targetList == null || _targetList.Length <= 0)
             {
                 RefreshTargets();

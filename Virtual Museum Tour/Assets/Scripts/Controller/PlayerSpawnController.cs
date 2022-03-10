@@ -85,14 +85,18 @@ namespace Controller
 
         private void SetTeleportRequestOn(EventParam eventParam)
         {
-            if (string.IsNullOrEmpty(eventParam.EventString))
+            PlayerSpawnPoint playerSpawnPoint = null;
+            if (!string.IsNullOrEmpty(eventParam.EventString))
             {
-                Debug.LogError("SetTeleportRequestOn [Error]: Parameter is empty or null!");
-                return;
+                playerSpawnPoint = GetPlayerSpawnPoint(eventParam.EventString);
+                Debug.Log($"SetTeleportRequestOn: {eventParam.EventString} (String)");
+            } else if (eventParam.EventPlayerSpawnPoint != null)
+            {
+                playerSpawnPoint = eventParam.EventPlayerSpawnPoint;
+                Debug.Log($"SetTeleportRequestOn: {eventParam.EventPlayerSpawnPoint.PlayerSpawnName} (PlayerSpawnPoint)");
             }
 
-            var playerSpawnPoint = GetPlayerSpawnPoint(eventParam.EventString);
-            if (playerSpawnPoint == null)
+            if (playerSpawnPoint == null) // Error check
             {
                 Debug.LogError("SetTeleportRequestOn [Error]: Player spawn point is null!");
                 return;

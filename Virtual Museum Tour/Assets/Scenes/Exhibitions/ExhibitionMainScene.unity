@@ -831,7 +831,7 @@ Light:
   m_RenderMode: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 87
+    m_Bits: 215
   m_RenderingLayerMask: 1
   m_Lightmapping: 4
   m_LightShadowCasterMode: 0
@@ -1811,8 +1811,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   exhibitionList:
-  - {fileID: 1486493621179937014, guid: 678ae86e9d43cc5429e313c595cfb1ed, type: 3}
-  - {fileID: 1486493621179937014, guid: 678ae86e9d43cc5429e313c595cfb1ed, type: 3}
   - {fileID: 1486493621179937014, guid: 678ae86e9d43cc5429e313c595cfb1ed, type: 3}
   origin: {x: 0, y: 0, z: 0}
 --- !u!4 &786756782

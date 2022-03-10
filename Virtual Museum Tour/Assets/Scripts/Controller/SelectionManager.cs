@@ -8,7 +8,9 @@ namespace Controller
     public class SelectionManager : MonoBehaviour
     {
         [SerializeField] private Material highlightMaterial;
-
+        [SerializeField] private LayerMask raycastLayerMask;
+        [SerializeField] private float maxRaycastDistance = 10f;
+        
         private Transform _selection;
         private Material _selectionMaterial;
         private bool _isLocked;
@@ -37,8 +39,8 @@ namespace Controller
         {
             if (_isLocked) return;
             
-            // 1. check for main camera
-            var originCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<Camera>();
+            // 1. check for player camera
+            var originCamera = GameObject.FindGameObjectWithTag("PlayerCamera")?.GetComponent<Camera>();
             if (originCamera == null) return;
 
             // 2. if something is selected, reset
@@ -48,12 +50,12 @@ namespace Controller
                 selectionRenderer.material = _selectionMaterial;
                 _selection = null;
             }
-
+            
             // 3. cast ray from camera to screen
             var ray = originCamera.ScreenPointToRay(Input.mousePosition);
 
             // 4. handle raycast hit
-            if (Physics.Raycast(ray, out var hit))
+            if (Physics.Raycast(ray, out var hit, maxRaycastDistance, raycastLayerMask))
             {
                 var selection = hit.transform;
                 if (selection.CompareTag("Exhibit"))

@@ -152,6 +152,7 @@ namespace Controller
             {
                 var childOfChild = child.transform.GetChild(index).gameObject;
                 childOfChild.tag = "Exhibit";
+                childOfChild.layer = LayerMask.NameToLayer("RaycastTarget");
                 if (childOfChild.GetComponent<Renderer>() != null && childOfChild.GetComponent<Collider>() == null)
                 {
                     childOfChild.AddComponent<MeshCollider>();

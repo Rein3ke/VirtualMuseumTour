@@ -1,5 +1,7 @@
 using DollHouseView;
+using Events;
 using UnityEngine;
+using EventType = Events.EventType;
 
 public class PlayerSpawnPoint : MonoBehaviour, IPoi
 {
@@ -19,8 +21,11 @@ public class PlayerSpawnPoint : MonoBehaviour, IPoi
         Poi.OnClick += PoiOnClick;
     }
 
-    private static void PoiOnClick()
+    private void PoiOnClick()
     {
-        Debug.Log("POI clicked!");
+        EventManager.TriggerEvent(EventType.EventTeleportRequest, new EventParam
+        {
+            EventPlayerSpawnPoint = this
+        });
     }
 }
