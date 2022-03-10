@@ -14,7 +14,7 @@ namespace Interface.UIStates
 
         public void Enter()
         {
-            EventManager.StartListening(EventType.EventOpenDollHouseView, ChangeToNavigationState);
+            EventManager.StartListening(EventType.EventDollHouseView, ChangeToNavigationState);
         }
 
         public void Tick()
@@ -29,7 +29,7 @@ namespace Interface.UIStates
 
         public void Exit()
         {
-            EventManager.StopListening(EventType.EventOpenDollHouseView, ChangeToNavigationState);
+            EventManager.StopListening(EventType.EventDollHouseView, ChangeToNavigationState);
         }
 
         private void ChangeToNavigationState(EventParam eventParam)

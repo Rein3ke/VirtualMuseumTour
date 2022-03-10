@@ -14,6 +14,6 @@
         public const string EventPauseAudio = "EventPauseAudio";
         public const string EventLockControls = "EventLockControls";
         public const string EventExhibitionsPlaced = "EventExhibitionsPlaced";
-        public const string EventOpenDollHouseView = "EventOpenDollHouseView";
+        public const string EventDollHouseView = "EventDollHouseView";
     }
 }

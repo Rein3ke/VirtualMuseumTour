@@ -92,12 +92,12 @@ namespace DollHouseView
 
         private void OnEnable()
         {
-            EventManager.StartListening(EventType.EventOpenDollHouseView, SetMainCamera);
+            EventManager.StartListening(EventType.EventDollHouseView, SetMainCamera);
         }
 
         private void OnDisable()
         {
-            EventManager.StopListening(EventType.EventOpenDollHouseView, SetMainCamera);
+            EventManager.StopListening(EventType.EventDollHouseView, SetMainCamera);
         }
 
         private void OnGUI()

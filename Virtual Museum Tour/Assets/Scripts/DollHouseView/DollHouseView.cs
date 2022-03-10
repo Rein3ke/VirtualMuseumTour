@@ -49,7 +49,7 @@ namespace DollHouseView
 
         private void OnEnable()
         {
-            EventManager.TriggerEvent(EventType.EventOpenDollHouseView, new EventParam
+            EventManager.TriggerEvent(EventType.EventDollHouseView, new EventParam
             {
                 EventBoolean = true
             });
@@ -61,7 +61,7 @@ namespace DollHouseView
 
         private void OnDisable()
         {
-            EventManager.TriggerEvent(EventType.EventOpenDollHouseView, new EventParam
+            EventManager.TriggerEvent(EventType.EventDollHouseView, new EventParam
             {
                 EventBoolean = false
             });
