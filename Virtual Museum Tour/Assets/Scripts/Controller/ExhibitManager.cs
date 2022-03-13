@@ -137,30 +137,40 @@ namespace Controller
             }
         }
 
-        private void InstantiateAsChildFrom([NotNull] GameObject parent, [NotNull] GameObject child)
+        private void InstantiateExhibit([NotNull] GameObject anchor, [NotNull] GameObject exhibitGameObject)
         {
-            if (parent == null || child == null)
+            if (anchor == null || exhibitGameObject == null)
             {
-                var errorMessage = parent == null ? "parent" : "child";
-                Debug.LogError($"InstantiateAsChildFrom: {errorMessage} can't be null!");
+                var errorMessage = anchor == null ? "anchor" : "exhibit";
+                Debug.LogError($"InstantiateExhibit: {errorMessage} can't be null!");
                 return;
             }
 
             // add tag to exhibit and its children
-            child.tag = "Exhibit";
-            for (var index = 0; index < child.transform.childCount; index++)
+            exhibitGameObject.tag = "Exhibit";
+            for (var index = 0; index < exhibitGameObject.transform.childCount; index++)
             {
-                var childOfChild = child.transform.GetChild(index).gameObject;
-                childOfChild.tag = "Exhibit";
-                childOfChild.layer = LayerMask.NameToLayer("RaycastTarget");
-                if (childOfChild.GetComponent<Renderer>() != null && childOfChild.GetComponent<Collider>() == null)
+                var childGameObject = exhibitGameObject.transform.GetChild(index).gameObject;
+                
+                childGameObject.tag = "Exhibit";
+                childGameObject.layer = LayerMask.NameToLayer("RaycastTarget");
+                
+                if (childGameObject.GetComponent<Renderer>() != null && childGameObject.GetComponent<Collider>() == null)
                 {
-                    childOfChild.AddComponent<MeshCollider>();
+                    childGameObject.AddComponent<MeshCollider>();
+                }
+                
+                // Disable animations if instantiated gameObject has an animationController
+                var animator = childGameObject.GetComponent<Animator>();
+                if (animator != null)
+                {
+                    animator.enabled = false;
                 }
             }
 
-            Instantiate(child, parent.transform);
-            Debug.Log($"Instantiate {child.name} as a child from [{parent.GetType()}]{parent.GetComponent<ExhibitAnchor>().ExhibitID}.");
+            Instantiate(exhibitGameObject, anchor.transform);
+
+            Debug.Log($"Instantiate {exhibitGameObject.name} as a exhibitGameObject from [{anchor.GetType()}]{anchor.GetComponent<ExhibitAnchor>().ExhibitID}.");
         }
 
         private static void RefreshExhibitAnchors()
@@ -178,7 +188,7 @@ namespace Controller
             foreach (var exhibit in ExhibitDictionary.Select(exhibitEntry => exhibitEntry.Value))
             {
                 if (exhibit.Anchor == null) continue;
-                InstantiateAsChildFrom(exhibit.Anchor, exhibit.Asset);
+                InstantiateExhibit(exhibit.Anchor, exhibit.Asset);
             }
         }
 

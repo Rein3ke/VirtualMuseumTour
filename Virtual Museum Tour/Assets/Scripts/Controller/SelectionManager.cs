@@ -11,7 +11,7 @@ namespace Controller
         [SerializeField] private LayerMask raycastLayerMask;
         [SerializeField] private float maxRaycastDistance = 10f;
         
-        private Transform _selection;
+        private Transform _currentlySelectedGameObject;
         private Material _selectionMaterial;
         private bool _isLocked;
 
@@ -44,11 +44,11 @@ namespace Controller
             if (originCamera == null) return;
 
             // 2. if something is selected, reset
-            if (_selection != null)
+            if (_currentlySelectedGameObject != null)
             {
-                var selectionRenderer = _selection.GetComponent<Renderer>();
+                var selectionRenderer = _currentlySelectedGameObject.GetComponent<Renderer>();
                 selectionRenderer.material = _selectionMaterial;
-                _selection = null;
+                _currentlySelectedGameObject = null;
             }
             
             // 3. cast ray from camera to screen
@@ -57,30 +57,28 @@ namespace Controller
             // 4. handle raycast hit
             if (Physics.Raycast(ray, out var hit, maxRaycastDistance, raycastLayerMask))
             {
-                var selection = hit.transform;
-                if (selection.CompareTag("Exhibit"))
+                var selectionTransform = hit.transform;
+                if (selectionTransform.CompareTag("Exhibit"))
                 {
-                    var selectionRenderer = selection.GetComponent<Renderer>();
+                    var selectionRenderer = selectionTransform.GetComponent<Renderer>();
                     if (selectionRenderer != null)
                     {
                         _selectionMaterial = selectionRenderer.material;
                         selectionRenderer.material = highlightMaterial;
                     }
 
-                    _selection = selection;
+                    _currentlySelectedGameObject = selectionTransform;
                 }
             }
 
             // (5.) do something if something is selected and left mouse button is pressed
-            if (Input.GetMouseButtonDown(0) && _selection != null)
+            if (Input.GetMouseButtonDown(0) && _currentlySelectedGameObject != null)
             {
                 // Find anchor of selection and invoke event
-                if (HasExhibitAnchor(_selection.gameObject, out var anchor))
+                if (HasExhibitAnchor(_currentlySelectedGameObject.gameObject, out var anchor))
                 {
-                    
                     ExhibitManager.ExhibitDictionary.TryGetValue(anchor.GetComponent<ExhibitAnchor>().ExhibitID, out var exhibit);
 
-                    
                     EventManager.TriggerEvent(EventType.EventExhibitSelect, new EventParam
                     {
                         EventExhibit = exhibit

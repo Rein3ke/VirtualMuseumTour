@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Events;
@@ -13,12 +14,14 @@ namespace Interface
     {
         [Header("Scale")] [Space(8)]
         [SerializeField] private float scaleFactorChangeSpeed;
+
         [SerializeField] private float scaleFactor = 100f;
         [SerializeField] private float minimumScale = 0.7f;
         [SerializeField] private float maximumScale = 4.2f;
 
         [Header("Components")] [Space(8)]
         [SerializeField] private GameObject interfaceGameObject;
+
         [SerializeField] private GameObject modelHolder;
         [SerializeField] private GameObject imageHolder;
         [SerializeField] private Camera interfaceCamera;
@@ -26,17 +29,38 @@ namespace Interface
         [SerializeField] private TextMeshProUGUI description;
         [SerializeField] private TextMeshProUGUI scaleFactorText;
         [SerializeField] private Dropdown audioClipsDropdown;
-        
+
         [Header("Buttons")]
         [SerializeField] private Button playButton;
+
         [SerializeField] private Button pauseButton;
 
-        // Members
-        private Exhibit _currentExhibit;
-        private GameObject _currentAttachedGameObject;
+        [Header("Animation")]
+        [SerializeField] private Button playAnimationButton;
+
         private readonly Dictionary<Dropdown.OptionData, AudioClip> _optionsAudioClipsDictionary = new Dictionary<Dropdown.OptionData, AudioClip>();
+
+        private List<Animator> _animatorList;
+        private GameObject _currentAttachedGameObject;
         private AudioClip _currentAudioClip;
+        private Exhibit _currentExhibit;
+        private bool _isAnimationPlaying;
         private bool _isVisible;
+
+        private bool IsAnimationPlaying
+        {
+            get => _isAnimationPlaying;
+            set
+            {
+                _isAnimationPlaying = value;
+                playAnimationButton.GetComponentInChildren<Text>().text = value ? "Pause animation" : "Play animation";
+            }
+        }
+
+        private void Awake()
+        {
+            _animatorList = new List<Animator>();
+        }
 
         private void Start()
         {
@@ -44,10 +68,51 @@ namespace Interface
             audioClipsDropdown.onValueChanged.AddListener(delegate { SetCurrentAudioClip(); });
             
             // Set button events
-            playButton.onClick.AddListener(delegate { PlaySelectedAudioClip(); });
-            pauseButton.onClick.AddListener(delegate { PauseSelectedAudioClip(); });
+            playButton.onClick.AddListener(PlaySelectedAudioClip);
+            pauseButton.onClick.AddListener(PauseSelectedAudioClip);
+            playAnimationButton.onClick.AddListener(ToggleAnimation);
             
             HideInterface(); // Hide interface
+        }
+
+        private void Update()
+        {
+            if (!_isVisible) return;
+            
+            // on right mouse button, hide interface
+            if (Input.GetMouseButtonDown(1))
+            {
+                EventManager.TriggerEvent(EventType.EventDetailsInterfaceClose, new EventParam());
+                return;
+            }
+
+            // update model scale
+            var f = Input.mouseScrollDelta.y;
+            scaleFactor += f * (scaleFactorChangeSpeed * 4) * Time.deltaTime;
+            scaleFactor = Mathf.Clamp(scaleFactor, 1, float.MaxValue);
+
+            // set scale between following bounds
+            var meshRenderer = _currentAttachedGameObject.GetComponentInChildren<MeshRenderer>();
+            while (meshRenderer.bounds.extents.x > maximumScale ||
+                   meshRenderer.bounds.extents.y > maximumScale ||
+                   meshRenderer.bounds.extents.z > maximumScale)
+            {
+                scaleFactor *= 0.99f;
+                _currentAttachedGameObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
+            }
+
+            while (meshRenderer.bounds.extents.x < minimumScale ||
+                   meshRenderer.bounds.extents.y < minimumScale ||
+                   meshRenderer.bounds.extents.z < minimumScale)
+            {
+                scaleFactor *= 1.01f;
+                _currentAttachedGameObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
+            }
+
+            _currentAttachedGameObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
+
+            // Set scale factor text
+            scaleFactorText.text = $"Scale factor: {scaleFactor}";
         }
 
         private void OnEnable()
@@ -58,6 +123,16 @@ namespace Interface
         private void OnDisable()
         {
             EventManager.StopListening(EventType.EventExhibitSelect, Initialize);
+        }
+
+        private void ToggleAnimation()
+        {
+            IsAnimationPlaying = !IsAnimationPlaying;
+            
+            foreach (var animator in _animatorList)
+            {
+                animator.enabled = IsAnimationPlaying;
+            }
         }
 
         private void Initialize(EventParam eventParam)
@@ -98,46 +173,6 @@ namespace Interface
         private void PauseSelectedAudioClip()
         {
             EventManager.TriggerEvent(EventType.EventPauseAudio, new EventParam());
-        }
-
-        private void Update()
-        {
-            if (!_isVisible) return;
-            
-            // on right mouse button, hide interface
-            if (Input.GetMouseButtonDown(1))
-            {
-                EventManager.TriggerEvent(EventType.EventDetailsInterfaceClose, new EventParam());
-                return;
-            }
-
-            // update model scale
-            var f = Input.mouseScrollDelta.y;
-            scaleFactor += f * (scaleFactorChangeSpeed * 4) * Time.deltaTime;
-            scaleFactor = Mathf.Clamp(scaleFactor, 1, float.MaxValue);
-
-            // set scale between following bounds
-            var meshRenderer = _currentAttachedGameObject.GetComponent<MeshRenderer>();
-            while (meshRenderer.bounds.extents.x > maximumScale ||
-                   meshRenderer.bounds.extents.y > maximumScale ||
-                   meshRenderer.bounds.extents.z > maximumScale)
-            {
-                scaleFactor *= 0.99f;
-                _currentAttachedGameObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
-            }
-
-            while (meshRenderer.bounds.extents.x < minimumScale ||
-                   meshRenderer.bounds.extents.y < minimumScale ||
-                   meshRenderer.bounds.extents.z < minimumScale)
-            {
-                scaleFactor *= 1.01f;
-                _currentAttachedGameObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
-            }
-
-            _currentAttachedGameObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
-
-            // Set scale factor text
-            scaleFactorText.text = $"Scale factor: {scaleFactor}";
         }
 
         public void ShowInterface()
@@ -195,17 +230,27 @@ namespace Interface
             description.text = exhibit.Description;
 
             // set model
-            _currentAttachedGameObject = Instantiate(exhibit.Asset.GetComponentInChildren<Renderer>().gameObject,
-                modelHolder.transform);
-            _currentAttachedGameObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
+            _currentAttachedGameObject = Instantiate(exhibit.Asset, modelHolder.transform);
+            _currentAttachedGameObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor); // scale model up (100x times)
             _currentAttachedGameObject.layer = LayerMask.NameToLayer("UI");
+            var boxCollider = _currentAttachedGameObject.AddComponent<BoxCollider>();
+            boxCollider.size = (new Vector3(scaleFactor, scaleFactor, scaleFactor) / 100f) * 4f;
+            
             // set attached game object children
             if (_currentAttachedGameObject.transform.childCount > 0)
             {
-                for (int index = 0; index < _currentAttachedGameObject.transform.childCount; index++)
+                /*for (var index = 0; index < _currentAttachedGameObject.transform.childCount; index++)
                 {
                     var child = _currentAttachedGameObject.transform.GetChild(index).gameObject;
+                    Debug.Log(child.name);
                     if (child.GetComponent<MeshRenderer>() != null) child.layer = LayerMask.NameToLayer("UI");
+                }*/
+                foreach (Transform child in _currentAttachedGameObject.transform.GetComponentsInChildren<Transform>())
+                {
+                    if (child.GetComponent<MeshRenderer>() != null)
+                    {
+                        child.gameObject.layer = LayerMask.NameToLayer("UI");
+                    }
                 }
             }
 
@@ -225,6 +270,20 @@ namespace Interface
                 // set selected audio clip
                 _currentAudioClip = _optionsAudioClipsDictionary.Values.FirstOrDefault();
             }
+            
+            // get animator in main object
+            var mainAnimator = _currentAttachedGameObject.GetComponent<Animator>();
+            if (mainAnimator != null) _animatorList.Add(mainAnimator);
+            
+            // get animator in child objects
+            foreach (var animator in _currentAttachedGameObject.GetComponentsInChildren<Animator>())
+            {
+                _animatorList.Add(animator);
+            }
+
+            playAnimationButton.interactable = _animatorList.Count > 0;
+
+            IsAnimationPlaying = false;
 
             // set images
             /*for (var index = 0; index < exhibit.ExhibitData.images.Length; index++)
@@ -260,6 +319,8 @@ namespace Interface
             }
             // clear dictionary
             _optionsAudioClipsDictionary.Clear();
+            // clear animator list
+            _animatorList.Clear();
         }
     }
 }
