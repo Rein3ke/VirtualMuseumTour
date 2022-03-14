@@ -1,5 +1,7 @@
+using System;
 using Controller;
 using Events;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using EventType = Events.EventType;
@@ -8,6 +10,11 @@ namespace Interface
 {
     public class MainMenuController : MonoBehaviour
     {
+        [Header("Text Elements")]
+        [SerializeField] private TextMeshProUGUI welcomeText;
+        [SerializeField][TextArea] private string welcomeTextContent;
+        
+        [Header("Buttons")]
         [SerializeField] private Button startButton;
 
         private void OnEnable()
@@ -18,6 +25,11 @@ namespace Interface
         private void OnDisable()
         {
             startButton.onClick.RemoveListener(StartButtonEvent);
+        }
+
+        private void Start()
+        {
+            welcomeText.text = welcomeTextContent;
         }
 
         private void StartButtonEvent()
