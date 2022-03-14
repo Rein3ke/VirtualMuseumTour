@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Controller;
 using Events;
 using JetBrains.Annotations;
 using TMPro;
@@ -184,6 +185,7 @@ namespace Interface
             {
                 EventBoolean = true
             });
+            MouseCursorController.SetCursorTexture(null); // reset mouse
         }
 
         public void HideInterface()

@@ -1,4 +1,5 @@
 using System;
+using Controller;
 using Events;
 using Interface;
 using UnityEngine;
@@ -44,7 +45,7 @@ namespace Player
 
         private void Update()
         {
-            if (_isLocked) return;
+            if (_isLocked && !LockStateManager.HasFocus) return;
             
             var mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
             var mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;

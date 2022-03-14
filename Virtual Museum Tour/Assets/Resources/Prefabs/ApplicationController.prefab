@@ -125,6 +125,7 @@ GameObject:
   - component: {fileID: 8161930157544598836}
   - component: {fileID: 5706620830458848468}
   - component: {fileID: 3858967783328693900}
+  - component: {fileID: 3419414163814687523}
   m_Layer: 0
   m_Name: ApplicationController
   m_TagString: GameController
@@ -173,6 +174,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 600e9f8e257c56b4b86259719b71dc86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  masterMixerGroup: {fileID: 24300002, guid: 6a324f4c92528744ca6de8756bc3306c, type: 2}
   storytellingMixerGroup: {fileID: -211603733906993727, guid: 6a324f4c92528744ca6de8756bc3306c, type: 2}
   environmentMixerGroup: {fileID: -8045654224017197879, guid: 6a324f4c92528744ca6de8756bc3306c, type: 2}
   musicMixerGroup: {fileID: -7280561429161534162, guid: 6a324f4c92528744ca6de8756bc3306c, type: 2}
@@ -224,8 +226,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d860d1ed0b962a24ea712cdc744d16d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bundleUrl: http://localhost/assetbundles/
-  bundleName: testbundle_webgl
+  bundleUrl: https://rein3ke.github.io/virtual-museum-prototype-website/assetbundles/
+  bundleName: testbundle_webGl
 --- !u!114 &3858967783328693900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -243,6 +245,21 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   maxRaycastDistance: 10
+--- !u!114 &3419414163814687523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4963561049610654465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76d0bbcb76834009b21e3020331b5472, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hoverTexture: {fileID: 2800000, guid: 64adcb3c64f3ee841a2dca58ebe579a8, type: 3}
+  dragTexture: {fileID: 2800000, guid: bcf6ebd30a7b333488ce4f73cf31613a, type: 3}
+  searchTexture: {fileID: 2800000, guid: 20ea0a9507d737f4688d4884cdb0b837, type: 3}
 --- !u!1 &8593546944468465609
 GameObject:
   m_ObjectHideFlags: 0

@@ -57,11 +57,13 @@ namespace Controller
         private void OnEnable()
         {
             EventManager.StartListening(EventType.EventExhibitionsPlaced, OnExhibitionsPlaced);
+            EventManager.StartListening(EventType.EventAssetBundleLoaded, OnExhibitionsPlaced);
         }
 
         private void OnDisable()
         {
             EventManager.StopListening(EventType.EventExhibitionsPlaced, OnExhibitionsPlaced);
+            EventManager.StopListening(EventType.EventAssetBundleLoaded, OnExhibitionsPlaced);
         }
 
         /// <summary>
@@ -93,6 +95,8 @@ namespace Controller
                     }
                 }
             }
+            
+            EventManager.TriggerEvent(EventType.EventAssetBundleLoaded, new EventParam()); // Trigger event itself, if asset bundle download took a long time
         }
 
         private void RegisterExhibit([NotNull] GameObject exhibitAsset)

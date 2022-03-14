@@ -1,3 +1,5 @@
+using System;
+using Controller;
 using UnityEngine;
 
 // http://gyanendushekhar.com/2018/01/11/rotate-gameobject-using-mouse-drag-or-touch-unity-tutorial/
@@ -13,5 +15,15 @@ public class MouseDragRotate : MonoBehaviour
         
         transform.Rotate(Vector3.down, -xAxisRotation, Space.World);
         transform.Rotate(Vector3.right, yAxisRotation, Space.World);
+    }
+
+    private void OnMouseEnter()
+    {
+        MouseCursorController.SetCursorTexture(MouseCursorController.DragTexture);
+    }
+
+    private void OnMouseExit()
+    {
+        MouseCursorController.SetCursorTexture(null);
     }
 }

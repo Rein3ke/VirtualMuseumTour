@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Linq;
 using Events;
@@ -24,6 +25,7 @@ namespace Audio
 
         #region SerializeFields
 
+        [SerializeField] private AudioMixerGroup masterMixerGroup;
         [SerializeField] private AudioMixerGroup storytellingMixerGroup;
         [SerializeField] private AudioMixerGroup environmentMixerGroup;
         [SerializeField] private AudioMixerGroup musicMixerGroup;
@@ -70,6 +72,12 @@ namespace Audio
         {
             EventManager.StopListening(EventType.EventPlayAudio, PlayStorytellingAudio);
             EventManager.StopListening(EventType.EventPauseAudio, StopStorytellingAudio);
+        }
+
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            if (!hasFocus) StartCoroutine(SetMasterVolumeTarget(-80f));
+            else StartCoroutine(SetMasterVolumeTarget(0f));
         }
 
         #endregion
@@ -188,6 +196,18 @@ namespace Audio
         {
             if (_storytellingAudioSource.isPlaying)
                 _storytellingAudioSource.Stop();
+        }
+
+        private IEnumerator SetMasterVolumeTarget(float volume)
+        {
+            masterMixerGroup.audioMixer.GetFloat("MasterVolume", out var currentVolume);
+            float t = 0f;
+            while (currentVolume != volume)
+            {
+                masterMixerGroup.audioMixer.SetFloat("MasterVolume", Mathf.Lerp(currentVolume, volume, t));
+                t += Time.deltaTime * .95f;
+                yield return null;
+            }
         }
 
         #endregion

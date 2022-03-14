@@ -1,4 +1,5 @@
 using System;
+using Controller;
 using Events;
 using UnityEngine;
 using EventType = Events.EventType;
@@ -49,7 +50,7 @@ namespace Player
 
         private void Update()
         {
-            if (_isLocked) return;
+            if (_isLocked && !LockStateManager.HasFocus) return;
             
             var currentTransform = transform;
             IsGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);

@@ -1,18 +1,15 @@
-using System;
 using UnityEngine;
 
 namespace Controller
 {
     public class LockStateManager : MonoBehaviour
     {
-        private void Start()
-        {
-            Cursor.lockState = CursorLockMode.Confined;
-        }
+        public static bool HasFocus { get; private set; }
 
-        private void Update()
+        private void OnApplicationFocus(bool hasFocus)
         {
-            
+            HasFocus = hasFocus;
+            Cursor.lockState = HasFocus ? CursorLockMode.Confined : CursorLockMode.None;
         }
     }
 }

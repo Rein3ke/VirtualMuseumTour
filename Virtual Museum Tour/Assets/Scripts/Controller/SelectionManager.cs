@@ -7,6 +7,7 @@ namespace Controller
 {
     public class SelectionManager : MonoBehaviour
     {
+        [Header("Highlight")]
         [SerializeField] private Material highlightMaterial;
         [SerializeField] private LayerMask raycastLayerMask;
         [SerializeField] private float maxRaycastDistance = 10f;
@@ -46,8 +47,8 @@ namespace Controller
             // 2. if something is selected, reset
             if (_currentlySelectedGameObject != null)
             {
-                var selectionRenderer = _currentlySelectedGameObject.GetComponent<Renderer>();
-                selectionRenderer.material = _selectionMaterial;
+                /*var selectionRenderer = _currentlySelectedGameObject.GetComponent<Renderer>();
+                selectionRenderer.material = _selectionMaterial;*/
                 _currentlySelectedGameObject = null;
             }
             
@@ -61,14 +62,19 @@ namespace Controller
                 if (selectionTransform.CompareTag("Exhibit"))
                 {
                     var selectionRenderer = selectionTransform.GetComponent<Renderer>();
-                    if (selectionRenderer != null)
+                    /*if (selectionRenderer != null)
                     {
                         _selectionMaterial = selectionRenderer.material;
                         selectionRenderer.material = highlightMaterial;
-                    }
+                    }*/
+                    MouseCursorController.SetCursorTexture(MouseCursorController.SearchTexture);
 
                     _currentlySelectedGameObject = selectionTransform;
                 }
+            }
+            else
+            {
+                MouseCursorController.SetCursorTexture(null);
             }
 
             // (5.) do something if something is selected and left mouse button is pressed

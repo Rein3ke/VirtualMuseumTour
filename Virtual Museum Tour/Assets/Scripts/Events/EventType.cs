@@ -15,5 +15,6 @@
         public const string EventLockControls = "EventLockControls";
         public const string EventExhibitionsPlaced = "EventExhibitionsPlaced";
         public const string EventDollHouseView = "EventDollHouseView";
+        public const string EventAssetBundleLoaded = "EventAssetBundleLoaded";
     }
 }
