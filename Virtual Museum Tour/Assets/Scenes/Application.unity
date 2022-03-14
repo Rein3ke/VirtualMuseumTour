@@ -178,5 +178,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: ApplicationController
       objectReference: {fileID: 0}
+    - target: {fileID: 5706620830458848468, guid: cfcff1d7aad038b489f04ab650c10b9a, type: 3}
+      propertyPath: bundleUrl
+      value: https://rein3ke.github.io/virtual-museum-prototype-website/assetbundles/
+      objectReference: {fileID: 0}
+    - target: {fileID: 5706620830458848468, guid: cfcff1d7aad038b489f04ab650c10b9a, type: 3}
+      propertyPath: bundleName
+      value: testbundle_webGl
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cfcff1d7aad038b489f04ab650c10b9a, type: 3}

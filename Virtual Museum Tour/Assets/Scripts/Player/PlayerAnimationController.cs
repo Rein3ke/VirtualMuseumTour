@@ -50,6 +50,8 @@ namespace Player
         // Method used in animation event
         public void PlayFootstep()
         {
+            if (!_characterController.IsGrounded) return;
+            
             var random = Random.Range(0.75f, 1.25f);
             _audioSource.pitch = random;
             _audioSource.Play();

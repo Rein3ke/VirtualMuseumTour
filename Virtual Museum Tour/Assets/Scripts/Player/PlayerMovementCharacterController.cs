@@ -13,8 +13,6 @@ namespace Player
         private const float Gravity = -9.81f;
 
         #endregion
-        
-        #region SerializeFields
 
         [SerializeField] private float playerSpeed = 4.0f;
         [SerializeField] private float groundDistance = 0.4f;
@@ -22,18 +20,13 @@ namespace Player
         [SerializeField] private Transform groundCheck;
         [SerializeField] private LayerMask groundMask;
 
-        #endregion
-
-        #region Members
 
         private CharacterController _characterController;
-        private Vector3 _velocity;
-        private bool _isGrounded;
         private bool _isLocked;
-
-        #endregion
+        private Vector3 _velocity;
 
         public static PlayerMovementCharacterController Instance { get; private set; }
+        public bool IsGrounded { get; private set; }
 
         private void Awake()
         {
@@ -54,29 +47,14 @@ namespace Player
             _isLocked = false;
         }
 
-        private void OnEnable()
-        {
-            EventManager.StartListening(EventType.EventLockControls, SetLockState);
-        }
-
-        private void OnDisable()
-        {
-            EventManager.StopListening(EventType.EventLockControls, SetLockState);
-        }
-
-        private void SetLockState(EventParam eventParam)
-        {
-            _isLocked = eventParam.EventBoolean;
-        }
-
         private void Update()
         {
             if (_isLocked) return;
             
             var currentTransform = transform;
-            _isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+            IsGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
-            if (_isGrounded && _velocity.y < 0)
+            if (IsGrounded && _velocity.y < 0)
             {
                 _velocity.y = -2f;
             }
@@ -88,7 +66,7 @@ namespace Player
 
             _characterController.Move(move * (playerSpeed * Time.deltaTime));
 
-            if (Input.GetButtonDown("Jump") && _isGrounded)
+            if (Input.GetButtonDown("Jump") && IsGrounded)
             {
                 _velocity.y = Mathf.Sqrt(jumpHeight * -2 * Gravity);
             }
@@ -98,9 +76,24 @@ namespace Player
             _characterController.Move(_velocity * Time.deltaTime);
         }
 
+        private void OnEnable()
+        {
+            EventManager.StartListening(EventType.EventLockControls, SetLockState);
+        }
+
+        private void OnDisable()
+        {
+            EventManager.StopListening(EventType.EventLockControls, SetLockState);
+        }
+
         private void OnDestroy()
         {
             if (Instance != null && Instance == this) Instance = null;
+        }
+
+        private void SetLockState(EventParam eventParam)
+        {
+            _isLocked = eventParam.EventBoolean;
         }
     }
 }
