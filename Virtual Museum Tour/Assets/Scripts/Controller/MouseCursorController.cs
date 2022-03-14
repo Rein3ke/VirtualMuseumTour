@@ -15,7 +15,8 @@ namespace Controller
 
         public static void SetCursorTexture(Texture2D texture)
         {
-            Cursor.SetCursor(texture, new Vector2(0,0), CursorMode.Auto);
+            var hotspot = texture != null ? new Vector2(texture.width / 2f,texture.height / 2f) : Vector2.zero;
+            Cursor.SetCursor(texture, hotspot, CursorMode.Auto);
         }
 
         private void Awake()

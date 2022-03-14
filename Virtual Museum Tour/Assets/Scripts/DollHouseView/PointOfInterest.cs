@@ -1,4 +1,5 @@
 using System;
+using Controller;
 using Events;
 using UnityEngine;
 using EventType = Events.EventType;
@@ -139,6 +140,7 @@ namespace DollHouseView
             GetComponent<SpriteRenderer>().color = HighlightColor;
             transform.localScale += new Vector3(.25f, .25f, .25f);
             _isScaled = true;
+            MouseCursorController.SetCursorTexture(MouseCursorController.HoverTexture);
         }
 
         private void OnMouseExit()
@@ -149,6 +151,7 @@ namespace DollHouseView
 
             ChangeColorBasedOnType();
             _isScaled = false;
+            MouseCursorController.SetCursorTexture(null);
         }
 
         private void OnValidate()

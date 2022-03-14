@@ -50,7 +50,7 @@ namespace Player
 
         private void Update()
         {
-            if (_isLocked && !LockStateManager.HasFocus) return;
+            if (_isLocked || !LockStateManager.HasFocus) return;
             
             var currentTransform = transform;
             IsGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
