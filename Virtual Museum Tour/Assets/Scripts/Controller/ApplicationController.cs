@@ -104,6 +104,14 @@ namespace Controller
         {
             SetState(eventParam.EventApplicationState);
         }
+
+        // ReSharper disable once UnusedMember.Global
+        // Method is accessed by extern javascript.
+        public void SetLockStateFromWeb(int lockMode)
+        {
+            if (lockMode > 2 || lockMode < 0) Debug.LogError("Invalid lockMode supplied.");
+            // _lockStateManager.SetInternLockState((CursorLockMode) lockMode);
+        }
     }
 
     public enum ApplicationState

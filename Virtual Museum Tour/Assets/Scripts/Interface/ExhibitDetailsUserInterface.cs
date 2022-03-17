@@ -32,9 +32,7 @@ namespace Interface
         [SerializeField] private Dropdown audioClipsDropdown;
 
         [Header("Buttons")]
-        [SerializeField] private Button playButton;
-
-        [SerializeField] private Button pauseButton;
+        [SerializeField] private Button playButton, pauseButton, backButton;
 
         [Header("Animation")]
         [SerializeField] private Button playAnimationButton;
@@ -72,20 +70,26 @@ namespace Interface
             playButton.onClick.AddListener(PlaySelectedAudioClip);
             pauseButton.onClick.AddListener(PauseSelectedAudioClip);
             playAnimationButton.onClick.AddListener(ToggleAnimation);
+            backButton.onClick.AddListener(DisableDetailsInterface);
             
             HideInterface(); // Hide interface
         }
 
+        private void DisableDetailsInterface()
+        {
+            EventManager.TriggerEvent(EventType.EventDetailsInterfaceClose, new EventParam());
+        }
+        
         private void Update()
         {
             if (!_isVisible) return;
             
             // on right mouse button, hide interface
-            if (Input.GetMouseButtonDown(1))
+            /*if (Input.GetMouseButtonDown(1))
             {
                 EventManager.TriggerEvent(EventType.EventDetailsInterfaceClose, new EventParam());
                 return;
-            }
+            }*/
 
             // update model scale
             var f = Input.mouseScrollDelta.y;

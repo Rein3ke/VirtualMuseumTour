@@ -24,7 +24,7 @@ namespace DollHouseView
         [Header("Interface")]
         [SerializeField] private TextMeshProUGUI targetText;
 
-        [SerializeField] private Button leftButton, rightButton;
+        [SerializeField] private Button leftButton, rightButton, backButton;
 
         private Camera _camera;
         private bool _isControllable;
@@ -46,6 +46,7 @@ namespace DollHouseView
 
             leftButton.onClick.AddListener(GetPreviousTarget);
             rightButton.onClick.AddListener(GetNextTarget);
+            backButton.onClick.AddListener(DisableDollHouseView);
         }
 
         private void Update()
@@ -56,10 +57,10 @@ namespace DollHouseView
             {
                 StartCoroutine(ResetPositionCoroutine());
             }
-            if (Input.GetMouseButtonDown(1)) // Right Click = Disable gameObject
+            /*if (Input.GetMouseButtonDown(1)) // Right Click = Disable gameObject
             {
                 DisableDollHouseView();
-            }
+            }*/
             if (Input.GetKeyDown(KeyCode.RightArrow))
             {
                 GetNextTarget();
