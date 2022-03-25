@@ -1,4 +1,3 @@
-using System;
 using Audio;
 using Events;
 using SingletonPattern;
@@ -60,14 +59,12 @@ namespace Controller
                 case ApplicationState.Start:
                     CurrentState = state;
                     
-                    // TODO: Add code ...
                     Debug.Log("Enter Start State");
                     SetState(ApplicationState.Menu);
                     return;
                 case ApplicationState.Main:
                     CurrentState = state;
                     
-                    // TODO: Add code ...
                     _audioController.StartEnvironmentLoop();
                     _audioController.StartMusicLoop();
 
@@ -75,7 +72,6 @@ namespace Controller
                 case ApplicationState.Menu:
                     CurrentState = state;
                     
-                    // TODO: Add code ...
                     _sceneController.LoadScene("Scenes/MainMenu");
                     _audioController.StopEnvironmentLoop();
                     _audioController.StartMusicLoop();
@@ -84,7 +80,6 @@ namespace Controller
                 case ApplicationState.PauseMenu:
                     CurrentState = state;
                     
-                    // TODO: Add code ...
                     _audioController.StopEnvironmentLoop();
                     
                     break;

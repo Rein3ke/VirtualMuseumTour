@@ -598,6 +598,7 @@ GameObject:
   - component: {fileID: 2039520966150000184}
   - component: {fileID: 2767428373640144135}
   - component: {fileID: 2238104160771263110}
+  - component: {fileID: 6593798219154884315}
   m_Layer: 5
   m_Name: VerticalLayoutGroup
   m_TagString: Untagged
@@ -691,6 +692,18 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &6593798219154884315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2315005178853824283}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 996fd1c96cf9e2345984692dd6caff9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3097800759345854254
 GameObject:
   m_ObjectHideFlags: 0
@@ -1957,6 +1970,7 @@ MonoBehaviour:
   scaleFactor: 100
   minimumScale: 0.7
   maximumScale: 4.2
+  modelRotationSpeed: 1000
   interfaceGameObject: {fileID: 5642274503558154536}
   modelHolder: {fileID: 5642274503577391749}
   imageHolder: {fileID: 9077129154719231418}
@@ -1965,6 +1979,7 @@ MonoBehaviour:
   description: {fileID: 6251922741504681710}
   scaleFactorText: {fileID: 2226682623477330106}
   audioClipsDropdown: {fileID: 8885294180738859232}
+  mouseRotationArea: {fileID: 6593798219154884315}
   playButton: {fileID: 1181166003945972814}
   pauseButton: {fileID: 4563338229342888332}
   backButton: {fileID: 3397560392863264953}

@@ -6,6 +6,7 @@ using Events;
 using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using EventType = Events.EventType;
 
@@ -19,6 +20,7 @@ namespace Interface
         [SerializeField] private float scaleFactor = 100f;
         [SerializeField] private float minimumScale = 0.7f;
         [SerializeField] private float maximumScale = 4.2f;
+        [SerializeField] private float modelRotationSpeed = 10f;
 
         [Header("Components")] [Space(8)]
         [SerializeField] private GameObject interfaceGameObject;
@@ -30,6 +32,7 @@ namespace Interface
         [SerializeField] private TextMeshProUGUI description;
         [SerializeField] private TextMeshProUGUI scaleFactorText;
         [SerializeField] private Dropdown audioClipsDropdown;
+        [SerializeField] private UIElement mouseRotationArea;
 
         [Header("Buttons")]
         [SerializeField] private Button playButton, pauseButton, backButton;
@@ -83,13 +86,6 @@ namespace Interface
         private void Update()
         {
             if (!_isVisible) return;
-            
-            // on right mouse button, hide interface
-            /*if (Input.GetMouseButtonDown(1))
-            {
-                EventManager.TriggerEvent(EventType.EventDetailsInterfaceClose, new EventParam());
-                return;
-            }*/
 
             // update model scale
             var f = Input.mouseScrollDelta.y;
@@ -118,8 +114,29 @@ namespace Interface
 
             // Set scale factor text
             scaleFactorText.text = $"Scale factor: {scaleFactor}";
-        }
 
+            #region Model rotation
+
+            // Set model rotation
+            MouseCursorController.SetCursorTexture(mouseRotationArea.MouseOver ? MouseCursorController.DragTexture : null);
+            
+            if (!mouseRotationArea.MouseOver && !mouseRotationArea.IsPressed) return;
+            
+            var mouseX = Input.GetAxis("Mouse X") * modelRotationSpeed * Time.deltaTime;
+            var mouseY = Input.GetAxis("Mouse Y") * modelRotationSpeed * Time.deltaTime;
+
+            if (mouseRotationArea.IsPressed)
+            {
+                MouseCursorController.IsVisible = false;
+                _currentAttachedGameObject.transform.Rotate(new Vector3(mouseY, mouseX, 0), Space.World);
+            }
+            else
+            {
+                MouseCursorController.IsVisible = true;
+            }
+
+            #endregion
+        }
         private void OnEnable()
         {
             EventManager.StartListening(EventType.EventExhibitSelect, Initialize);
@@ -142,6 +159,8 @@ namespace Interface
 
         private void Initialize(EventParam eventParam)
         {
+            if (eventParam.EventExhibit == null) return;
+            
             _currentExhibit = eventParam.EventExhibit;
             InterfaceSetup(_currentExhibit);
         }
@@ -261,7 +280,7 @@ namespace Interface
             }
 
             // attach Drag And Rotation script to model
-            AttachScriptToModel(_currentAttachedGameObject);
+            // AttachScriptToModel(_currentAttachedGameObject);
 
             // set audio events
             if (exhibit.AudioClips.Length > 0)
