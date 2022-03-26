@@ -74,7 +74,7 @@ namespace Interface
             pauseButton.onClick.AddListener(PauseSelectedAudioClip);
             playAnimationButton.onClick.AddListener(ToggleAnimation);
             backButton.onClick.AddListener(DisableDetailsInterface);
-            
+
             HideInterface(); // Hide interface
         }
 
@@ -248,6 +248,12 @@ namespace Interface
 
         private void InterfaceSetup(Exhibit exhibit)
         {
+            if (exhibit == null)
+            {
+                Debug.LogError($"[{nameof(InterfaceSetup)}] Exhibit is null");
+                return;
+            }
+            
             ResetInterface();
 
             // set variables
@@ -255,9 +261,9 @@ namespace Interface
             description.text = exhibit.Description;
 
             // set model
-            _currentAttachedGameObject = Instantiate(exhibit.Asset, modelHolder.transform);
+            _currentAttachedGameObject = Instantiate(exhibit.Asset, modelHolder.transform); // instantiate the model
             _currentAttachedGameObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor); // scale model up (100x times)
-            _currentAttachedGameObject.layer = LayerMask.NameToLayer("UI");
+            _currentAttachedGameObject.layer = LayerMask.NameToLayer("UIModel");
             var boxCollider = _currentAttachedGameObject.AddComponent<BoxCollider>();
             boxCollider.size = (new Vector3(scaleFactor, scaleFactor, scaleFactor) / 100f) * 4f;
             
@@ -274,7 +280,7 @@ namespace Interface
                 {
                     if (child.GetComponent<MeshRenderer>() != null)
                     {
-                        child.gameObject.layer = LayerMask.NameToLayer("UI");
+                        child.gameObject.layer = LayerMask.NameToLayer("UIModel");
                     }
                 }
             }

@@ -18,8 +18,8 @@ namespace Utility
             var webRequest = UnityWebRequestAssetBundle.GetAssetBundle(bundleUrl);
 
             // Wait for completion...
-            yield return webRequest.SendWebRequest();
             Debug.Log($"{nameof(DownloadAssetBundle)}: Web request sent!");
+            yield return webRequest.SendWebRequest();
 
             if (webRequest.result != UnityWebRequest.Result.Success)
             {
@@ -34,6 +34,5 @@ namespace Utility
             bundle.Unload(false);
             webRequest.Dispose();
         }
-    
     }
 }

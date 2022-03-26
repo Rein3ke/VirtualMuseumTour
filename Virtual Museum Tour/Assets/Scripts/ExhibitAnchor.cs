@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DollHouseView;
 using UnityEngine;
+using Vector3 = UnityEngine.Vector3;
 
 public class ExhibitAnchor : MonoBehaviour, IPoi
 {
@@ -9,6 +10,11 @@ public class ExhibitAnchor : MonoBehaviour, IPoi
     /// ExhibitID which is used to assign an exhibit. Should have the name of the Exhibit from the AssetBundle.
     /// </summary>
     [SerializeField] private string exhibitID;
+    [SerializeField] private float exhibitScale = 1f;
+    [SerializeField] private Vector3 exhibitDirection;
+    
+    public Vector3 ExhibitDirection => exhibitDirection;
+    public float ExhibitScale => exhibitScale;
 
     /// <summary>
     /// Static list to access all ExhibitAnchors.
@@ -62,5 +68,20 @@ public class ExhibitAnchor : MonoBehaviour, IPoi
         }
         
         return ExhibitAnchors.FirstOrDefault(anchor => anchor.ExhibitID.Equals(id));
+    }
+
+    private void OnValidate()
+    {
+        // exhibitDirection = new Vector3(exhibitDirection.x, Mathf.Clamp(exhibitDirection.y, -1f, 2f), exhibitDirection.z);
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        var position = transform.position;
+        
+        Gizmos.color = Color.red;
+        Vector3 direction = (exhibitDirection - position).normalized;
+        Gizmos.DrawRay(position, direction * Vector3.Distance(position, exhibitDirection));
+        Gizmos.DrawSphere(exhibitDirection, 0.1f);
     }
 }

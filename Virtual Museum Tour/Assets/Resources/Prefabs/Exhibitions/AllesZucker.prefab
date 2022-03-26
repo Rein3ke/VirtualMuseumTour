@@ -789,6 +789,22 @@ PrefabInstance:
       propertyPath: exhibitID
       value: BundledJapaneseCrab
       objectReference: {fileID: 0}
+    - target: {fileID: 7053185931106318608, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
+      propertyPath: exhibitScale
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7053185931106318608, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
+      propertyPath: exhibitDirection.x
+      value: 6.19
+      objectReference: {fileID: 0}
+    - target: {fileID: 7053185931106318608, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
+      propertyPath: exhibitDirection.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7053185931106318608, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
+      propertyPath: exhibitDirection.z
+      value: -1.2
+      objectReference: {fileID: 0}
     - target: {fileID: 7053185931106318614, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
       propertyPath: m_Name
       value: ExhibitAnchor
@@ -803,7 +819,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7053185931106318615, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.15
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7053185931106318615, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
       propertyPath: m_LocalPosition.z

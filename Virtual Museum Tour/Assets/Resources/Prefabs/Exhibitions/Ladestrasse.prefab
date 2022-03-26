@@ -1020,6 +1020,22 @@ PrefabInstance:
       propertyPath: exhibitID
       value: ExampleExhibit_Car_01
       objectReference: {fileID: 0}
+    - target: {fileID: 7053185931106318608, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
+      propertyPath: exhibitScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7053185931106318608, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
+      propertyPath: exhibitDirection.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7053185931106318608, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
+      propertyPath: exhibitDirection.y
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7053185931106318608, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
+      propertyPath: exhibitDirection.z
+      value: 26.03
+      objectReference: {fileID: 0}
     - target: {fileID: 7053185931106318614, guid: 8dfa511bf07bfa54da0f925dfe671ea7, type: 3}
       propertyPath: m_Name
       value: ExhibitAnchor

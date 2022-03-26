@@ -79,6 +79,7 @@ namespace Controller
                 return;
             }
 
+            Debug.Log("Load and unpack asset bundle...", this);
             foreach (var o in assetBundle.LoadAllAssets())
             {
                 switch (o)
@@ -95,6 +96,7 @@ namespace Controller
                     }
                 }
             }
+            Debug.Log("Asset bundle loaded and unpacked!", this);
             
             EventManager.TriggerEvent(EventType.EventAssetBundleLoaded, new EventParam()); // Trigger event itself, if asset bundle download took a long time
         }
@@ -172,9 +174,13 @@ namespace Controller
                 }
             }
 
-            Instantiate(exhibitGameObject, anchor.transform);
+            var exhibit = Instantiate(exhibitGameObject, anchor.transform);
+            var exhibitAnchor = anchor.GetComponent<ExhibitAnchor>();
+            
+            exhibit.transform.LookAt(exhibitAnchor.ExhibitDirection);
+            exhibit.transform.localScale = new Vector3(exhibitAnchor.ExhibitScale, exhibitAnchor.ExhibitScale, exhibitAnchor.ExhibitScale);
 
-            Debug.Log($"Instantiate {exhibitGameObject.name} as a exhibitGameObject from [{anchor.GetType()}]{anchor.GetComponent<ExhibitAnchor>().ExhibitID}.");
+            Debug.Log($"Instantiate {exhibitGameObject.name} as a exhibitGameObject from [{anchor.GetType()}]{exhibitAnchor.ExhibitID}.");
         }
 
         private static void RefreshExhibitAnchors()
