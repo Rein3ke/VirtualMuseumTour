@@ -178,5 +178,25 @@ PrefabInstance:
       propertyPath: m_Name
       value: ApplicationController
       objectReference: {fileID: 0}
+    - target: {fileID: 5706620830458848468, guid: cfcff1d7aad038b489f04ab650c10b9a, type: 3}
+      propertyPath: assetPackages.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5706620830458848468, guid: cfcff1d7aad038b489f04ab650c10b9a, type: 3}
+      propertyPath: assetPackages.Array.data[0].URL
+      value: https://rein3ke.github.io/virtual-museum-prototype-website/assetbundles/
+      objectReference: {fileID: 0}
+    - target: {fileID: 5706620830458848468, guid: cfcff1d7aad038b489f04ab650c10b9a, type: 3}
+      propertyPath: assetPackages.Array.data[0].AssetBundleNames.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5706620830458848468, guid: cfcff1d7aad038b489f04ab650c10b9a, type: 3}
+      propertyPath: assetPackages.Array.data[0].AssetBundleNames.Array.data[0]
+      value: testbundle_webGl
+      objectReference: {fileID: 0}
+    - target: {fileID: 5706620830458848468, guid: cfcff1d7aad038b489f04ab650c10b9a, type: 3}
+      propertyPath: assetPackages.Array.data[0].AssetBundleNames.Array.data[1]
+      value: bundle_japanesecrab
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cfcff1d7aad038b489f04ab650c10b9a, type: 3}

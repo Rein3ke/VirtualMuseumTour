@@ -16,6 +16,15 @@ public class ExhibitAnchor : MonoBehaviour, IPoi
     public Vector3 ExhibitDirection => exhibitDirection;
     public float ExhibitScale => exhibitScale;
 
+    public bool ContainsExhibit
+    {
+        get
+        {
+            var exhibit = transform.GetComponentsInChildren<Transform>().FirstOrDefault(t => t.CompareTag("Exhibit"));
+            return exhibit != null;
+        }
+    }
+
     /// <summary>
     /// Static list to access all ExhibitAnchors.
     /// </summary>
@@ -67,7 +76,8 @@ public class ExhibitAnchor : MonoBehaviour, IPoi
             return null;
         }
         
-        return ExhibitAnchors.FirstOrDefault(anchor => anchor.ExhibitID.Equals(id));
+        var exhibitAnchors = ExhibitAnchors.Where(e => !string.IsNullOrWhiteSpace(e.exhibitID)).ToList();      
+        return exhibitAnchors.FirstOrDefault(anchor => anchor.ExhibitID.Equals(id));
     }
 
     private void OnValidate()

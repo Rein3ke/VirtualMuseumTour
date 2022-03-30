@@ -10,13 +10,18 @@ using EventType = Events.EventType;
 
 namespace Controller
 {
+    [Serializable]
+    public struct AssetPackage {
+        public string URL;
+        public string[] AssetBundleNames;
+    }
+    
     public class ExhibitManager : MonoBehaviour
     {
-        [Header("Asset Bundle")] [SerializeField]
-        private string bundleUrl = "http://localhost/assetbundles/";
-
-        [SerializeField] private string bundleName = "testbundle";
-
+        //[SerializeField] private string bundleUrl = "http://localhost/assetbundles/";
+        //[SerializeField] private string bundleName = "testbundle";
+        [SerializeField] private AssetPackage[] assetPackages;
+        
         /// <summary>
         /// Public singleton instance. Instance of the script must exist only once.
         /// </summary>
@@ -51,7 +56,14 @@ namespace Controller
             // SceneManager.sceneLoaded += SceneManager_OnSceneLoaded;
             
             // start asset bundle download...
-            StartCoroutine(BundleWebLoader.DownloadAssetBundle(LoadAndUnpackAssetBundle, bundleUrl + bundleName));
+            foreach (AssetPackage assetPackage in assetPackages)
+            {
+                foreach (var bundleString in assetPackage.AssetBundleNames)
+                {
+                    StartCoroutine(BundleWebLoader.DownloadAssetBundle(LoadAndUnpackAssetBundle, assetPackage.URL + bundleString));
+                }
+            }
+            //StartCoroutine(BundleWebLoader.DownloadAssetBundle(LoadAndUnpackAssetBundle, bundleUrl + bundleName));
         }
 
         private void OnEnable()
@@ -198,6 +210,9 @@ namespace Controller
             foreach (var exhibit in ExhibitDictionary.Select(exhibitEntry => exhibitEntry.Value))
             {
                 if (exhibit.Anchor == null) continue;
+                // continue, if anchor.containsExhibit is true
+                if (exhibit.Anchor.GetComponent<ExhibitAnchor>().ContainsExhibit) continue;
+                
                 InstantiateExhibit(exhibit.Anchor, exhibit.Asset);
             }
         }
