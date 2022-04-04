@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using Controller;
 using Events;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -20,7 +21,8 @@ namespace Audio
         private const string MusicPath = "AudioClips/Music/";
         private const string EffectsAudioPath = "AudioClips/Effects/";
         private const string TestAudioPath = "AudioClips/Test/";
-
+        private const float MasterVolumeHorizontalSliderWidth = 96f;
+        
         #endregion
 
         #region SerializeFields
@@ -41,6 +43,19 @@ namespace Audio
         
         private Coroutine _environmentCoroutine;
         private Coroutine _musicCoroutine;
+        private float masterVolumeSliderValue;
+        private bool _displayOnGUI;
+
+        private float MasterVolumeSliderValue
+        {
+            get => masterVolumeSliderValue;
+            set
+            {
+                masterVolumeSliderValue = value;
+                AudioListener.volume = value;
+                PlayerPrefs.SetFloat("MasterVolume", value);
+            }
+        }
 
         #endregion
 
@@ -62,22 +77,38 @@ namespace Audio
             _storytellingAudioSource.outputAudioMixerGroup = storytellingMixerGroup; // Set storytelling mixer group
         }
 
+        private void Start()
+        {
+            MasterVolumeSliderValue = PlayerPrefs.GetFloat("MasterVolume", 1f);
+        }
+
         private void OnEnable()
         {
             EventManager.StartListening(EventType.EventPlayAudio, PlayStorytellingAudio);
             EventManager.StartListening(EventType.EventPauseAudio, StopStorytellingAudio);
+            EventManager.StartListening(EventType.EventStateChange, SetDisplayInterface);
         }
 
         private void OnDisable()
         {
             EventManager.StopListening(EventType.EventPlayAudio, PlayStorytellingAudio);
             EventManager.StopListening(EventType.EventPauseAudio, StopStorytellingAudio);
+            EventManager.StopListening(EventType.EventStateChange, SetDisplayInterface);
         }
 
         private void OnApplicationFocus(bool hasFocus)
         {
             if (!hasFocus) StartCoroutine(SetMasterVolumeTarget(-80f));
             else StartCoroutine(SetMasterVolumeTarget(0f));
+        }
+
+        private void OnGUI()
+        {
+            if (!_displayOnGUI) return;
+            
+            // display a horizontal slider to control master volume at top right corner of screen
+            GUI.Label(new Rect(Screen.width - 24 - MasterVolumeHorizontalSliderWidth, 8, MasterVolumeHorizontalSliderWidth, 100), "Master Volume");
+            MasterVolumeSliderValue = GUI.HorizontalSlider(new Rect(Screen.width - 32 - MasterVolumeHorizontalSliderWidth, 32, MasterVolumeHorizontalSliderWidth, 24), MasterVolumeSliderValue, 0f, 1f);
         }
 
         #endregion
@@ -208,6 +239,11 @@ namespace Audio
                 t += Time.deltaTime * .95f;
                 yield return null;
             }
+        }
+        
+        private void SetDisplayInterface(EventParam eventParam)
+        {
+            _displayOnGUI = eventParam.EventApplicationState == ApplicationState.Main;
         }
 
         #endregion

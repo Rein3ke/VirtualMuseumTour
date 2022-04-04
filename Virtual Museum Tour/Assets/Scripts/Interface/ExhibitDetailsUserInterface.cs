@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Controller;
@@ -6,7 +5,6 @@ using Events;
 using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using EventType = Events.EventType;
 
@@ -122,17 +120,12 @@ namespace Interface
             
             if (!mouseRotationArea.MouseOver && !mouseRotationArea.IsPressed) return;
             
-            var mouseX = Input.GetAxis("Mouse X") * modelRotationSpeed * Time.deltaTime;
+            var mouseX = Input.GetAxis("Mouse X") * modelRotationSpeed * Time.deltaTime * -1;
             var mouseY = Input.GetAxis("Mouse Y") * modelRotationSpeed * Time.deltaTime;
 
             if (mouseRotationArea.IsPressed)
             {
-                MouseCursorController.IsVisible = false;
                 _currentAttachedGameObject.transform.Rotate(new Vector3(mouseY, mouseX, 0), Space.World);
-            }
-            else
-            {
-                MouseCursorController.IsVisible = true;
             }
 
             #endregion

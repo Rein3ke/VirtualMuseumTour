@@ -188,15 +188,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5706620830458848468, guid: cfcff1d7aad038b489f04ab650c10b9a, type: 3}
       propertyPath: assetPackages.Array.data[0].AssetBundleNames.Array.size
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5706620830458848468, guid: cfcff1d7aad038b489f04ab650c10b9a, type: 3}
       propertyPath: assetPackages.Array.data[0].AssetBundleNames.Array.data[0]
-      value: testbundle_webGl
+      value: bundle_car01
       objectReference: {fileID: 0}
     - target: {fileID: 5706620830458848468, guid: cfcff1d7aad038b489f04ab650c10b9a, type: 3}
       propertyPath: assetPackages.Array.data[0].AssetBundleNames.Array.data[1]
       value: bundle_japanesecrab
+      objectReference: {fileID: 0}
+    - target: {fileID: 5706620830458848468, guid: cfcff1d7aad038b489f04ab650c10b9a, type: 3}
+      propertyPath: assetPackages.Array.data[0].AssetBundleNames.Array.data[2]
+      value: bundle_spriteobject
+      objectReference: {fileID: 0}
+    - target: {fileID: 5706620830458848468, guid: cfcff1d7aad038b489f04ab650c10b9a, type: 3}
+      propertyPath: assetPackages.Array.data[0].AssetBundleNames.Array.data[3]
+      value: bundle_testobject
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cfcff1d7aad038b489f04ab650c10b9a, type: 3}

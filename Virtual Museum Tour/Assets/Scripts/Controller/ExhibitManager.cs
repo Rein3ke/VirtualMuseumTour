@@ -126,7 +126,6 @@ namespace Controller
             {
                 exhibit = new Exhibit
                 {
-                    // Anchor = ExhibitAnchor.GetExhibitAnchor(exhibitID)?.gameObject,
                     Name = exhibitID,
                     Asset = exhibitAsset
                 };

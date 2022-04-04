@@ -76,7 +76,7 @@ namespace DollHouseView
             if (Input.GetKey(KeyCode.D)) movementVector += Vector3.right;
             if (Input.GetKey(KeyCode.S)) movementVector += Vector3.down;
             if (Input.GetKey(KeyCode.W)) movementVector += Vector3.up;
-            
+
             if (Input.GetAxis("Mouse ScrollWheel") > 0f) // forward
             {
                 movementVector += Vector3.forward * scrollSpeed;
@@ -86,7 +86,9 @@ namespace DollHouseView
             }
         
             transform.LookAt(target);
-            transform.Translate(movementVector * (rotationSpeed * Time.deltaTime), Space.Self);
+            
+            var calculatedRotationSpeed = rotationSpeed * (transform.position - target.position).magnitude;
+            transform.Translate(movementVector * (calculatedRotationSpeed * Time.deltaTime), Space.Self);
         }
 
         private void OnEnable()

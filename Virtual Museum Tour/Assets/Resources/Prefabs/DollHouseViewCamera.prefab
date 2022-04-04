@@ -998,8 +998,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 0}
   offset: {x: 0, y: 10, z: -40}
-  scrollSpeed: 10
-  rotationSpeed: 10
+  scrollSpeed: 2
+  rotationSpeed: 2
   targetText: {fileID: 3361228168329619589}
   leftButton: {fileID: 2314958909900402154}
   rightButton: {fileID: 6431874656786558131}

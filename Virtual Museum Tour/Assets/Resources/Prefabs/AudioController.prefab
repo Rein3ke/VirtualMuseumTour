@@ -43,6 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 600e9f8e257c56b4b86259719b71dc86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  masterMixerGroup: {fileID: 24300002, guid: 6a324f4c92528744ca6de8756bc3306c, type: 2}
   storytellingMixerGroup: {fileID: -211603733906993727, guid: 6a324f4c92528744ca6de8756bc3306c, type: 2}
   environmentMixerGroup: {fileID: -8045654224017197879, guid: 6a324f4c92528744ca6de8756bc3306c, type: 2}
   musicMixerGroup: {fileID: -7280561429161534162, guid: 6a324f4c92528744ca6de8756bc3306c, type: 2}
