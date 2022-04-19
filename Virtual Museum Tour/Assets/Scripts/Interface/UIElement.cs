@@ -10,13 +10,11 @@ namespace Interface
         
         public void OnPointerDown(PointerEventData eventData)
         {
-            Debug.Log("OnPointerDown");
             IsPressed = true;
         }
         
         public void OnPointerUp(PointerEventData eventData)
         {
-            Debug.Log("OnPointerUp");
             IsPressed = false;
         }
 

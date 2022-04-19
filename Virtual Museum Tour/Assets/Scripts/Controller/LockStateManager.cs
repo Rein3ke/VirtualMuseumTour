@@ -10,7 +10,7 @@ namespace Controller
 
         private void Update()
         {
-            if (Input.GetMouseButtonDown(0)) // left mouse click
+            /*if (Input.GetMouseButtonDown(0)) // left mouse click
             {
                 SetInternLockState(CursorLockMode.Confined);
             }
@@ -21,20 +21,22 @@ namespace Controller
                 {
                     SetInternLockState(CursorLockMode.None);
                 }
-            }
+            }*/
         }
 
         private void OnGUI()
         {
-            Cursor.lockState = LockMode;
+            // Cursor.lockState = LockMode;
         }
 
-        private void SetInternLockState(CursorLockMode lockMode)
+        public static void SetInternLockState(CursorLockMode lockMode)
         {
             if (LockMode == lockMode) return;
 
             LockMode = lockMode;
             IsPaused = LockMode == CursorLockMode.None;
+            
+            Cursor.lockState = LockMode;
         }
     }
 }

@@ -43,6 +43,8 @@ namespace Audio
         
         private Coroutine _environmentCoroutine;
         private Coroutine _musicCoroutine;
+        private Coroutine _setMasterVolumeCoroutine;
+        
         private float masterVolumeSliderValue;
         private bool _displayOnGUI;
 
@@ -67,7 +69,7 @@ namespace Audio
             AudioClip[] environmentClipsFromDirectory = LoadAudioClipsFromDirectory(EnvironmentAudioPath); // Load audio clips from directory
             _environmentAudioQueue = new AudioQueue(environmentClipsFromDirectory, AudioQueueType.Environment);
 
-            // setup music audio
+            // Setup music audio
             AudioClip[] musicClipsFromDirectory = LoadAudioClipsFromDirectory(MusicPath); // Load audio clips from directory
             _musicAudioQueue = new AudioQueue(musicClipsFromDirectory, AudioQueueType.Music);
 
@@ -98,13 +100,22 @@ namespace Audio
 
         private void OnApplicationFocus(bool hasFocus)
         {
-            if (!hasFocus) StartCoroutine(SetMasterVolumeTarget(-80f));
-            else StartCoroutine(SetMasterVolumeTarget(0f));
+            if (_setMasterVolumeCoroutine != null) StopCoroutine(_setMasterVolumeCoroutine);
+            
+            if (!hasFocus)
+            {
+                _setMasterVolumeCoroutine = StartCoroutine(SetMasterVolumeTarget(-80f));
+            }
+            else
+            {
+                _setMasterVolumeCoroutine = StartCoroutine(SetMasterVolumeTarget(0f));
+            }
         }
 
         private void OnGUI()
         {
             if (!_displayOnGUI) return;
+            if (!LockStateManager.IsPaused) return;
             
             // display a horizontal slider to control master volume at top right corner of screen
             GUI.Label(new Rect(Screen.width - 24 - MasterVolumeHorizontalSliderWidth, 8, MasterVolumeHorizontalSliderWidth, 100), "Master Volume");
@@ -115,11 +126,22 @@ namespace Audio
 
         #region AudioController specific methods
 
+        /// <summary>
+        /// Start playing audio from the environment audio queue if no environment audio is currently playing.
+        /// </summary>
         public void StartEnvironmentLoop()
         {
+            if (_environmentAudioQueue.Length <= 0)
+            {
+                Debug.LogWarning($"Environment audio queue is empty. Please add audio clips to {EnvironmentAudioPath} directory.");
+                return;
+            }
             _environmentCoroutine ??= StartCoroutine(AudioQueueCoroutine(_environmentAudioQueue)); // Start background audio loop
         }
 
+        /// <summary>
+        /// Stops playing audio from the environment audio queue.
+        /// </summary>
         public void StopEnvironmentLoop()
         {
             if (_environmentCoroutine != null)
@@ -129,12 +151,22 @@ namespace Audio
             }
         }
 
+        /// <summary>
+        /// Start playing audio from the music audio queue if no music audio is currently playing.
+        /// </summary>
         public void StartMusicLoop()
         {
-            if (_musicAudioQueue.Length <= 0) Debug.LogWarning("Music queue not fully loaded yet!");
+            if (_musicAudioQueue.Length <= 0)
+            {
+                Debug.LogWarning($"Music audio queue is empty. Please add audio clips to {MusicPath} directory.");
+                return;
+            }
             _musicCoroutine ??= StartCoroutine(AudioQueueCoroutine(_musicAudioQueue));
         }
 
+        /// <summary>
+        /// Stops playing audio from the music audio queue.
+        /// </summary>
         public void StopMusicLoop()
         {
             if (_musicCoroutine != null)
@@ -144,6 +176,11 @@ namespace Audio
             }
         }
 
+        /// <summary>
+        /// Add a new audio clip to an existing audio queue.
+        /// </summary>
+        /// <param name="clip">New AudioClip.</param>
+        /// <param name="type">Select target queue type.</param>
         public void AddAudioToQueue([NotNull] AudioClip clip, AudioQueueType type)
         {
             switch (type)

@@ -1,4 +1,5 @@
-﻿using Controller;
+﻿using System;
+using Controller;
 using Events;
 using Interface.UIStates;
 using State;
@@ -21,6 +22,8 @@ namespace Interface
         public InterfaceNavigationState NavigationState { get; private set; }
         public InterfaceDetailsState DetailsState { get; private set; }
         public InterfaceEmptyState EmptyState { get; private set; }
+        
+        public InterfaceDollHouseViewState DollHouseViewState { get; private set; }
 
         #endregion
 
@@ -31,14 +34,9 @@ namespace Interface
             
             NavigationState = new InterfaceNavigationState(this, _navigationUserInterface);
             DetailsState = new InterfaceDetailsState(this, _detailsUserInterface);
-            EmptyState = new InterfaceEmptyState(this);
+            EmptyState = new InterfaceEmptyState(this, _detailsUserInterface, _navigationUserInterface);
+            DollHouseViewState = new InterfaceDollHouseViewState(this);
         }
-
-        /*private void Start()
-        {
-            _navigationUserInterface.gameObject.SetActive(false);
-            _detailsUserInterface.gameObject.SetActive(false);
-        }*/
 
         private void OnEnable()
         {
@@ -53,12 +51,11 @@ namespace Interface
         private void OnApplicationStateChange(EventParam eventParam)
         {
             var applicationState = eventParam.EventApplicationState;
-            Debug.Log($"Application state changed: {applicationState}");
             if (applicationState == ApplicationState.Main)
             {
                 _navigationUserInterface.gameObject.SetActive(true);
                 _detailsUserInterface.gameObject.SetActive(true);
-                ChangeState(NavigationState);
+                ChangeState(EmptyState);
             }
             else
             {

@@ -61,21 +61,21 @@ namespace DollHouseView
             {
                 DisableDollHouseView();
             }*/
-            if (Input.GetKeyDown(KeyCode.RightArrow))
+            if (Input.GetKeyDown(KeyCode.E))
             {
                 GetNextTarget();
             }
-            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            if (Input.GetKeyDown(KeyCode.Q))
             {
                 GetPreviousTarget();
             }
             
             var movementVector = new Vector3();
         
-            if (Input.GetKey(KeyCode.A)) movementVector += Vector3.left;
-            if (Input.GetKey(KeyCode.D)) movementVector += Vector3.right;
-            if (Input.GetKey(KeyCode.S)) movementVector += Vector3.down;
-            if (Input.GetKey(KeyCode.W)) movementVector += Vector3.up;
+            if (Input.GetKey(KeyCode.A) | Input.GetKey(KeyCode.LeftArrow)) movementVector += Vector3.left;
+            if (Input.GetKey(KeyCode.D) | Input.GetKey(KeyCode.RightArrow)) movementVector += Vector3.right;
+            if (Input.GetKey(KeyCode.S) | Input.GetKey(KeyCode.DownArrow)) movementVector += Vector3.down;
+            if (Input.GetKey(KeyCode.W) | Input.GetKey(KeyCode.UpArrow)) movementVector += Vector3.up;
 
             if (Input.GetAxis("Mouse ScrollWheel") > 0f) // forward
             {

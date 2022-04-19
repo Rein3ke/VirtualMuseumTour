@@ -85,7 +85,9 @@ namespace Interface
         {
             if (!_isVisible) return;
 
-            // update model scale
+            // Update model scale based on user input
+            #region Model Scale
+            
             var f = Input.mouseScrollDelta.y;
             scaleFactor += f * (scaleFactorChangeSpeed * 4) * Time.deltaTime;
             scaleFactor = Mathf.Clamp(scaleFactor, 1, float.MaxValue);
@@ -112,22 +114,26 @@ namespace Interface
 
             // Set scale factor text
             scaleFactorText.text = $"Scale factor: {scaleFactor}";
-
+            #endregion
+            
+            // Set model rotation
             #region Model rotation
 
-            // Set model rotation
-            MouseCursorController.SetCursorTexture(mouseRotationArea.MouseOver ? MouseCursorController.DragTexture : null);
+            MouseCursorController.SetCursorTexture(mouseRotationArea.MouseOver ? MouseCursorController.DragTexture : null); // Set cursor texture
             
             if (!mouseRotationArea.MouseOver && !mouseRotationArea.IsPressed) return;
             
             var mouseX = Input.GetAxis("Mouse X") * modelRotationSpeed * Time.deltaTime * -1;
             var mouseY = Input.GetAxis("Mouse Y") * modelRotationSpeed * Time.deltaTime;
-
+            var targetEuler = Vector3.zero;
+            
             if (mouseRotationArea.IsPressed)
             {
-                _currentAttachedGameObject.transform.Rotate(new Vector3(mouseY, mouseX, 0), Space.World);
+                targetEuler = new Vector3(mouseY, mouseX, 0);
             }
-
+            
+            _currentAttachedGameObject.transform.Rotate(targetEuler, Space.World);
+            
             #endregion
         }
         private void OnEnable()
@@ -260,15 +266,9 @@ namespace Interface
             var boxCollider = _currentAttachedGameObject.AddComponent<BoxCollider>();
             boxCollider.size = (new Vector3(scaleFactor, scaleFactor, scaleFactor) / 100f) * 4f;
             
-            // set attached game object children
+            // set layer mask of attached child game objects
             if (_currentAttachedGameObject.transform.childCount > 0)
             {
-                /*for (var index = 0; index < _currentAttachedGameObject.transform.childCount; index++)
-                {
-                    var child = _currentAttachedGameObject.transform.GetChild(index).gameObject;
-                    Debug.Log(child.name);
-                    if (child.GetComponent<MeshRenderer>() != null) child.layer = LayerMask.NameToLayer("UI");
-                }*/
                 foreach (Transform child in _currentAttachedGameObject.transform.GetComponentsInChildren<Transform>())
                 {
                     if (child.GetComponent<MeshRenderer>() != null)
