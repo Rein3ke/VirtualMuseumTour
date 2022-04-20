@@ -55,7 +55,7 @@ public class ExhibitAnchor : MonoBehaviour, IPoi
 
     public void InstantiatePoi()
     {
-        if (Poi != null) return;
+        if (Poi != null || !ContainsExhibit) return;
 
         Poi = Instantiate(Resources.Load<PointOfInterest>(PointOfInterest.PrefabPath), transform);
         Poi.IsClickable = false;

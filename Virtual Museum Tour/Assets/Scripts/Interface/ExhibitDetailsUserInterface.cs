@@ -12,39 +12,105 @@ namespace Interface
 {
     public class ExhibitDetailsUserInterface : MonoBehaviour
     {
+        /// <summary>
+        /// Variable to set the model scale speed. 
+        /// </summary>
         [Header("Scale")] [Space(8)]
         [SerializeField] private float scaleFactorChangeSpeed;
 
+        /// <summary>
+        /// Variable that holds the model scale.
+        /// </summary>
         [SerializeField] private float scaleFactor = 100f;
+        /// <summary>
+        /// Minimal scale factor value.
+        /// </summary>
         [SerializeField] private float minimumScale = 0.7f;
+        /// <summary>
+        /// Maximal scale factor value.
+        /// </summary>
         [SerializeField] private float maximumScale = 4.2f;
+        /// <summary>
+        /// Variable to define model rotation speed.
+        /// </summary>
         [SerializeField] private float modelRotationSpeed = 10f;
 
+        /// <summary>
+        /// GameObject that holds the whole detail interface.
+        /// </summary>
         [Header("Components")] [Space(8)]
         [SerializeField] private GameObject interfaceGameObject;
-
+        /// <summary>
+        /// GameObject that holds the model.
+        /// </summary>
         [SerializeField] private GameObject modelHolder;
+        /// <summary>
+        /// GameObject that contains all images.
+        /// </summary>
         [SerializeField] private GameObject imageHolder;
+        /// <summary>
+        /// Camera that is used to render the interface.
+        /// </summary>
         [SerializeField] private Camera interfaceCamera;
+        /// <summary>
+        /// Model title text.
+        /// </summary>
         [SerializeField] private TextMeshProUGUI title;
+        /// <summary>
+        /// Model description text.
+        /// </summary>
         [SerializeField] private TextMeshProUGUI description;
+        /// <summary>
+        /// Current scale factor text.
+        /// </summary>
         [SerializeField] private TextMeshProUGUI scaleFactorText;
+        /// <summary>
+        /// Dropdown that holds the available audio clips.
+        /// </summary>
         [SerializeField] private Dropdown audioClipsDropdown;
+        /// <summary>
+        /// Area where the mouse can be used to rotate the model.
+        /// </summary>
         [SerializeField] private UIElement mouseRotationArea;
-
+        
+        // Buttons that are used to start and stop audio playback and to close the interface.
         [Header("Buttons")]
         [SerializeField] private Button playButton, pauseButton, backButton;
 
+        /// <summary>
+        /// Button to start an animation.
+        /// </summary>
         [Header("Animation")]
         [SerializeField] private Button playAnimationButton;
 
+        /// <summary>
+        /// A dictionary that holds all the available audio clips.
+        /// </summary>
         private readonly Dictionary<Dropdown.OptionData, AudioClip> _optionsAudioClipsDictionary = new Dictionary<Dropdown.OptionData, AudioClip>();
 
+        /// <summary>
+        /// List of all animators in the model.
+        /// </summary>
         private List<Animator> _animatorList;
+        /// <summary>
+        /// GameObject (model) that is currently attached to the interface.
+        /// </summary>
         private GameObject _currentAttachedGameObject;
+        /// <summary>
+        /// Current selected audio clip.
+        /// </summary>
         private AudioClip _currentAudioClip;
+        /// <summary>
+        /// Exhibit (exhibit object) that is currently attached to the interface.
+        /// </summary>
         private Exhibit _currentExhibit;
+        /// <summary>
+        /// Boolean, to check if the animation is playing.
+        /// </summary>
         private bool _isAnimationPlaying;
+        /// <summary>
+        /// Boolean, to check if the interface is currently visible.
+        /// </summary>
         private bool _isVisible;
 
         private bool IsAnimationPlaying
@@ -278,9 +344,6 @@ namespace Interface
                 }
             }
 
-            // attach Drag And Rotation script to model
-            // AttachScriptToModel(_currentAttachedGameObject);
-
             // set audio events
             if (exhibit.AudioClips.Length > 0)
             {
@@ -306,6 +369,7 @@ namespace Interface
             }
 
             playAnimationButton.interactable = _animatorList.Count > 0;
+            playAnimationButton.GetComponentInChildren<Text>().color = playAnimationButton.interactable ? Color.white : Color.gray;
 
             IsAnimationPlaying = false;
 

@@ -1,5 +1,4 @@
-﻿using System;
-using Controller;
+﻿using Controller;
 using Events;
 using Interface.UIStates;
 using State;
@@ -8,25 +7,33 @@ using EventType = Events.EventType;
 
 namespace Interface
 {
+    /// <summary>
+    /// The UIManager handles all UI states by inheriting from the StateManager.
+    /// </summary>
     public class UIManager : StateMachine
     {
         #region Members
 
         private NavigationUserInterface _navigationUserInterface;
         private ExhibitDetailsUserInterface _detailsUserInterface;
-
+        private GUIStyle _currentGUIStyle;
+        
         #endregion
 
-        #region States (as properties)
+        #region States (Properties)
 
         public InterfaceNavigationState NavigationState { get; private set; }
         public InterfaceDetailsState DetailsState { get; private set; }
         public InterfaceEmptyState EmptyState { get; private set; }
-        
         public InterfaceDollHouseViewState DollHouseViewState { get; private set; }
 
         #endregion
 
+        #region Unity Methods
+
+        /// <summary>
+        /// Initializes the UIManager. Instantiate the interfaces and declares the states.
+        /// </summary>
         private void Awake()
         {
             _navigationUserInterface = Instantiate(Resources.Load<NavigationUserInterface>("Prefabs/Navigation_UserInterface"), transform);
@@ -48,6 +55,48 @@ namespace Interface
             EventManager.StopListening(EventType.EventStateChange, OnApplicationStateChange);
         }
 
+        private void OnGUI()
+        {
+            if (_currentGUIStyle == null) InitGUIStyle();
+            
+            var text = "";
+
+            if (CurrentState == EmptyState)
+            {
+                text = "Right click to open interface.";
+            }
+
+            if (CurrentState == NavigationState)
+            {
+                text = "Right click to close interface.\nLeft click to select an exhibit (if you are standing in front of it).";
+            }
+            
+            // add label with text in the lower right corner of the screen and center the text inside
+            GUI.Box(new Rect(Screen.width - 350, Screen.height - 100, 350, 100), text, _currentGUIStyle);
+        }
+        
+        #endregion
+        
+        /// <summary>
+        /// Helper method to set the GUIStyle for the OnGUI method.
+        /// </summary>
+        private void InitGUIStyle()
+        {
+            _currentGUIStyle ??= new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 12,
+                normal =
+                {
+                    textColor = Color.white
+                },
+                alignment = TextAnchor.LowerRight
+            };
+        }
+
+        /// <summary>
+        /// Gets called when the application state changes. Depending on the application state, the UIManager switches to the corresponding interface state.
+        /// </summary>
+        /// <param name="eventParam">Application state (in EventApplicationState)</param>
         private void OnApplicationStateChange(EventParam eventParam)
         {
             var applicationState = eventParam.EventApplicationState;
