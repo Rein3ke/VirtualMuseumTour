@@ -4,9 +4,11 @@ using SingletonPattern;
 using UnityEngine;
 using EventType = Events.EventType;
 
-// Singleton
 namespace Controller
 {
+    /// <summary>
+    /// Controller, which manages the application state, as well as the references to other systems added as a component.
+    /// </summary>
     [RequireComponent(typeof(AudioController))]
     [RequireComponent(typeof(SceneController))]
     [RequireComponent(typeof(PlayerSpawnController))]
@@ -15,14 +17,49 @@ namespace Controller
     [RequireComponent(typeof(SelectionManager))]
     public class ApplicationController : GenericSingletonClass<ApplicationController>
     {
+        #region Members
+
+        /// <summary>
+        /// Reference to the AudioController component.
+        /// </summary>
         private AudioController _audioController;
+        /// <summary>
+        /// Reference to the ExhibitManager component.
+        /// </summary>
         private ExhibitManager _exhibitManager;
+        /// <summary>
+        /// Reference to the LockStateManager component.
+        /// </summary>
         private LockStateManager _lockStateManager;
+        /// <summary>
+        /// Reference to the PlayerSpawnController component.
+        /// </summary>
         private PlayerSpawnController _playerSpawnController;
+        /// <summary>
+        /// Reference to the SceneController component.
+        /// </summary>
         private SceneController _sceneController;
+        /// <summary>
+        /// Reference to the SelectionManager component.
+        /// </summary>
         private SelectionManager _selectionManager;
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// The current application state.
+        /// </summary>
         public ApplicationState CurrentState { get; private set; }
 
+        #endregion
+
+        #region Unity Methods
+
+        /// <summary>
+        /// Gets the reference of all components and saves them.
+        /// </summary>
         public override void Awake()
         {
             base.Awake();
@@ -35,21 +72,40 @@ namespace Controller
             _selectionManager = GetComponent<SelectionManager>();
         }
 
+        /// <summary>
+        /// Initializes the application by setting the current state to start.
+        /// </summary>
         private void Start()
         {
             SetState(ApplicationState.Start);
         }
 
+        /// <summary>
+        /// Subscribes to the EventSetState event, so that the application state can be changed by other systems.
+        /// The SetState method is called by the EventSetState event.
+        /// </summary>
         private void OnEnable()
         {
             EventManager.StartListening(EventType.EventSetState, SetState);
         }
 
+        /// <summary>
+        /// Unsubscribes from the EventSetState event.
+        /// </summary>
         private void OnDisable()
         {
             EventManager.StopListening(EventType.EventSetState, SetState);
         }
 
+        #endregion
+
+        #region Application State Methods
+
+        /// <summary>
+        /// Sets the current application state and executes commands based on it.
+        /// Afterwards the EventStateChanged event is fired.
+        /// </summary>
+        /// <param name="state">New application state.</param>
         private void SetState(ApplicationState state)
         {
             Debug.Log($"Previous State is {CurrentState}");
@@ -59,8 +115,7 @@ namespace Controller
                 case ApplicationState.Start:
                     CurrentState = state;
                     
-                    Debug.Log("Enter Start State");
-                    SetState(ApplicationState.Menu);
+                    SetState(ApplicationState.Menu); // switch to the menu state and return
                     return;
                 case ApplicationState.Main:
                     CurrentState = state;
@@ -100,13 +155,7 @@ namespace Controller
             SetState(eventParam.EventApplicationState);
         }
 
-        // ReSharper disable once UnusedMember.Global
-        // Method is accessed by extern javascript.
-        public void SetLockStateFromWeb(int lockMode)
-        {
-            if (lockMode > 2 || lockMode < 0) Debug.LogError("Invalid lockMode supplied.");
-            // _lockStateManager.SetInternLockState((CursorLockMode) lockMode);
-        }
+        #endregion
     }
 
     public enum ApplicationState

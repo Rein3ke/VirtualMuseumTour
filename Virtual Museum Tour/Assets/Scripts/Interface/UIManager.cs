@@ -13,18 +13,38 @@ namespace Interface
     public class UIManager : StateMachine
     {
         #region Members
-
+        /// <summary>
+        /// Stores the reference to the NavigationUserInterface object.
+        /// </summary>
         private NavigationUserInterface _navigationUserInterface;
+        /// <summary>
+        /// Stores the reference to the ExhibitDetailsUserInterface object.
+        /// </summary>
         private ExhibitDetailsUserInterface _detailsUserInterface;
+        /// <summary>
+        /// The GUIStyle for the text element in the lower right corner.
+        /// </summary>
         private GUIStyle _currentGUIStyle;
         
         #endregion
 
         #region States (Properties)
 
+        /// <summary>
+        /// Public property for the InterfaceNavigationState object.
+        /// </summary>
         public InterfaceNavigationState NavigationState { get; private set; }
+        /// <summary>
+        /// Public property for the InterfaceDetailsState object.
+        /// </summary>
         public InterfaceDetailsState DetailsState { get; private set; }
+        /// <summary>
+        /// Public property for the InterfaceEmptyState object.
+        /// </summary>
         public InterfaceEmptyState EmptyState { get; private set; }
+        /// <summary>
+        /// Public property for the InterfaceDollHouseViewState object.
+        /// </summary>
         public InterfaceDollHouseViewState DollHouseViewState { get; private set; }
 
         #endregion
@@ -45,16 +65,25 @@ namespace Interface
             DollHouseViewState = new InterfaceDollHouseViewState(this);
         }
 
+        /// <summary>
+        /// Subscribe to the OnApplicationStateChange event to call the OnApplicationStateChange method.
+        /// </summary>
         private void OnEnable()
         {
             EventManager.StartListening(EventType.EventStateChange, OnApplicationStateChange);
         }
 
+        /// <summary>
+        /// Unsubscribe from the OnApplicationStateChange event.
+        /// </summary>
         private void OnDisable()
         {
             EventManager.StopListening(EventType.EventStateChange, OnApplicationStateChange);
         }
 
+        /// <summary>
+        /// Displays a small hint in the bottom left corner of the screen to guide the user.
+        /// </summary>
         private void OnGUI()
         {
             if (_currentGUIStyle == null) InitGUIStyle();

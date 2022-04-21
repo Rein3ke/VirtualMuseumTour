@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Controller;
 using Events;
-using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,8 +9,14 @@ using EventType = Events.EventType;
 
 namespace Interface
 {
+    /// <summary>
+    /// This class controls all user interface controls, as well as user input.
+    /// It is used in the ExhibitDetailsUserInterface prefab and configured via the Inspector.
+    /// </summary>
     public class ExhibitDetailsUserInterface : MonoBehaviour
     {
+        #region Serialized Fields
+
         /// <summary>
         /// Variable to set the model scale speed. 
         /// </summary>
@@ -83,6 +88,10 @@ namespace Interface
         [Header("Animation")]
         [SerializeField] private Button playAnimationButton;
 
+        #endregion
+
+        #region Members
+
         /// <summary>
         /// A dictionary that holds all the available audio clips.
         /// </summary>
@@ -91,15 +100,11 @@ namespace Interface
         /// <summary>
         /// List of all animators in the model.
         /// </summary>
-        private List<Animator> _animatorList;
+        private List<Animator> _animatorList = new List<Animator>();
         /// <summary>
         /// GameObject (model) that is currently attached to the interface.
         /// </summary>
         private GameObject _currentAttachedGameObject;
-        /// <summary>
-        /// Current selected audio clip.
-        /// </summary>
-        private AudioClip _currentAudioClip;
         /// <summary>
         /// Exhibit (exhibit object) that is currently attached to the interface.
         /// </summary>
@@ -113,6 +118,13 @@ namespace Interface
         /// </summary>
         private bool _isVisible;
 
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Returns true, if the animation is playing. Also sets the play animation button text.
+        /// </summary>
         private bool IsAnimationPlaying
         {
             get => _isAnimationPlaying;
@@ -123,16 +135,15 @@ namespace Interface
             }
         }
 
-        private void Awake()
-        {
-            _animatorList = new List<Animator>();
-        }
+        #endregion
 
+        #region Unity Methods
+
+        /// <summary>
+        /// Add listeners to all clickable ui elements and hides the interface on start.
+        /// </summary>
         private void Start()
         {
-            // Set dropdown value change event
-            audioClipsDropdown.onValueChanged.AddListener(delegate { SetCurrentAudioClip(); });
-            
             // Set button events
             playButton.onClick.AddListener(PlaySelectedAudioClip);
             pauseButton.onClick.AddListener(PauseSelectedAudioClip);
@@ -142,11 +153,9 @@ namespace Interface
             HideInterface(); // Hide interface
         }
 
-        private void DisableDetailsInterface()
-        {
-            EventManager.TriggerEvent(EventType.EventDetailsInterfaceClose, new EventParam());
-        }
-        
+        /// <summary>
+        /// Controls the scaling and rotation of the attached model based on user input.
+        /// </summary>
         private void Update()
         {
             if (!_isVisible) return;
@@ -202,16 +211,33 @@ namespace Interface
             
             #endregion
         }
+
+        /// <summary>
+        /// Subscribe to the EventExhibitSelected event and set the Initialize method as the callback.
+        /// </summary>
         private void OnEnable()
         {
             EventManager.StartListening(EventType.EventExhibitSelect, Initialize);
         }
 
+        /// <summary>
+        /// Unsubscribe from the EventExhibitSelected event.
+        /// </summary>
         private void OnDisable()
         {
             EventManager.StopListening(EventType.EventExhibitSelect, Initialize);
         }
 
+        #endregion
+
+        
+
+        #region Animation
+
+        /// <summary>
+        /// Toggles between playing and stopping animations.
+        /// When the animations are to be played, the list of animators is iterated and each animator within it is activated.
+        /// </summary>
         private void ToggleAnimation()
         {
             IsAnimationPlaying = !IsAnimationPlaying;
@@ -222,21 +248,30 @@ namespace Interface
             }
         }
 
+        #endregion
+
+        #region Event Callbacks
+
+        /// <summary>
+        /// Callback method to call InterfaceSetup() after the EventExhibitSelect event is invoked. Also sets the current exhibit.
+        /// </summary>
+        /// <param name="eventParam">The selected exhibit (via eventParam.EventExhibit).</param>
         private void Initialize(EventParam eventParam)
         {
-            if (eventParam.EventExhibit == null) return;
+            if (eventParam.EventExhibit == null) return; // Do nothing if the event is called without an exhibit...
             
             _currentExhibit = eventParam.EventExhibit;
             InterfaceSetup(_currentExhibit);
         }
 
-        private void SetCurrentAudioClip()
-        {
-            var optionData = audioClipsDropdown.options[audioClipsDropdown.value];
-            _optionsAudioClipsDictionary.TryGetValue(optionData, out _currentAudioClip);
-            Debug.Log($"[{nameof(SetCurrentAudioClip)}] Current audio clip: {_currentAudioClip}");
-        }
+        #endregion
 
+        #region Audio
+
+        /// <summary>
+        /// Returns the currently selected AudioClip from the dropdown.
+        /// </summary>
+        /// <returns>Currently selected AudioClip.</returns>
         private AudioClip GetCurrentlySelectedAudioClip()
         {
             var selectedOptionData = audioClipsDropdown.options[audioClipsDropdown.value]; // Get the currently selected option
@@ -250,6 +285,9 @@ namespace Interface
             return null;
         }
 
+        /// <summary>
+        /// Trigger an event to play the currently selected audio clip.
+        /// </summary>
         private void PlaySelectedAudioClip()
         {
             var audioClip = GetCurrentlySelectedAudioClip();
@@ -259,34 +297,22 @@ namespace Interface
             });
         }
 
+        /// <summary>
+        /// Trigger an event to pause the AudioClip playback.
+        /// </summary>
         private void PauseSelectedAudioClip()
         {
             EventManager.TriggerEvent(EventType.EventPauseAudio, new EventParam());
         }
 
-        public void ShowInterface()
-        {
-            interfaceGameObject.SetActive(true);
-            interfaceCamera.enabled = true;
-            _isVisible = true;
-            EventManager.TriggerEvent(EventType.EventLockControls, new EventParam
-            {
-                EventBoolean = true
-            });
-            MouseCursorController.SetCursorTexture(null); // reset mouse
-        }
+        #endregion
 
-        public void HideInterface()
-        {
-            interfaceGameObject.SetActive(false);
-            interfaceCamera.enabled = false;
-            _isVisible = false;
-            EventManager.TriggerEvent(EventType.EventLockControls, new EventParam
-            {
-                EventBoolean = false
-            });
-        }
+        #region Exhibit
 
+        /// <summary>
+        /// Returns the exhibit that is currently set as a child object of the model holder GameObject.
+        /// </summary>
+        /// <returns>Attached exhibit asset as GameObject.</returns>
         private GameObject GetAttachedModel()
         {
             var child = modelHolder.transform.GetChild(0);
@@ -294,6 +320,10 @@ namespace Interface
             return child.gameObject != null ? child.gameObject : null;
         }
 
+        /// <summary>
+        /// Returns the GameObjects that can be found as child objects of the ImageHolder.
+        /// </summary>
+        /// <returns>Array of child GameObjects.</returns>
         private GameObject[] GetAttachedImageGameObjects()
         {
             var childCount = imageHolder.transform.childCount;
@@ -306,11 +336,51 @@ namespace Interface
             return attachedImageGameObjects;
         }
 
-        private static void AttachScriptToModel([NotNull] GameObject model)
+        #endregion
+
+        #region Interface
+
+        /// <summary>
+        /// Executes an event that announces the closing of the interface.
+        /// </summary>
+        private void DisableDetailsInterface()
         {
-            model.AddComponent<MouseDragRotate>();
+            EventManager.TriggerEvent(EventType.EventDetailsInterfaceClose, new EventParam());
+        }
+        
+        /// <summary>
+        /// Sets the user interface and its camera to active. Triggers an event to block the player character's control.
+        /// </summary>
+        public void ShowInterface()
+        {
+            interfaceGameObject.SetActive(true);
+            interfaceCamera.enabled = true;
+            _isVisible = true;
+            EventManager.TriggerEvent(EventType.EventLockControls, new EventParam
+            {
+                EventBoolean = true // Lock controls
+            });
+            MouseCursorController.SetCursorTexture(null); // Reset mouse texture
         }
 
+        /// <summary>
+        /// Sets the user interface and its camera to inactive. Triggers an event to unblock the player character's control.
+        /// </summary>
+        public void HideInterface()
+        {
+            interfaceGameObject.SetActive(false);
+            interfaceCamera.enabled = false;
+            _isVisible = false;
+            EventManager.TriggerEvent(EventType.EventLockControls, new EventParam
+            {
+                EventBoolean = false // Unlock controls
+            });
+        }
+
+        /// <summary>
+        /// Resets the user interface and then configures it according to the specified exhibit.
+        /// </summary>
+        /// <param name="exhibit">The (selected) exhibit. It contains data that is required for the setup.</param>
         private void InterfaceSetup(Exhibit exhibit)
         {
             if (exhibit == null)
@@ -319,96 +389,78 @@ namespace Interface
                 return;
             }
             
-            ResetInterface();
+            ResetInterface(); // reset interface to its default state
 
             // set variables
             title.text = exhibit.Name;
             description.text = exhibit.Description;
 
             // set model
-            _currentAttachedGameObject = Instantiate(exhibit.Asset, modelHolder.transform); // instantiate the model
-            _currentAttachedGameObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor); // scale model up (100x times)
-            _currentAttachedGameObject.layer = LayerMask.NameToLayer("UIModel");
-            var boxCollider = _currentAttachedGameObject.AddComponent<BoxCollider>();
-            boxCollider.size = (new Vector3(scaleFactor, scaleFactor, scaleFactor) / 100f) * 4f;
-            
+            _currentAttachedGameObject = Instantiate(exhibit.Asset, modelHolder.transform); // instantiate the exhibit asset as a child of the model holder GameObject
+            _currentAttachedGameObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor); // scale model
+            _currentAttachedGameObject.layer = LayerMask.NameToLayer("UIModel"); // set its layer to "UIModel" so will be rendered on top of the UI
+
             // set layer mask of attached child game objects
             if (_currentAttachedGameObject.transform.childCount > 0)
             {
                 foreach (Transform child in _currentAttachedGameObject.transform.GetComponentsInChildren<Transform>())
                 {
-                    if (child.GetComponent<MeshRenderer>() != null)
+                    if (child.GetComponent<MeshRenderer>() != null) // set the layer mask of all child GameObjects of the exhibit that have a mesh renderer to the UI model layer.
                     {
                         child.gameObject.layer = LayerMask.NameToLayer("UIModel");
                     }
                 }
             }
 
-            // set audio events
+            // configure the audio clip dropdown
             if (exhibit.AudioClips.Length > 0)
             {
-                // save all audio clips into a dictionary including dropdown options which contains an audio clip title each
+                // create an entry in the dictionary for each AudioClip. With the clip title as key, and the AudioClip as value
                 foreach (AudioClip exhibitAudioClip in exhibit.AudioClips)
                 {
                     _optionsAudioClipsDictionary.Add(new Dropdown.OptionData($"{exhibitAudioClip.name}"), exhibitAudioClip);
                 }
-                // convert the dictionary keys to a list (Dropdown.OptionData) and set this as the audio clips dropdown options list
+                // convert the dictionary keys to a list (Dropdown.OptionData) and set it as the audio clips dropdown options list
                 audioClipsDropdown.options = new List<Dropdown.OptionData>(_optionsAudioClipsDictionary.Keys);
                 // set selected audio clip
-                _currentAudioClip = _optionsAudioClipsDictionary.Values.FirstOrDefault();
+                _optionsAudioClipsDictionary.Values.FirstOrDefault();
             }
             
             // get animator in main object
             var mainAnimator = _currentAttachedGameObject.GetComponent<Animator>();
             if (mainAnimator != null) _animatorList.Add(mainAnimator);
-            
-            // get animator in child objects
-            foreach (var animator in _currentAttachedGameObject.GetComponentsInChildren<Animator>())
+
+            foreach (var animator in _currentAttachedGameObject.GetComponentsInChildren<Animator>()) // get all animators inside the child GameObjects and store them in a list
             {
                 _animatorList.Add(animator);
             }
 
+            // configure play animation button
             playAnimationButton.interactable = _animatorList.Count > 0;
             playAnimationButton.GetComponentInChildren<Text>().color = playAnimationButton.interactable ? Color.white : Color.gray;
 
             IsAnimationPlaying = false;
-
-            // set images
-            /*for (var index = 0; index < exhibit.ExhibitData.images.Length; index++)
-            {
-                var storedTexture = exhibit.ExhibitData.images[index];
-                var imageObject = new GameObject($"Image_{index}");
-                // set rect transform
-                var trans = imageObject.AddComponent<RectTransform>();
-                trans.transform.SetParent(imageHolder.transform);
-                trans.localScale = Vector3.one;
-                trans.anchoredPosition3D = Vector3.zero;
-                trans.sizeDelta = new Vector2(storedTexture.width, storedTexture.height);
-
-                var image = imageObject.AddComponent<Image>();
-                image.sprite = Sprite.Create(
-                    storedTexture,
-                    new Rect(0, 0, storedTexture.width, storedTexture.height),
-                    new Vector2(0.5f, 0.5f)
-                );
-            }*/
         }
 
+        /// <summary>
+        /// Removes the current exhibit and resets the interface to its default state.
+        /// </summary>
         private void ResetInterface()
         {
-            // destroy attached game object to prevent clipping
-            Destroy(GetAttachedModel());
-            // reset scale factor to prevent next object being to large
-            scaleFactor = 100f;
-            // iterate through each attached image and remove their gameObject references
-            foreach (var imageGameObject in GetAttachedImageGameObjects())
+            Destroy(GetAttachedModel()); // destroy attached game object to prevent clipping
+            
+            scaleFactor = 100f; // reset scale factor to prevent next object being to large/small
+            
+            foreach (var imageGameObject in GetAttachedImageGameObjects()) // iterate through each attached image and remove their gameObject references
             {
                 Destroy(imageGameObject);
             }
-            // clear dictionary
-            _optionsAudioClipsDictionary.Clear();
-            // clear animator list
-            _animatorList.Clear();
+            
+            _optionsAudioClipsDictionary.Clear(); // clear audio clips dictionary
+            
+            _animatorList.Clear(); // clear animator list
         }
+
+        #endregion
     }
 }

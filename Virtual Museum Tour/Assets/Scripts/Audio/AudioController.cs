@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Linq;
 using Controller;
@@ -11,49 +10,107 @@ using EventType = Events.EventType;
 namespace Audio
 {
     /// <summary>
-    /// An controller that handles all the audio clips which should be played.
+    /// A controller that manages the AudioMixerGroups, the AudioQueues, and the playing and stopping of AudioClips.
     /// </summary>
     public class AudioController : MonoBehaviour
     {
         #region Constants
 
+        /// <summary>
+        /// Path to the AudioClips in the Resources folder which are used for everything related to the environment.
+        /// </summary>
         private const string EnvironmentAudioPath = "AudioClips/Environment/";
+        /// <summary>
+        /// Path to the AudioClips in the Resources folder which are used for everything related to the music.
+        /// </summary>
         private const string MusicPath = "AudioClips/Music/";
+        /// <summary>
+        /// Path to the AudioClips in the Resources folder which are used for everything related to the sound effects.
+        /// </summary>
         private const string EffectsAudioPath = "AudioClips/Effects/";
+        /// <summary>
+        /// Path to the AudioClips in the Resources folder which are used for testing purposes.
+        /// </summary>
         private const string TestAudioPath = "AudioClips/Test/";
+        /// <summary>
+        /// Width of the volume control GUI element.
+        /// </summary>
         private const float MasterVolumeHorizontalSliderWidth = 96f;
         
         #endregion
 
         #region SerializeFields
 
+        /// <summary>
+        /// Master channel where all channels are merged.
+        /// </summary>
         [SerializeField] private AudioMixerGroup masterMixerGroup;
+        /// <summary>
+        /// Channel for AudioSources that play audio clips related to the exhibit.
+        /// </summary>
         [SerializeField] private AudioMixerGroup storytellingMixerGroup;
+        /// <summary>
+        /// Channel for AudioSources, which play ambient audio clips.
+        /// </summary>
         [SerializeField] private AudioMixerGroup environmentMixerGroup;
+        /// <summary>
+        /// Channel for AudioSources, which play music audio clips.
+        /// </summary>
         [SerializeField] private AudioMixerGroup musicMixerGroup;
 
         #endregion
 
         #region Members
 
+        /// <summary>
+        /// AudioSource, which is used for all exhibit relevant audio clips.
+        /// </summary>
         private AudioSource _storytellingAudioSource;
-        
+        /// <summary>
+        /// AudioQueue, which contains all environment-relevant audio clips.
+        /// </summary>
         private AudioQueue _environmentAudioQueue;
+        /// <summary>
+        /// AudioQueue, which contains all music-relevant audio clips.
+        /// </summary>
         private AudioQueue _musicAudioQueue;
         
+        /// <summary>
+        /// Coroutine or process that is executed asynchronously to play ambient audio clips.
+        /// </summary>
         private Coroutine _environmentCoroutine;
+        /// <summary>
+        /// Coroutine or process that is executed asynchronously to play music audio clips.
+        /// </summary>
         private Coroutine _musicCoroutine;
+        /// <summary>
+        /// Coroutine that smoothly changes the volume of the master channel.
+        /// </summary>
         private Coroutine _setMasterVolumeCoroutine;
         
-        private float masterVolumeSliderValue;
+        /// <summary>
+        /// Current value of the master volume slider.
+        /// </summary>
+        private float _masterVolumeSliderValue;
+        /// <summary>
+        /// Boolean specifying whether the GUI interface should be displayed.
+        /// </summary>
         private bool _displayOnGUI;
 
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Returns the current value of the main volume slider.
+        /// When set, the slider value is updated, as well as the audio listener volume and the value in the player presets. 
+        /// </summary>
         private float MasterVolumeSliderValue
         {
-            get => masterVolumeSliderValue;
+            get => _masterVolumeSliderValue;
             set
             {
-                masterVolumeSliderValue = value;
+                _masterVolumeSliderValue = value;
                 AudioListener.volume = value;
                 PlayerPrefs.SetFloat("MasterVolume", value);
             }
@@ -61,8 +118,12 @@ namespace Audio
 
         #endregion
 
-        #region Unity Functions
+        #region Unity Methods
 
+        /// <summary>
+        /// Loads all audio clips from the resources folder and adds them to their corresponding AudioQueues.
+        /// Also adds an AudioSource to the GameObject to play exhibit-related audio.
+        /// </summary>
         private void Awake()
         {
             // Setup background audio
@@ -79,18 +140,27 @@ namespace Audio
             _storytellingAudioSource.outputAudioMixerGroup = storytellingMixerGroup; // Set storytelling mixer group
         }
 
+        /// <summary>
+        /// Loads the master volume from the player presets.
+        /// </summary>
         private void Start()
         {
-            MasterVolumeSliderValue = PlayerPrefs.GetFloat("MasterVolume", 1f);
+            MasterVolumeSliderValue = PlayerPrefs.GetFloat("MasterVolume", 1f); // Update slider based on the value stored in player presets. Default value is 1 (max volume).
         }
 
+        /// <summary>
+        /// Subscribes to multiple events to handle audio playback requests and whether the GUI interface should be displayed.
+        /// </summary>
         private void OnEnable()
         {
-            EventManager.StartListening(EventType.EventPlayAudio, PlayStorytellingAudio);
-            EventManager.StartListening(EventType.EventPauseAudio, StopStorytellingAudio);
-            EventManager.StartListening(EventType.EventStateChange, SetDisplayInterface);
+            EventManager.StartListening(EventType.EventPlayAudio, PlayStorytellingAudio); // Play audio from the selected audio clip dropdown
+            EventManager.StartListening(EventType.EventPauseAudio, StopStorytellingAudio); // Stop audio playback
+            EventManager.StartListening(EventType.EventStateChange, SetDisplayInterface); // Toggle the GUI interface
         }
 
+        /// <summary>
+        /// Unsubscribes from multiple events.
+        /// </summary>
         private void OnDisable()
         {
             EventManager.StopListening(EventType.EventPlayAudio, PlayStorytellingAudio);
@@ -98,6 +168,12 @@ namespace Audio
             EventManager.StopListening(EventType.EventStateChange, SetDisplayInterface);
         }
 
+        /// <summary>
+        /// Uses the SetMasterVolumeCoroutine to adjust the volume.
+        /// Triggered depending on whether the application is focused or not.
+        /// Example: When the browser tab is switched, the application is no longer focused and the volume is set to zero.
+        /// </summary>
+        /// <param name="hasFocus">True, if the application is focused.</param>
         private void OnApplicationFocus(bool hasFocus)
         {
             if (_setMasterVolumeCoroutine != null) StopCoroutine(_setMasterVolumeCoroutine);
@@ -112,6 +188,9 @@ namespace Audio
             }
         }
 
+        /// <summary>
+        /// Draws a slider in the corner of the screen to adjust the volume.
+        /// </summary>
         private void OnGUI()
         {
             if (!_displayOnGUI) return;
@@ -177,7 +256,7 @@ namespace Audio
         }
 
         /// <summary>
-        /// Add a new audio clip to an existing audio queue.
+        /// Adds a new audio clip based on the queue type to an existing audio queue.
         /// </summary>
         /// <param name="clip">New AudioClip.</param>
         /// <param name="type">Select target queue type.</param>
@@ -198,7 +277,7 @@ namespace Audio
         }
 
         /// <summary>
-        /// Audio loop.
+        /// Coroutine to manage the asynchronous playback of AudioClips via an AudioQueue.
         /// </summary>
         /// <param name="queue">Queue for referencing</param>
         private IEnumerator AudioQueueCoroutine([NotNull] AudioQueue queue)
@@ -236,6 +315,10 @@ namespace Audio
             }
         }
 
+        /// <summary>
+        /// Callback method to enable playback of an AudioClip passed in the event.
+        /// </summary>
+        /// <param name="eventParam">AudioClip (via eventParam.EventAudioClip).</param>
         private void PlayStorytellingAudio(EventParam eventParam)
         {
             var clip = eventParam.EventAudioClip;
@@ -251,7 +334,7 @@ namespace Audio
                 _storytellingAudioSource.Stop();
             }
 
-            #if UNITY_EDITOR
+            #if UNITY_EDITOR // if in editor, play test audio instead of actual audio
                 _storytellingAudioSource.clip = Resources.LoadAll<AudioClip>(TestAudioPath)[0];
             #else
                 _storytellingAudioSource.clip = clip;
@@ -260,12 +343,21 @@ namespace Audio
             _storytellingAudioSource.Play();
         }
 
+        /// <summary>
+        /// Callback method to stop playing an AudioClip via the Storytelling AudioSource.
+        /// </summary>
+        /// <param name="eventParam">(Obsolete).</param>
         private void StopStorytellingAudio(EventParam eventParam)
         {
             if (_storytellingAudioSource.isPlaying)
                 _storytellingAudioSource.Stop();
         }
 
+        /// <summary>
+        /// Coroutine to adjust the master volume to a specified value over time.
+        /// </summary>
+        /// <param name="volume">Desired volume.</param>
+        /// <returns>Nothing (Coroutine).</returns>
         private IEnumerator SetMasterVolumeTarget(float volume)
         {
             masterMixerGroup.audioMixer.GetFloat("MasterVolume", out var currentVolume);
@@ -278,6 +370,10 @@ namespace Audio
             }
         }
         
+        /// <summary>
+        /// Callback method that allows displaying GUI elements as soon as the application is in main state.
+        /// </summary>
+        /// <param name="eventParam">Application state (via eventParam.EventApplicationState).</param>
         private void SetDisplayInterface(EventParam eventParam)
         {
             _displayOnGUI = eventParam.EventApplicationState == ApplicationState.Main;
@@ -287,6 +383,11 @@ namespace Audio
 
         #region Resource Management
 
+        /// <summary>
+        /// Returns an array of audio clips found at the passed path in the resource folder.
+        /// </summary>
+        /// <param name="path">Path to the AudioClips in the Resources folder.</param>
+        /// <returns>Array of found AudioClips.</returns>
         private static AudioClip[] LoadAudioClipsFromDirectory(string path)
         {
             if (string.IsNullOrWhiteSpace(path)) return null;
