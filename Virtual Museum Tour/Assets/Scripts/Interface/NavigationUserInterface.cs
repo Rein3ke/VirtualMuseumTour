@@ -1,5 +1,6 @@
 using System.Linq;
 using Events;
+using Player;
 using UnityEngine;
 using UnityEngine.UI;
 using EventType = Events.EventType;

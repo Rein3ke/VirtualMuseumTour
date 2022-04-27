@@ -11,10 +11,16 @@ namespace DollHouseView
     /// </summary>
     public class PoiController : MonoBehaviour
     {
+        #region Members
+
         /// <summary>
         /// List of all IPoi interface inheritors.
         /// </summary>
         private readonly List<IPoi> _poiInheritingObjects = new List<IPoi>();
+
+        #endregion
+
+        #region Unity Methods
 
         /// <summary>
         /// Start listening to the OnAssetBundleLoaded event to call the OnAssetBundleLoaded method.
@@ -32,6 +38,10 @@ namespace DollHouseView
             EventManager.StopListening(EventType.EventAssetBundleLoaded, OnAssetBundleLoaded);
         }
 
+        #endregion
+
+        #region Event Handlers
+
         /// <summary>
         /// Refresh the list of all IPoi interface inheritors and iterate through them to instantiate the poi prefabs.
         /// </summary>
@@ -45,6 +55,8 @@ namespace DollHouseView
                 poiInheritingObject.InstantiatePoi();
             }
         }
+
+        #endregion
 
         /// <summary>
         /// Clear the list of all IPoi interface inheritors and fill it with all IPoi interface inheritors found in the scene.

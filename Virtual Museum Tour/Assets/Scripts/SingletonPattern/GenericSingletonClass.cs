@@ -2,10 +2,20 @@
 
 namespace SingletonPattern
 {
+    /// <summary>
+    /// The class describes the singleton pattern (used for the ApplicationController).
+    /// It is based on the code of Bunny83 from the Unity forum (https://answers.unity.com/questions/1408574/destroying-and-recreating-a-singleton.html).
+    /// </summary>
+    /// <typeparam name="T">Class that is a component and should implement the singleton pattern.</typeparam>
     public class GenericSingletonClass<T> : MonoBehaviour where T : Component
     {
         private static T _instance;
 
+        /// <summary>
+        /// Public property that returns the singleton instance of the class.
+        /// If the instance does not exist, an object containing the component is searched for within the scene.
+        /// If no object is found, a new GameObject is created with the component and assigned to the local instance.
+        /// </summary>
         public static T Instance
         {
             get
@@ -24,12 +34,16 @@ namespace SingletonPattern
             }
         }
 
+        /// <summary>
+        /// Sets the inheriting class as a local instance if, none exists.
+        /// If the instance is already set, the duplicate object is destroyed.
+        /// </summary>
         public virtual void Awake()
         {
             if (_instance == null)
             {
                 _instance = this as T;
-                DontDestroyOnLoad(gameObject);
+                DontDestroyOnLoad(gameObject); // set this object to not be destroyed when loading a new scene
             }
             else
             {

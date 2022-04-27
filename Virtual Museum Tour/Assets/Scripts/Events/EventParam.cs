@@ -1,4 +1,5 @@
 ﻿using Controller;
+using Player;
 using UnityEngine;
 
 namespace Events

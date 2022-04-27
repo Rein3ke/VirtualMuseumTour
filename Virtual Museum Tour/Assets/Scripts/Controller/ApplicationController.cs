@@ -158,6 +158,9 @@ namespace Controller
         #endregion
     }
 
+    /// <summary>
+    /// Enum for the application states.
+    /// </summary>
     public enum ApplicationState
     {
         Start,

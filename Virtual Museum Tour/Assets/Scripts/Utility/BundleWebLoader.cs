@@ -5,6 +5,9 @@ using UnityEngine.Networking;
 
 namespace Utility
 {
+    /// <summary>
+    /// Helper class for downloading AssetBundles from the internet.
+    /// </summary>
     public static class BundleWebLoader
     {
         /// <summary>
@@ -17,20 +20,21 @@ namespace Utility
         {
             var webRequest = UnityWebRequestAssetBundle.GetAssetBundle(bundleUrl);
 
-            // Wait for completion...
+            
             Debug.Log($"{nameof(DownloadAssetBundle)}: Web request sent!");
-            yield return webRequest.SendWebRequest();
+            yield return webRequest.SendWebRequest(); // Wait for completion...
 
-            if (webRequest.result != UnityWebRequest.Result.Success)
+            if (webRequest.result != UnityWebRequest.Result.Success) // If the request failed, throw an exception and stop the coroutine.
             {
                 Debug.LogError($"{nameof(DownloadAssetBundle)}: {webRequest.error}");
                 yield break;
             }
             Debug.Log($"{nameof(DownloadAssetBundle)}: {webRequest.result}");
 
-            var bundle = DownloadHandlerAssetBundle.GetContent(webRequest);
-            callbackMethod(bundle);
+            var bundle = DownloadHandlerAssetBundle.GetContent(webRequest); // Get the AssetBundle from the web request.
+            callbackMethod(bundle); // Pass the AssetBundle to the callback method.
         
+            // Unload the bundle and dispose the web request to free up memory.
             bundle.Unload(false);
             webRequest.Dispose();
         }

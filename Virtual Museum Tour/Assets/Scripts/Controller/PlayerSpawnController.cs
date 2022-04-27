@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Linq;
 using Events;
+using Player;
 using UnityEngine;
 using EventType = Events.EventType;
 using Random = UnityEngine.Random;
