@@ -1,0 +1,46 @@
+ManifestFileVersion: 0
+CRC: 1844234127
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 2ed6f4a7c07844c240044a9dba05882c
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 77199f2955a5884768770ef208c87a36
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 64
+  Script: {instanceID: 0}
+- Class: 83
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: 7911f41849a6cee4480a03cfde355b37, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/BundledAssets/testbundle/ExampleExhibit_Car_01_ExhibitData.asset
+- Assets/BundledAssets/testbundle/BundledSpriteObject.prefab
+- Assets/SoundFiles/15376__m-colon-o__g-w-bush-an-empire-of-oppression.wav
+- Assets/BundledAssets/testbundle/BundledSpriteObject_ExhibitData.asset
+- Assets/BundledAssets/testbundle/BundledTestObject.prefab
+- Assets/BundledAssets/testbundle/BundledTestObject_ExhibitData.asset
+- Assets/BundledAssets/testbundle/ExampleExhibit_Car_01.prefab
+- Assets/ImageFiles/technikmuseum.jpg
+Dependencies: []

@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7911f41849a6cee4480a03cfde355b37, type: 3}
+  m_Name: BundledSpriteObject_ExhibitData
+  m_EditorClassIdentifier: 
+  exhibitName: BundledSpriteObject
+  exhibitDescription: This is a description for the bundled sprite object.
+  audioClips:
+  - {fileID: 8300000, guid: 68647df8f45463940837ace819a60b59, type: 3}
+  images:
+  - {fileID: 2800000, guid: 7ae2b531a99a605469d9dc775e0d11c4, type: 3}

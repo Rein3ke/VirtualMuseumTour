@@ -1,0 +1,59 @@
+ManifestFileVersion: 0
+CRC: 976190698
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 329a38278794eb5e4df3b27fc3e3bd29
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 9b6bacc813bb7864c7a03fe2d1368ffa
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 64
+  Script: {instanceID: 0}
+- Class: 74
+  Script: {instanceID: 0}
+- Class: 83
+  Script: {instanceID: 0}
+- Class: 91
+  Script: {instanceID: 0}
+- Class: 95
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: 7911f41849a6cee4480a03cfde355b37, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Animations/Spinning.anim
+- Assets/BundledAssets/testbundle/ExampleExhibit_Car_01_ExhibitData.asset
+- Assets/BundledAssets/testbundle/BundledSpriteObject.prefab
+- Assets/SoundFiles/15376__m-colon-o__g-w-bush-an-empire-of-oppression.wav
+- Assets/BundledAssets/testbundle/BundledSpriteObject_ExhibitData.asset
+- Assets/BundledAssets/testbundle/BundledTestObject.prefab
+- Assets/BundledAssets/testbundle/BundledJapaneseCrab.prefab
+- Assets/SoundFiles/179927__yosarrian__underwater.wav
+- Assets/BundledAssets/testbundle/BundledTestObject_ExhibitData.asset
+- Assets/BundledAssets/testbundle/ExampleExhibit_Car_01.prefab
+- Assets/Animations/BundledSpriteObject_AC.controller
+- Assets/Animations/ExampleExhibit_Car_01_AC.controller
+- Assets/ImageFiles/technikmuseum.jpg
+- Assets/BundledAssets/testbundle/BundledJapaneseCrab_ExhibitData.asset
+- Assets/Animations/Car_Wheels_Spinning.anim
+Dependencies: []
