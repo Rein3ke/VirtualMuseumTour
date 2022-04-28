@@ -53,6 +53,9 @@ public class Exhibit
 
 	#region Members
 
+	/// <summary>
+	/// Reference to the ExhibitData property.
+	/// </summary>
 	private ExhibitData _exhibitData;
 
 	#endregion

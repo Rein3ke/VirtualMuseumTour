@@ -26,6 +26,8 @@ namespace Interface.UIStates
 
         #endregion
 
+        #region Constructors
+
         /// <summary>
         /// Constructor. Stores references to the current UIManager, ExhibitDetailsUserInterface and the current NavigationUserInterface.
         /// </summary>
@@ -39,6 +41,8 @@ namespace Interface.UIStates
             NavigationUserInterface = navigationUserInterface;
         }
 
+        #endregion
+
         #region IState Implementation
 
         /// <summary>
@@ -48,26 +52,18 @@ namespace Interface.UIStates
         {
             ExhibitDetailsUserInterface.HideInterface();
             NavigationUserInterface.HideInterface();
-            LockStateManager.SetInternLockState(CursorLockMode.Locked);
+            LockStateManager.SetInternLockState(CursorLockMode.Locked); // Lock mouse cursor and make it invisible.
         }
 
         /// <summary>
-        /// Checks at each frame whether the user has clicked the right mouse button. If this is the case, the method ChangeToNavigationState is called.
+        /// Checks at each frame whether the user has clicked the right mouse button. If this is the case, the ChangeToNavigationState method is called.
         /// </summary>
         public void Tick()
         {
-            if (Input.GetMouseButtonDown(1))
+            if (Input.GetMouseButtonDown(1)) // On right mouse button click
             {
                 ChangeToNavigationState();
             }
-        }
-
-        /// <summary>
-        /// (Gets called on FixedUpdate() - Unused in this state)
-        /// </summary>
-        public void FixedTick()
-        {
-            
         }
 
         /// <summary>
@@ -80,6 +76,8 @@ namespace Interface.UIStates
 
         #endregion
 
+        #region State Change Methods
+
         /// <summary>
         /// Uses the UIManager reference to switch to the NavigationState.
         /// </summary>
@@ -87,5 +85,7 @@ namespace Interface.UIStates
         {
             UIManager.ChangeState(UIManager.NavigationState);
         }
+
+        #endregion
     }
 }

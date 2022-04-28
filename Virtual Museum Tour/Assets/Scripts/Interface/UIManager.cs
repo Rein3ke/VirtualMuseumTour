@@ -31,19 +31,19 @@ namespace Interface
         #region States (Properties)
 
         /// <summary>
-        /// Public property for the InterfaceNavigationState object.
+        /// Public reference to the InterfaceNavigationState object.
         /// </summary>
         public InterfaceNavigationState NavigationState { get; private set; }
         /// <summary>
-        /// Public property for the InterfaceDetailsState object.
+        /// Public reference to the InterfaceDetailsState object.
         /// </summary>
         public InterfaceDetailsState DetailsState { get; private set; }
         /// <summary>
-        /// Public property for the InterfaceEmptyState object.
+        /// Public reference to the InterfaceEmptyState object.
         /// </summary>
         public InterfaceEmptyState EmptyState { get; private set; }
         /// <summary>
-        /// Public property for the InterfaceDollHouseViewState object.
+        /// Public reference to the InterfaceDollHouseViewState object.
         /// </summary>
         public InterfaceDollHouseViewState DollHouseViewState { get; private set; }
 
@@ -107,7 +107,7 @@ namespace Interface
         #endregion
         
         /// <summary>
-        /// Helper method to set the GUIStyle for the OnGUI method.
+        /// Sets the GUIStyle for the OnGUI method.
         /// </summary>
         private void InitGUIStyle()
         {

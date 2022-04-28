@@ -2,55 +2,72 @@
 
 namespace State
 {
+    /// <summary>
+    /// Class that can be inherited by any other class that uses the State pattern.
+    /// Stores the current state and has methods for changing the state.
+    /// </summary>
     public abstract class StateMachine : MonoBehaviour
     {
-        public IState CurrentState { get; private set; }
-        public IState PreviousState { get; private set; }
+        #region Properties
 
-        private bool _inTransition = false;
+        /// <summary>
+        /// Reference to the current state.
+        /// </summary>
+        protected IState CurrentState { get; private set; }
 
-        public void ChangeState(IState newState)
-        {
-            if (CurrentState == newState || _inTransition)
-                return;
+        #endregion
 
-            ChangeStateRoutine(newState);
-        }
+        #region Members
 
-        public void RevertState()
-        {
-            if (PreviousState != null)
-                ChangeState(PreviousState);
-        }
+        /// <summary>
+        /// Set to true if the state machine is in a transition.
+        /// </summary>
+        private bool _inTransition;
 
-        private void ChangeStateRoutine(IState newState)
-        {
-            _inTransition = true;
+        #endregion
 
-            if (CurrentState != null)
-                CurrentState.Exit();
+        #region Unity Methods
 
-            if (PreviousState != null)
-                PreviousState = CurrentState;
-            
-            CurrentState = newState;
-            
-            if (CurrentState != null)
-                CurrentState.Enter();
-            
-            _inTransition = false;
-        }
-
+        /// <summary>
+        /// Calls the Tick method of the current state if the state machine is not in a transition.
+        /// </summary>
         private void Update()
         {
             if (CurrentState != null && !_inTransition)
                 CurrentState.Tick();
         }
 
-        private void FixedUpdate()
+        #endregion
+
+        #region State Change
+
+        /// <summary>
+        /// Calls ChangeStateRoutine to change the current state to the new state.
+        /// </summary>
+        /// <param name="newState">New State.</param>
+        public void ChangeState(IState newState)
         {
-            if (CurrentState != null && !_inTransition)
-                CurrentState.FixedTick();
+            if (CurrentState == newState || _inTransition) return;
+
+            ChangeStateRoutine(newState);
         }
+
+        /// <summary>
+        /// Changes the current state to the new state. Sets _inTransition to true while the state is changing.
+        /// Calls the Exit method of the current state before the state is changed. Then calls the start method of the new state.
+        /// </summary>
+        /// <param name="newState"></param>
+        private void ChangeStateRoutine(IState newState)
+        {
+            _inTransition = true;
+
+            CurrentState?.Exit();
+            CurrentState = newState;
+            CurrentState?.Enter();
+
+            _inTransition = false;
+        }
+
+        #endregion
     }
 }

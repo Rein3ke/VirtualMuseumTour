@@ -94,6 +94,7 @@ namespace Interface
 
         /// <summary>
         /// A dictionary that holds all the available audio clips.
+        /// The key holds an OptionData object which contains the name of the audio clip. The value holds the actual audio clip.
         /// </summary>
         private readonly Dictionary<Dropdown.OptionData, AudioClip> _optionsAudioClipsDictionary = new Dictionary<Dropdown.OptionData, AudioClip>();
 

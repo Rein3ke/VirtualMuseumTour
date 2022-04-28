@@ -189,7 +189,7 @@ namespace Audio
         }
 
         /// <summary>
-        /// Draws a slider in the corner of the screen to adjust the volume.
+        /// Draws a slider in the corner of the screen to allow the user to adjust the volume.
         /// </summary>
         private void OnGUI()
         {
@@ -297,7 +297,7 @@ namespace Audio
                     audioSource.outputAudioMixerGroup = musicMixerGroup; // Music mixer
                     break;
                 default:
-                    Debug.LogError($"[{nameof(AddAudioToQueue)}] Error while trying to determine mixer group.");
+                    Debug.LogError($"[{nameof(AudioQueueCoroutine)}] Error while trying to determine mixer group.");
                     break;
             }
             
@@ -356,16 +356,16 @@ namespace Audio
         /// <summary>
         /// Coroutine to adjust the master volume to a specified value over time.
         /// </summary>
-        /// <param name="volume">Desired volume.</param>
+        /// <param name="targetVolume">Desired volume.</param>
         /// <returns>Nothing (Coroutine).</returns>
-        private IEnumerator SetMasterVolumeTarget(float volume)
+        private IEnumerator SetMasterVolumeTarget(float targetVolume)
         {
-            masterMixerGroup.audioMixer.GetFloat("MasterVolume", out var currentVolume);
+            masterMixerGroup.audioMixer.GetFloat("MasterVolume", out var currentVolume); // get current volume
             float t = 0f;
-            while (currentVolume != volume)
+            while (currentVolume != targetVolume) // while current volume is not equal to desired volume
             {
-                masterMixerGroup.audioMixer.SetFloat("MasterVolume", Mathf.Lerp(currentVolume, volume, t));
-                t += Time.deltaTime * .95f;
+                masterMixerGroup.audioMixer.SetFloat("MasterVolume", Mathf.Lerp(currentVolume, targetVolume, t));
+                t += Time.deltaTime * .95f; // increase t by delta time multiplied by a factor of .95 (to speed up the transition)
                 yield return null;
             }
         }
@@ -376,7 +376,7 @@ namespace Audio
         /// <param name="eventParam">Application state (via eventParam.EventApplicationState).</param>
         private void SetDisplayInterface(EventParam eventParam)
         {
-            _displayOnGUI = eventParam.EventApplicationState == ApplicationState.Main;
+            _displayOnGUI = (eventParam.EventApplicationState == ApplicationState.Main);
         }
 
         #endregion
@@ -395,7 +395,7 @@ namespace Audio
             var clips = Resources.LoadAll(path, typeof(AudioClip));
 
             return clips
-                .Cast<AudioClip>()
+                .Cast<AudioClip>() // cast Object[] to AudioClip[]
                 .Where(clip => clip != null)
                 .ToArray();
         }
